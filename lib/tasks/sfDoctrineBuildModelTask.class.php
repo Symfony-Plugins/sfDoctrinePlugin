@@ -82,6 +82,7 @@ EOF;
         $relations = $import->getRelations($properties);            
         
         $options['inheritance']['extends'] = 'sfDoctrineRecord';
+        $options['override_parent'] = true;
         
         $builder->buildRecord($options, $columns, $relations);
     }
@@ -123,6 +124,7 @@ EOF;
     
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['inheritance']['extends'] = 'Plugin' . $options['className'];
+    $options['no_definition'] = true;
     
     $builder->writeDefinition($options, array(), array());
   }
@@ -140,8 +142,9 @@ EOF;
     }
     
     $options['className'] = 'Base' . $options['className'];
-    $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['inheritance']['extends'] = 'sfDoctrineRecord';
+    $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
+    $options['override_parent'] = true;
     
     $builder->writeDefinition($options, $columns, $relations);
   }
@@ -161,8 +164,8 @@ EOF;
     $options['fileName'] = $pluginModelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     
     // We only want to generate this file if it doesn't exist.
-    if (!file_exists($options['fileName'])) {
+    //if (!file_exists($options['fileName'])) {
       $builder->writeDefinition($options, array(), array());
-    }
+    //}
   }
 }
