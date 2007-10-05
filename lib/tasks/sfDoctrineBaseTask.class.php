@@ -32,7 +32,9 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
       $name = basename($plugin);  
       $pluginModels = sfConfig::get('sf_plugins_dir').'/'.$name.'/lib/model/doctrine';
       
-      $directories[] = $pluginModels;
+      if (file_exists($pluginModels)) {
+        $directories[] = $pluginModels;
+      }
     }
     
     $models = Doctrine::loadModels($directories);

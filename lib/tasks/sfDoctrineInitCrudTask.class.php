@@ -77,7 +77,7 @@ EOF;
 
     // create basic application structure
     $finder = sfFinder::type('any')->ignore_version_control()->discard('.sf');
-    $dirs = sfLoader::getGeneratorSkeletonDirs('sfDoctrineCrud', $options['theme']);
+    $dirs = sfLoader::getGeneratorSkeletonDirs('sfDoctrineAdmin', $options['theme']);
     foreach ($dirs as $dir)
     {
       if (is_dir($dir))
