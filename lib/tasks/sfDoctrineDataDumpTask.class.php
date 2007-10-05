@@ -64,10 +64,6 @@ EOF;
 
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
 
-    $this->loadDoctrine();
-    
-    $databaseManager = new sfDatabaseManager();
-
     if (!sfToolkit::isPathAbsolute($filename))
     {
       $dir = sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'fixtures';

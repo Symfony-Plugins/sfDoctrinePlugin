@@ -62,8 +62,6 @@ EOF;
   {
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
     
-    $this->loadDoctrine();
-    
     // generate module
     $tmpDir = sfConfig::get('sf_root_dir').DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.md5(uniqid(rand(), true));
     sfConfig::set('sf_module_cache_dir', $tmpDir);

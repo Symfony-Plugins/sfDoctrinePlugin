@@ -41,6 +41,11 @@ class sfDoctrineSchemasConfigHandler extends sfYamlConfigHandler
             // If empty lets see if the schema is in a plugin
             if (empty($components)) {
                 $schema = explode('/', $schemaFile);
+                
+                if (!isset($schema[1])) {
+                  continue;
+                }
+                
                 $pluginName = $schema[0];
                 $schema = $schema[1];
                 

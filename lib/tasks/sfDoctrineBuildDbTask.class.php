@@ -22,7 +22,7 @@ class sfDoctrineBuildDbTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {    
+  {
     $this->aliases = array('doctrine-build-db');
     $this->namespace = 'doctrine';
     $this->name = 'build-db';
@@ -44,6 +44,25 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-
+    $databases = sfYaml::load(sfConfig::get('sf_config_dir').'/databases.yml');
+    $databases = $databases['all'];
+    
+    foreach ($databases as $name => $database)
+    {
+      $dsn = $database['param']['dsn'];
+      $info = Doctrine_Manager::getInstance()->parseDsn($dsn);
+      
+      $dsn = $info['scheme'].':host='.$info['host'];
+      $user = $info['user'];
+      $password = $info['pass'];
+      
+      $connection = Doctrine_Manager::getInstance()->openConnection(new PDO($dsn, $user, $password), $name);
+      
+      try {
+        $connection->export->createDatabase($info['database']);
+      } catch(Exception $e) {
+        
+      }
+    }
   }
 }

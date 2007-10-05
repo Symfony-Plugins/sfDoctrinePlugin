@@ -64,8 +64,6 @@ EOF;
   {
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
     
-    $this->loadDoctrine();
-    
     sfSimpleAutoload::getInstance()->unregister();
     sfSimpleAutoload::getInstance()->register();
 

@@ -51,9 +51,6 @@ EOF;
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
     $buildModel->run();
 
-    $buildSql = new sfDoctrineBuildSqlTask($this->dispatcher, $this->formatter);
-    $buildSql->run();
-
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
     $insertSql->run();
   }

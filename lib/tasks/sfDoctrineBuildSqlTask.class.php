@@ -22,16 +22,7 @@ class sfDoctrineBuildSqlTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name')
-    ));
-
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environement', 'dev'),
-      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
-    ));
-    
+  {    
     $this->aliases = array('doctrine-build-sql');
     $this->namespace = 'doctrine';
     $this->name = 'build-sql';
@@ -53,29 +44,27 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->loadConnections();
     
     $sqlPath = sfConfig::get('sf_root_dir').'/data/sql';
     
-    $sql = Doctrine::exportSql(sfConfig::get('sf_root_dir').'/lib/model/doctrine');
-    
-    file_put_contents($sqlPath.'/doctrine-schema.sql', implode("\n", $sql));
+    $directories = array();
+    $directories[] = sfConfig::get('sf_root_dir').'/lib/model/doctrine';
     
     // Build sql for all of the plugins
     $plugins = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_plugins_dir'));
     
     foreach ($plugins as $plugin)
     {
-      $name = basename($plugin);
+      $pluginModelPath = sfConfig::get('sf_plugins_dir').'/'.basename($plugin).'/lib/model/doctrine';
       
-      $pluginModels = sfConfig::get('sf_plugins_dir').'/'.$name.'/lib/model/doctrine';
-      
-      if (file_exists($pluginModels))
-      {
-        $sql = Doctrine::exportSql($pluginModels);
-        
-        file_put_contents($sqlPath.'/doctrine-'.$name.'-schema.sql', implode("\n", $sql));
+      if (file_exists($pluginModelPath)) {
+        $directories[] = $pluginModelPath;
       }
     }
+    
+    $sql = Doctrine::exportSql($directories);
+    
+    file_put_contents($sqlPath.'/doctrine-schema.sql', implode("\n", $sql));
   }
 }
