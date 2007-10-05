@@ -30,6 +30,7 @@ class sfDoctrineGenerateCrudTask extends sfDoctrineBaseTask
     ));
 
     $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environement', 'dev'),
       new sfCommandOption('theme', null, sfCommandOption::PARAMETER_REQUIRED, 'The theme name', 'default'),
     ));
 
@@ -59,8 +60,10 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $properties = parse_ini_file(sfConfig::get('sf_config_dir').'/properties.ini', true);
-
+    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    
+    $this->loadDoctrine();
+    
     // generate module
     $tmpDir = sfConfig::get('sf_root_dir').DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.md5(uniqid(rand(), true));
     sfConfig::set('sf_module_cache_dir', $tmpDir);
@@ -76,11 +79,11 @@ EOF;
     $this->filesystem->replaceTokens($moduleDir.'/actions/actions.class.php', '', '', array('auto'.ucfirst($arguments['module']) => $arguments['module']));
 
     $constants = array(
-      'PROJECT_NAME' => isset($properties['name']) ? $properties['name'] : 'symfony',
+      'PROJECT_NAME' => 'symfony',
       'APP_NAME'     => $arguments['application'],
       'MODULE_NAME'  => $arguments['module'],
       'MODEL_CLASS'  => $arguments['model'],
-      'AUTHOR_NAME'  => isset($properties['author']) ? $properties['author'] : 'Your name here',
+      'AUTHOR_NAME'  => 'Your name here',
     );
 
     // customize php and yml files
