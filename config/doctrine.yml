@@ -10,4 +10,4 @@ all:
     # enable quoting
     quote_identifier: false
 
-#  global_listeners: [ sfDoctrineEventListener ]
+#    global_listeners: [ ]

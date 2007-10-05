@@ -18,20 +18,20 @@ class sfDoctrineAdminColumn extends sfAdminColumn
 {
   // doctrine to creole type conversion
   static $docToCreole = array(
-    'boolean'   => CreoleTypes::BOOLEAN,
-    'string'    => CreoleTypes::TEXT,
-    'integer'   => CreoleTypes::INTEGER,
-    'date'      => CreoleTypes::DATE,
-    'timestamp' => CreoleTypes::TIMESTAMP,
-    'time'      => CreoleTypes::TIME,
-    'enum'      => CreoleTypes::TINYINT,
-    'float'     => CreoleTypes::FLOAT,
-    'double'    => CreoleTypes::FLOAT,
-    'clob'      => CreoleTypes::CLOB,
-    'blob'      => CreoleTypes::BLOB,
-    'object'    => CreoleTypes::VARCHAR,
-    'array'     => CreoleTypes::VARCHAR,
-    'decimal'	=> CreoleTypes::DECIMAL,
+    'boolean'   => 1,
+    'string'    => 17,
+    'integer'   => 5,
+    'date'      => 10,
+    'timestamp' => 12,
+    'time'      => 11,
+    'enum'      => 4,
+    'float'     => 8,
+    'double'    => 8,
+    'clob'      => 16,
+    'blob'      => 15,
+    'object'    => 7,
+    'array'     => 7,
+    'decimal'	  => 18,
   );
 
   protected $relatedClassName = null;
@@ -50,10 +50,10 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     // we simulate the CHAR/VARCHAR types to generate input_tags
     if(($dType == 'string') and ($this->getSize() < 256))
     {
-      return CreoleTypes::VARCHAR;
+      return 17;
     }
 
-    return $dType ? self::$docToCreole[$dType] : CreoleTypes::OTHER;
+    return $dType ? self::$docToCreole[$dType] : -1;
   }
 
   function getSize()
