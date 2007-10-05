@@ -1,0 +1,13 @@
+all:
+  attributes:
+
+    #automatic table creation (none, tables, constraints, all)
+    export:  all
+    
+    #enable doctrine side validation (true, false)
+    validate: false
+
+    # enable quoting
+    quote_identifier: false
+
+#  global_listeners: [ sfDoctrineEventListener ]
