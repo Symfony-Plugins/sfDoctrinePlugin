@@ -18,7 +18,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
 {
   protected $table;
 
-  public function initialize($generatorManager)
+  public function initialize(sfGeneratorManager $generatorManager)
   {
     parent::initialize($generatorManager);
 

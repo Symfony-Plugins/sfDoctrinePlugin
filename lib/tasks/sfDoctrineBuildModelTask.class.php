@@ -63,6 +63,30 @@ EOF;
     }
   }
   
+  protected function importSchema($directory, $outputDirectory)
+  {
+    $schemas = sfFinder::type('file')->ignore_version_control()->name('*.yml')->in($directory);
+    
+    $import = new Doctrine_Import_Schema();
+    $schema = $import->buildSchema($schemas, 'yml');
+     
+    $array = $schema['schema'];
+    
+    $builder = new Doctrine_Import_Builder();
+    $builder->setTargetPath($outputDirectory);
+    $builder->generateBaseClasses(true);
+    
+    foreach ($array as $name => $properties) {
+        $options = $import->getOptions($properties, $outputDirectory);
+        $columns = $import->getColumns($properties);
+        $relations = $import->getRelations($properties);            
+        
+        $options['inheritance']['extends'] = 'sfDoctrineRecord';
+        
+        $builder->buildRecord($options, $columns, $relations);
+    }
+  }
+  
   protected function importPluginSchema($path)
   {
     $name = basename($path);
@@ -79,13 +103,13 @@ EOF;
         $columns = $import->getColumns($properties);
         $relations = $import->getRelations($properties);            
         
-        $this->writeProjectDefinition($path, $options);
-        $this->writeBaseDefinition($path, $options, $columns, $relations);
+        $this->writePluginProjectDefinition($path, $options);
+        $this->writePluginBaseDefinition($path, $options, $columns, $relations);
         $this->writePluginDefinition($path, $options);
     }
   }
   
-  protected function writeProjectDefinition($path, $options)
+  protected function writePluginProjectDefinition($path, $options)
   {
     $name = basename($path);
     
@@ -94,7 +118,7 @@ EOF;
     $modelPath = sfConfig::get('sf_model_lib_dir').'/doctrine' . DIRECTORY_SEPARATOR . $name;
     
     if (!file_exists($modelPath)) {
-      mkdir($modelPath);
+      $this->filesystem->mkdirs($modelPath);
     }
     
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
@@ -103,7 +127,7 @@ EOF;
     $builder->writeDefinition($options, array(), array());
   }
   
-  protected function writeBaseDefinition($path, $options, $columns, $relations)
+  protected function writePluginBaseDefinition($path, $options, $columns, $relations)
   {
     $name = basename($path);
     
@@ -112,11 +136,12 @@ EOF;
     $modelPath = sfConfig::get('sf_model_lib_dir').'/doctrine' . DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . 'generated';
     
     if (!file_exists($modelPath)) {
-      mkdir($modelPath);
+      $this->filesystem->mkdirs($modelPath);
     }
     
     $options['className'] = 'Base' . $options['className'];
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
+    $options['inheritance']['extends'] = 'sfDoctrineRecord';
     
     $builder->writeDefinition($options, $columns, $relations);
   }
@@ -128,21 +153,16 @@ EOF;
     $pluginModelPath = $path . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . 'doctrine';
     
     if (!file_exists($pluginModelPath)) {
-      mkdir($pluginModelPath);
+      $this->filesystem->mkdirs($pluginModelPath);
     }
     
     $options['inheritance']['extends'] = 'Base' . $options['className'];
     $options['className'] = 'Plugin' . $options['className'];
     $options['fileName'] = $pluginModelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     
-    $builder->writeDefinition($options, array(), array());
-  }
-  
-  protected function importSchema($directory, $outputDirectory)
-  {
-    $schemas = sfFinder::type('file')->name('*.yml')->ignore_version_control()->in($directory);
-    
-    $import = new Doctrine_Import_Schema();
-    $import->importSchema($schemas, 'yml', $outputDirectory);
+    // We only want to generate this file if it doesn't exist.
+    if (!file_exists($options['fileName'])) {
+      $builder->writeDefinition($options, array(), array());
+    }
   }
 }
