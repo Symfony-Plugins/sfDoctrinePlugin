@@ -142,6 +142,7 @@ EOF;
     }
     
     $options['className'] = 'Base' . $options['className'];
+    $options['abstract'] = true;
     $options['inheritance']['extends'] = 'sfDoctrineRecord';
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['override_parent'] = true;
@@ -162,10 +163,12 @@ EOF;
     $options['inheritance']['extends'] = 'Base' . $options['className'];
     $options['className'] = 'Plugin' . $options['className'];
     $options['fileName'] = $pluginModelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
+    $options['abstract'] = true;
+    $options['no_definition'] = true;
     
     // We only want to generate this file if it doesn't exist.
-    //if (!file_exists($options['fileName'])) {
+    if (!file_exists($options['fileName'])) {
       $builder->writeDefinition($options, array(), array());
-    //}
+    }
   }
 }
