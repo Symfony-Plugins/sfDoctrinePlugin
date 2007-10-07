@@ -23,6 +23,14 @@ class sfDoctrineBuildSqlTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {    
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+    
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
+    ));
+    
     $this->aliases = array('doctrine-build-sql');
     $this->namespace = 'doctrine';
     $this->name = 'build-sql';
@@ -44,26 +52,13 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
     $this->loadConnections();
+    $models = $this->loadModels();
     
     $sqlPath = sfConfig::get('sf_root_dir').'/data/sql';
     
-    $directories = array();
-    $directories[] = sfConfig::get('sf_root_dir').'/lib/model/doctrine';
-    
-    // Build sql for all of the plugins
-    $plugins = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_plugins_dir'));
-    
-    foreach ($plugins as $plugin)
-    {
-      $pluginModelPath = sfConfig::get('sf_plugins_dir').'/'.basename($plugin).'/lib/model/doctrine';
-      
-      if (file_exists($pluginModelPath)) {
-        $directories[] = $pluginModelPath;
-      }
-    }
-    
-    $sql = Doctrine::exportSql($directories);
+    $sql = Doctrine_Manager::connection()->export->exportClassesSql($models);
     
     file_put_contents($sqlPath.'/doctrine-schema.sql', implode("\n", $sql));
   }

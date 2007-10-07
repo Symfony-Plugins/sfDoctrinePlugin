@@ -35,46 +35,12 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
       }
     }
     
-    $models = Doctrine::loadModels($directories);
+    return Doctrine::loadModels($directories);
   }
   
   public function loadConnections()
   {
-    $doctrineConfigPath = sfConfig::get('sf_plugins_dir').'/sfDoctrinePlugin/config/doctrine.yml';
-    
-    $config = new sfDoctrineConfigHandler();
-    $php = str_replace('<?php', '', $config->execute(array($doctrineConfigPath)));
-    
-    eval($php);
-    
-    $databases = sfYaml::load(sfConfig::get('sf_config_dir').'/databases.yml');
-    $databases = $databases['all'];
-    
-    foreach ($databases as $name => $database)
-    {
-      $info = Doctrine_Manager::getInstance()->parseDsn($database['param']['dsn']);
-      
-      $dsn = $info['dsn'];
-      $user = $info['user'];
-      $password = $info['pass'];
-      
-      $connection = Doctrine_Manager::getInstance()->openConnection(new PDO($dsn, $user, $password), $name);
-      
-      // Load attributes to connection
-      foreach($default_attributes as $k => $v)
-      {
-        $connection->setAttribute(constant('Doctrine::'.$k), $v);
-      }
-    }
-    
-    // Apply connection component binding
-    $schemasPath = sfConfig::get('sf_config_dir').'/schemas.yml';
-    
-    if (file_exists($schemasPath)) {
-      $schemas = new sfDoctrineSchemasConfigHandler();
-      $php = str_replace('<?php', '', $schemas->execute(array($schemasPath)));
-      
-      eval($php);
-    }
+    $databaseManager = new sfDatabaseManager();
+    $databaseManager->initialize();
   }
 }
