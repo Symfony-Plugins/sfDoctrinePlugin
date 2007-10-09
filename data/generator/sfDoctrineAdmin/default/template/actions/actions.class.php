@@ -36,7 +36,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->pager = new sfDoctrinePager('<?php echo $this->getClassName() ?>', <?php echo $this->getParameterValue('list.max_per_page', 20) ?>);
 
 <?php if ($peerMethod = $this->getParameterValue('list.peer_method')): ?>    
-    $q = sfDoctrine::getTable('<?php echo $this->getClassName() ?>')-><?php echo $peerMethod ?>();
+    $q = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')-><?php echo $peerMethod ?>();
     $this->pager->setQuery($q);
 <?php endif; ?>
 
@@ -100,7 +100,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 
   public function executeDelete ()
   {
-    $this-><?php echo $this->getSingularName() ?> = sfDoctrine::getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction(40) ?>);
+    $this-><?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction(40) ?>);
     
     $this->forward404Unless($this-><?php echo $this->getSingularName() ?>);
 
@@ -250,9 +250,9 @@ $outputPattern = ($type == 'date' ? 'i' : 'I');
 <?php // double lists
 if (in_array($input_type, array('doctrine_admin_double_list', 'doctrine_admin_check_list', 'doctrine_admin_select_list'))): ?>
       // Update many-to-many for "<?php echo $name ?>"
-      $<?php echo $name?>Table = sfDoctrine::getTable('<?php echo $this->getClassName() ?>')->getRelation('<?php echo $name ?>')->getTable();
+      $<?php echo $name?>Table = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->getRelation('<?php echo $name ?>')->getTable();
  
-      $associationName = sfDoctrine::getTable('<?php echo $this->getClassName() ?>')->getRelation('<?php echo $name ?>')->getAssociationTable()->getOption('name');
+      $associationName = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->getRelation('<?php echo $name ?>')->getAssociationTable()->getOption('name');
       $this-><?php echo $this->getSingularName()?>->$associationName->delete();
  
       $ids = $this->getRequestParameter('associated_<?php echo $name ?>');
@@ -280,7 +280,7 @@ if (in_array($input_type, array('doctrine_admin_double_list', 'doctrine_admin_ch
     }
     else
     {
-      $<?php echo $this->getSingularName() ?> = sfDoctrine::getTable('<?php echo $this->getClassName() ?>')->find(array(<?php echo $this->getRetrieveByPkParamsForGetOrCreate() ?>));
+      $<?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(array(<?php echo $this->getRetrieveByPkParamsForGetOrCreate() ?>));
 
       $this->forward404Unless($<?php echo $this->getSingularName() ?>);
     }
@@ -387,7 +387,7 @@ $dateArg = "\$this->filters['{$column->getName()}']['%s']";
   {
     if ($sort_column = $this->getUser()->getAttribute('sort', null, 'sf_admin/<?php echo $this->getSingularName() ?>/sort'))
     {
-      $table = sfDoctrine::getTable('<?php echo $this->getClassName()?>');
+      $table = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName()?>');
       $colNames = array_keys($table->getColumns());
       if (!in_array($sort_column, $colNames)) // illegal column name
         return;
