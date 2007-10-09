@@ -144,24 +144,13 @@ class sfDoctrineDatabase extends sfDatabase
     $eventListener = new sfDoctrineConnectionListener($this->doctrineConnection, $encoding);
     $this->doctrineConnection->addListener($eventListener);
     
-    // Load all the other specified listeners
-    $listeners = $this->getParameter('listeners');
-    
-    foreach ($listeners as $listener)
-    {
-      if ($listener instanceof Doctrine_Record_Listener_Interface)
-      {
-        $this->doctrineConnection->addRecordListener($listener);
-      } else {
-        $this->doctrineConnection->addListener($listener);
-      }
-    }
-    
     // Load Query Logger Listener
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
       $this->doctrineConnection->addListener(new sfDoctrineQueryLogger());
     }
+    
+    $this->doctrineConnection->addRecordListener(new sfDoctrineRecordListener());
   }
   
   /**
@@ -178,28 +167,8 @@ class sfDoctrineDatabase extends sfDatabase
     // Load the doctrine configuration
     require(sfConfigCache::getInstance()->checkConfig('config/doctrine.yml'));
     
-    $db_attributes = array();
-    $db_listeners = array();
-    
-    // DB Attributes
-    if (isset($attributes[$name]))
-    {
-      $db_attributes = array_merge($default_attributes, $attributes[$name]);
-    } else if (isset($default_attributes)) {
-      $db_attributes = $default_attributes;
-    }
-    
-    // DB Listeners
-    if (isset($listeners[$name]))
-    {
-      $db_listeners = array_merge($default_listeners, $listeners[$name]);
-    } else if (isset($default_listeners)) {
-      $db_listeners = $default_listeners;
-    }
-    
     // Load everything in to parameters
-    $this->setParameter('attributes', $db_attributes);
-    $this->setParameter('listeners', $db_listeners);
+    $this->setParameter('attributes', $default_attributes);
     $this->setParameter('name', $name);
   }
   
