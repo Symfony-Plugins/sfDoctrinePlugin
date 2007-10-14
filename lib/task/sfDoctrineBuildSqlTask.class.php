@@ -60,6 +60,6 @@ EOF;
     
     $sql = Doctrine_Manager::connection()->export->exportClassesSql($models);
     
-    file_put_contents($sqlPath.'/doctrine-schema.sql', implode("\n", $sql));
+    file_put_contents($sqlPath.'/doctrine-schema.sql', implode(";\n", $sql));
   }
 }
