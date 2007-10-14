@@ -27,7 +27,7 @@
  * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
  * @version    SVN: $Id: sfDoctrineUniqueValidator.php 5284 2007-09-26 08:55:32Z hartym $
  */
-class sfDoctrineUniqueValidator extends sfValidator
+class sfDoctrineUniqueValidator extends sfValidatorBase
 {
   public function execute(&$value, &$error)
   {
