@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfDoctrinePlugin package.
  * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +17,9 @@
  */
 class sfDoctrineAdminColumn extends sfAdminColumn
 {
-  // doctrine to creole type conversion
+  /**
+   * docToCreole
+   */
   static $docToCreole = array(
     'boolean'   => 1,
     'string'    => 17,
@@ -33,16 +36,45 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     'array'     => 7,
     'decimal'	  => 18,
   );
-
+  
+  /**
+   * relatedClassName
+   *
+   * @var string
+   */
   protected $relatedClassName = null;
+  
+  /**
+   * name
+   *
+   * @var string
+   */
   protected $name = null;
-  protected $columnName; // stores the real foreign id column
+  
+  /**
+   * columnName
+   *
+   * stores the real foreign id column
+   *
+   * @var string
+   */
+  protected $columnName;
 
+  /**
+   * getDoctrineType
+   *
+   * @return void
+   */
   function getDoctrineType()
   {
     return isset($this->column['type']) ? $this->column['type'] : null;
   }
 
+  /**
+   * getCreoleTypes
+   *
+   * @return void
+   */
   function getCreoleType()
   {
     $dType = $this->getDoctrineType();
@@ -55,12 +87,22 @@ class sfDoctrineAdminColumn extends sfAdminColumn
 
     return $dType ? self::$docToCreole[$dType] : -1;
   }
-
+  
+  /**
+   * getSize
+   *
+   * @return void
+   */
   function getSize()
   {
     return $this->column['length'];
   }
-
+  
+  /**
+   * isNotNull
+   *
+   * @return void
+   */
   function isNotNull()
   {
     //FIXME THIS NEEDS TO BE UPDATE-but I don't know the format for the column array
@@ -68,45 +110,90 @@ class sfDoctrineAdminColumn extends sfAdminColumn
       return $this->column[2]['notnull'];
     return false;
   }
-
+  
+  /**
+   * isPrimaryKey
+   *
+   * @return void
+   */
   function isPrimaryKey()
   {
     if (isset($this->column['primary']))
       return $this->column['primary'];
     return false;
   }
-
+  
+  /**
+   * setRelatedClassName
+   *
+   * @param string $newName 
+   * @return void
+   */
   function setRelatedClassName($newName)
   {
     $this->relatedClassName = $newName;
   }
-
+  
+  /**
+   * getRelatedClassName
+   *
+   * @return void
+   */
   function getRelatedClassName()
   {
     return $this->relatedClassName;
   }
-
+  
+  /**
+   * setColumnName
+   *
+   * @param string $newName 
+   * @return void
+   */
   function setColumnName($newName)
   {
     $this->columnName = $newName;
   }
-
+  
+  /**
+   * getColumnName
+   *
+   * @return void
+   */
   function getColumnName()
   {
     return $this->columnName;
   }
-
+  
+  /**
+   * setColumnInfo
+   *
+   * @param string $col 
+   * @return void
+   */
   function setColumnInfo($col)
   {
     $this->column = $col;
   }
 
-  // FIXME: this method is never used... remove it?
+  /**
+   * setName
+   *
+   * // FIXME: Should this be removed? it is not used anywhere
+   *
+   * @param string $newName 
+   * @return void
+   */
   function setName($newName)
   {
     $this->name = $newName;
   }
-
+  
+  /**
+   * getName
+   *
+   * @return void
+   */
   function getName()
   {
     if (isset($this->name))
@@ -116,14 +203,27 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     // a bit kludgy: the field name is actually in $this->phpName
     return parent::getPhpName();
   }
-
+  
+  /**
+   * isForeignKey
+   *
+   * @return void
+   */
   function isForeignKey()
   {
     return isset($this->relatedClassName);
   }
-
-  // all the calls that were forwarded to the table object with propel
-  // have to be dealt with explicitly here, otherwise:
+  
+  /**
+   * __call
+   *
+   * all the calls that were forwarded to the table object with propel
+   * have to be dealt with explicitly here, otherwise:
+   *
+   * @param string $name 
+   * @param string $arguments 
+   * @return void
+   */
   public function __call($name, $arguments)
   {
     throw new Exception(sprintf('Unhandled call: "%s"', $name));

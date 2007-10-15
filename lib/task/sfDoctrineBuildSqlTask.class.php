@@ -60,6 +60,11 @@ EOF;
     
     $sql = Doctrine_Manager::connection()->export->exportClassesSql($models);
     
-    file_put_contents($sqlPath.'/doctrine-schema.sql', implode(";\n", $sql));
+    $build = '';
+    foreach ($sql as $query) {
+        $build .= $query.";\n";
+    }
+    
+    file_put_contents($sqlPath.'/doctrine-schema.sql', $build);
   }
 }

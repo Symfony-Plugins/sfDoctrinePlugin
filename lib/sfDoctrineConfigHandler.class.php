@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfDoctrinePlugin package.
  * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,6 +19,12 @@
  */
 class sfDoctrineConfigHandler extends sfYamlConfigHandler
 {
+  /**
+   * execute
+   *
+   * @param string $configFiles 
+   * @return void
+   */
   public function execute($configFiles)
   {
     // Parse yaml config files
@@ -98,7 +105,13 @@ class sfDoctrineConfigHandler extends sfYamlConfigHandler
 
     return $retval;
   }
-
+  
+  /**
+   * configToListeners
+   *
+   * @param string $config 
+   * @return void
+   */
   protected function configToListeners($config)
   {
     $listeners = array();
@@ -109,7 +122,13 @@ class sfDoctrineConfigHandler extends sfYamlConfigHandler
     }
     return $listeners;
   }
-
+  
+  /**
+   * configToAttributes
+   *
+   * @param string $config 
+   * @return void
+   */
   protected function configToAttributes($config)
   {
     $attributes = array();
@@ -157,6 +176,12 @@ class sfDoctrineConfigHandler extends sfYamlConfigHandler
     return $attributes;
   }
 
+  /**
+   * attributeToPhp
+   *
+   * @param string $attr 
+   * @return void
+   */
   protected function attributeToPhp($attr)
   {
     if (is_array($attr))

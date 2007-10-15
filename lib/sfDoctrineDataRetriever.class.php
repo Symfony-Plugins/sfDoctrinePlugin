@@ -2,7 +2,7 @@
 /*
  * This file is part of the sfDoctrinePlugin package.
  * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
- * (c) 2007-2008 Jonathan H. Wage <jwage@mac.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,6 +18,11 @@
  */
 class sfDoctrineDataRetriever
 {
+  /**
+   * retrieveObjects
+   *
+   * @package default
+   */
   static public function retrieveObjects($class, $peerMethod = 'findAll')
   {
     if (!$peerMethod)

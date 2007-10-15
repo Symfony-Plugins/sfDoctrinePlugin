@@ -1,7 +1,8 @@
 <?php
 /*
  * This file is part of the sfDoctrinePlugin package.
- * (c) 2006 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.

@@ -22,8 +22,20 @@
  */
 class sfDoctrineDatabase extends sfDatabase
 {
+  /**
+   * doctrineConnection
+   *
+   * @var string
+   */
   protected $doctrineConnection = null;
-
+  
+  /**
+   * initialize
+   *
+   * @param string $parameters 
+   * @param string $name 
+   * @return void
+   */
   public function initialize($parameters = array(), $name = null)
   {
     if (!$parameters)

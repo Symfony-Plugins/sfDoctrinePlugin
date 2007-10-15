@@ -2,6 +2,7 @@
 /*
  * This file is part of the sfDoctrinePlugin package.
  * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,8 +17,19 @@
  */
 class sfDoctrineAdminGenerator extends sfAdminGenerator
 {
+  /**
+   * table
+   *
+   * @var string
+   */
   protected $table;
 
+  /**
+   * initialize
+   *
+   * @param string $sfGeneratorManager 
+   * @return void
+   */
   public function initialize(sfGeneratorManager $generatorManager)
   {
     parent::initialize($generatorManager);
@@ -25,17 +37,32 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     $this->setGeneratorClass('sfDoctrineAdmin');
   }
 
+  /**
+   * loadMapBuilderClasses
+   *
+   * @return void
+   */
   protected function loadMapBuilderClasses()
   {
     $conn = Doctrine_Manager::getInstance()->openConnection('mock://no-one@localhost/empty', null, false);
     $this->table = $conn->getTable($this->getClassName());
   }
-
+  
+  /**
+   * getTable
+   *
+   * @return void
+   */
   protected function getTable()
   {
     return $this->table;
   }
-
+  
+  /**
+   * loadPrimaryKeys
+   *
+   * @return void
+   */
   protected function loadPrimaryKeys()
   {
     $identifier = $this->getTable()->getIdentifier();
@@ -45,17 +72,21 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
       {
         $this->primaryKey[] = new sfDoctrineAdminColumn($_key);
       }
-    }
-    else
-    {
+    } else {
       $this->primaryKey[] = new sfDoctrineAdminColumn($identifier);
     }
     // FIXME: check that there is at least one primary key [ and if there is not, what to do???? ]
   }
-
+  
+  /**
+   * getColumns
+   *
+   * @param string $paramName 
+   * @param string $category 
+   * @return void
+   */
   public function getColumns($paramName, $category='NONE')
   {
-
     $columns = parent::getColumns($paramName, $category);
 
     // set the foreign key indicator
@@ -84,7 +115,12 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
 
     return $columns;
   }
-
+  
+  /**
+   * getAllColumns
+   *
+   * @return void
+   */
   function getAllColumns()
   {
     $cols = $this->getTable()->getColumns();
@@ -109,12 +145,28 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     return $columns;
   }
 
+  /**
+   * getAdminColumnForField
+   *
+   * @param string $field 
+   * @param string $flag 
+   * @return void
+   */
   function getAdminColumnForField($field, $flag = null)
   {
     $cols = $this->getTable()->getColumns(); // put this in an internal variable?
     return  new sfDoctrineAdminColumn($field, (isset($cols[$field]) ? $cols[$field] : null), $flag);
   }
-
+  
+  /**
+   * getPHPObjectHelper
+   *
+   * @param string $helperName 
+   * @param string $column 
+   * @param string $params 
+   * @param string $localParams 
+   * @return void
+   */
   function getPHPObjectHelper($helperName, $column, $params, $localParams = array())
   {
     $params = $this->getObjectTagParams($params, $localParams);
@@ -126,7 +178,15 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     }
     return sprintf ('object_%s($%s, %s, %s)', $helperName, $this->getSingularName(), var_export($this->getColumnGetter($column), true), $params);
   }
-
+  
+  /**
+   * getColumnGetter
+   *
+   * @param string $column 
+   * @param string $developed 
+   * @param string $prefix 
+   * @return void
+   */
   function getColumnGetter($column, $developed = false, $prefix = '')
   {
     if ($developed)
@@ -134,19 +194,41 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     // no parenthesis, we return a method+parameters array
     return array('get', array($column->getName()));
   }
-
+  
+  /**
+   * getColumnSetter
+   *
+   * @param string $column 
+   * @param string $value 
+   * @param string $singleQuotes 
+   * @param string $prefix 
+   * @return void
+   */
   function getColumnSetter($column, $value, $singleQuotes = false, $prefix = 'this->')
   {
     if ($singleQuotes)
       $value = sprintf("'%s'", $value);
     return sprintf('$%s%s->set(\'%s\', %s)', $prefix, $this->getSingularName(), $column->getName(), $value);
   }
-
+  
+  /**
+   * getRelatedClassName
+   *
+   * @param string $column 
+   * @return void
+   */
   function getRelatedClassName($column)
   {
     return $column->getRelatedClassName();
   }
-
+  
+  /**
+   * getColumnEditTag
+   *
+   * @param string $column 
+   * @param string $params 
+   * @return void
+   */
   public function getColumnEditTag($column, $params = array())
   {
     if ($column->getDoctrineType() == 'enum')

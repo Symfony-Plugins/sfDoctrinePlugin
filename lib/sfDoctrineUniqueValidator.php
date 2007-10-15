@@ -29,6 +29,13 @@
  */
 class sfDoctrineUniqueValidator extends sfValidatorBase
 {
+  /**
+   * execute
+   *
+   * @param string $value 
+   * @param string $error 
+   * @return void
+   */
   public function execute(&$value, &$error)
   {
     $className  = $this->getParameter('class');

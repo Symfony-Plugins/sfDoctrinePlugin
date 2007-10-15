@@ -1,6 +1,29 @@
 <?php
+/*
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * sfDoctrineRecordListener
+ * 
+ * @package    sfDoctrinePlugin
+ * @author     Jonathan H. Wage <jwage@mac.com>
+ * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
+ * @version    SVN: $Id: sfDoctrineUniqueValidator.php 5284 2007-09-26 08:55:32Z hartym $
+ */
 class sfDoctrineRecordListener extends Doctrine_Record_Listener
 {
+  /**
+   * preInsert
+   *
+   * @param string $Doctrine_Event 
+   * @return void
+   */
   public function preInsert(Doctrine_Event $event)
   {
     if ($event->getInvoker()->getTable()->hasColumn('created_at'))
@@ -14,6 +37,12 @@ class sfDoctrineRecordListener extends Doctrine_Record_Listener
     }
   }
   
+  /**
+   * preUpdate
+   *
+   * @param string $Doctrine_Event 
+   * @return void
+   */
   public function preUpdate(Doctrine_Event $event)
   {
     if ($event->getInvoker()->getTable()->hasColumn('updated_at'))

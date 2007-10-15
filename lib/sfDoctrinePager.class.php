@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of the sfDoctrine package.
- * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
- * (c) 2006 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,8 +17,18 @@
  */
 class sfDoctrinePager extends sfPager implements Serializable
 {
+  /**
+   * query
+   *
+   * @var string
+   */
   protected $query;
-
+  
+  /**
+   * __construct
+   *
+   * @package default
+   */
   public function __construct($class, $defaultMaxPerPage = 10)
   {
     parent::__construct($class, $defaultMaxPerPage);
@@ -26,13 +36,24 @@ class sfDoctrinePager extends sfPager implements Serializable
     $this->setQuery(Doctrine_Query::create()->from($class));
   }
 
+  /**
+   * serialize
+   *
+   * @return void
+   */
   public function serialize()
   {
     $vars = get_object_vars($this);
     unset($vars['query']);
     return serialize($vars);
   }
-
+  
+  /**
+   * unserialize
+   *
+   * @param string $serialized 
+   * @return void
+   */
   public function unserialize($serialized)
   {
     $array = unserialize($serialized);
@@ -41,7 +62,12 @@ class sfDoctrinePager extends sfPager implements Serializable
         $this->$name = $values;
     }
   }
-
+  
+  /**
+   * init
+   *
+   * @return void
+   */
   public function init()
   {
     $count = $this->getQuery()->offset(0)->limit(0)->count();
@@ -64,17 +90,34 @@ class sfDoctrinePager extends sfPager implements Serializable
       $p->limit($this->getMaxPerPage());
     }
   }
-
+  
+  /**
+   * getQuery
+   *
+   * @return void
+   */
   public function getQuery()
   {
     return $this->query;
   }
-
+  
+  /**
+   * setQuery
+   *
+   * @param string $query 
+   * @return void
+   */
   public function setQuery($query)
   {
     $this->query = $query;
   }
-
+  
+  /**
+   * retrieveObject
+   *
+   * @param string $offset 
+   * @return void
+   */
   protected function retrieveObject($offset)
   {
     $cForRetrieve = clone $this->getQuery();
@@ -85,7 +128,13 @@ class sfDoctrinePager extends sfPager implements Serializable
 
     return $results[0];
   }
-
+  
+  /**
+   * getResults
+   *
+   * @param string $fetchtype 
+   * @return void
+   */
   public function getResults($fetchtype = null)
   {
     $query = $this->getQuery();
