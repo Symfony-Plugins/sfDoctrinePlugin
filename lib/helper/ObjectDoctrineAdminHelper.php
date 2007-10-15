@@ -76,14 +76,14 @@ function _get_doctrine_object_list($object, $method, $options)
   $ids = array();
   foreach ($associatedObjects as $associatedObject)
   {
-    $ids[] = $associatedObject->obtainIdentifier();
+    $ids[] = $associatedObject->identifier();
   }
-  
+
   if ($associatedObjects instanceof Doctrine_Collection && $associatedObjects->count() === 0)
   {
     $associatedObjects = null;
   }
-  
+ 
   return array($allObjects, $associatedObjects, $ids);
 }
 
