@@ -19,6 +19,42 @@
 abstract class sfDoctrineRecord extends Doctrine_Record
 {
   /**
+   * __toString
+   *
+   * @return void
+   * @author Jonathan H. Wage
+   */
+  public function __toString()
+  {
+    // if the current object doesn't exist we return nothing
+    if (!$this->exists())
+    {
+      return '-';
+    }
+
+    // we try to guess a column which would give a good description of the object
+    foreach (array('name', 'title', 'description', 'id') as $descriptionColumn)
+    {
+      if ($this->getTable()->hasColumn($descriptionColumn))
+      {
+        return $this->get($descriptionColumn);
+      }
+    }
+
+    return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
+  }
+  
+  /**
+   * getPrimaryKey
+   *
+   * @return void
+   */
+  public function getPrimaryKey()
+  {
+    return $this->identifier();
+  }
+  
+  /**
    * get
    *
    * @param string $name 
@@ -55,5 +91,41 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     }
     
     return parent::set($name, $value, $load);
+  }
+  
+  /**
+   * __call
+   *
+   * @param string $m 
+   * @param string $a 
+   * @return void
+   */
+  public function __call($m, $a)
+  {
+    try {
+      $verb = substr($m, 0, 3);
+
+      if ($verb == 'set' || $verb == 'get')
+      {
+        $camelColumn = substr($m, 3);
+        
+        // If is a relation
+        if (in_array($camelColumn, array_keys($this->getTable()->getRelations())))
+        {
+          $column = $camelColumn;
+        } else {
+          $column = sfInflector::underscore($camelColumn);
+        }
+
+        if ($verb == 'get')
+        {
+          return $this->get($column);
+        } else {
+          return $this->set($column, $a[0]);
+        }
+      }
+    } catch(Exception $e) {
+      return parent::__call($m, $a);
+    }
   }
 }

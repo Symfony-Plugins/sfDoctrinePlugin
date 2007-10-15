@@ -96,7 +96,6 @@ EOF;
         
         $options['inheritance']['extends'] = 'sfDoctrineRecord';
         $options['override_parent'] = true;
-        $options['generate_accessors'] = true;
         
         $this->writeModelTableClass($options['className'] . 'Table', $outputDirectory);
         
@@ -164,7 +163,6 @@ EOF;
     $options['inheritance']['extends'] = 'sfDoctrineRecord';
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['override_parent'] = true;
-    $options['generate_accessors'] = true;
     
     $builder->writeDefinition($options, $columns, $relations);
   }
