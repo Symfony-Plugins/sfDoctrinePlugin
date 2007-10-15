@@ -74,6 +74,18 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   }
   
   /**
+   * rawGet
+   *
+   * @param string $name 
+   * @param string $load 
+   * @return void
+   */
+  public function rawGet($name)
+  {
+    return parent::rawGet($name);
+  }
+  
+  /**
    * set
    *
    * @param string $name 
@@ -91,6 +103,18 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     }
     
     return parent::set($name, $value, $load);
+  }
+  
+  /**
+   * rawSet
+   *
+   * @param string $name 
+   * @param string $value 
+   * @return void
+   */
+  public function rawSet($name, $value)
+  {
+    parent::set($name, $value);
   }
   
   /**
