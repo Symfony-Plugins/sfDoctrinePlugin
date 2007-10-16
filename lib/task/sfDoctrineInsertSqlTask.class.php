@@ -54,6 +54,8 @@ EOF;
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
     $this->loadConnections();
     
-    Doctrine::exportSchema(sfConfig::get('sf_root_dir').'/lib/model/doctrine');
+    $modelsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . 'doctrine';
+    
+    Doctrine_Facade::createTablesFromModels($modelsDirectory);
   }
 }

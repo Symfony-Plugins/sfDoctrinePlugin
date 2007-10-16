@@ -54,17 +54,12 @@ EOF;
   {
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
     $this->loadConnections();
-    $models = $this->loadModels();
+    $this->loadModels();
     
-    $sqlPath = sfConfig::get('sf_root_dir').'/data/sql';
+    $sqlPath = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'sql';
     
-    $sql = Doctrine_Manager::connection()->export->exportClassesSql($models);
+    $sql = Doctrine_Facade::generateSqlFromModels();
     
-    $build = '';
-    foreach ($sql as $query) {
-        $build .= $query.";\n";
-    }
-    
-    file_put_contents($sqlPath.'/doctrine-schema.sql', $build);
+    file_put_contents($sqlPath. DIRECTORY_SEPARATOR . 'doctrine-schema.sql', $sql);
   }
 }

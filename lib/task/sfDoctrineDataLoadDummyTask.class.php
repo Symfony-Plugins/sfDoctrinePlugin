@@ -24,7 +24,8 @@ class sfDoctrineDataLoadDummyTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name')
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+      new sfCommandArgument('num', sfCommandArgument::OPTIONAL, 'Number of dummy records to populate per model')
     ));
 
     $this->addOptions(array(
@@ -50,26 +51,14 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
-
-    $this->loadDoctrine();
     
-    $delete = isset($options['append']) ? ($options['append'] ? false : true) : true;
-    
-    if ($delete)
-    {
-      $models = Doctrine::getLoadedModels();
-      
-      foreach ($models as $model)
-      {
-        $model = new $model();
-        
-        $model->getTable()->createQuery()->delete($model)->execute();
-      }
-    }
+    $this->loadModels();
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', 'loading dummy data'))));
     
-    $data = new Doctrine_Data();
-    $data->importDummyData(5);
+    $append = (isset($options['append']) && $options['append']) ? true:false;
+    $num = isset($arguments['num']) ? $arguments['num']:5;
+    
+    Doctrine_Facade::loadDummyData($append, $num);
   }
 }

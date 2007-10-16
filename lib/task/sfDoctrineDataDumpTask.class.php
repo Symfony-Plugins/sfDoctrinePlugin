@@ -26,6 +26,7 @@ class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
     $this->addArguments(array(
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('target', sfCommandArgument::REQUIRED, 'The target filename'),
+      new sfCommandArgument('individual_files', sfCommandArgument::OPTIONAL, 'Whether or not to have individiaul fixtures file for each model.')
     ));
 
     $this->addOptions(array(
@@ -60,9 +61,11 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $filename = $arguments['target'];
-
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    
+    $this->loadModels();
+    
+    $filename = $arguments['target'];
 
     if (!sfToolkit::isPathAbsolute($filename))
     {
@@ -73,7 +76,8 @@ EOF;
 
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('dumping data to "%s"', $filename)))));
     
-    $data = new Doctrine_Data();
-    $data->exportData($filename, 'yml');
+    $individualFiles = (isset($arguments['individual_files']) && $arguments['individual_files']) ? true:false;
+    
+    Doctrine_Facade::dumpData($filename, $individualFiles);
   }
 }

@@ -59,9 +59,9 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
-    $buildAll->run(array('application' => $arguments['application']), array('env' => $options['env']));
+    $buildAll->run(array('application' => $arguments['application']));
 
     $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->run(array('application' => $arguments['application']), array('env' => $options['env']));
+    $loadData->run(array('application' => $arguments['application']));
   }
 }

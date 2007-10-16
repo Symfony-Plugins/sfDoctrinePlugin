@@ -44,7 +44,6 @@ The [doctrine:build-all|INFO] task is a shortcut for three other tasks:
 The task is equivalent to:
 
   [./symfony doctrine:build-model|INFO]
-  [./symfony doctrine:build-sql|INFO]
   [./symfony doctrine:insert-sql|INFO]
 
 See those three tasks help page for more information.
@@ -57,9 +56,9 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
-    $buildModel->run(array('application' => $arguments['application']), array('env' => $options['env']));
+    $buildModel->run();
 
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
-    $insertSql->run(array('application' => $arguments['application']), array('env' => $options['env']));
+    $insertSql->run(array('application' => $arguments['application']));
   }
 }

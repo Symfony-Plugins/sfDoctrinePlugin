@@ -62,7 +62,9 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    if (!defined('SF_ROOT_DIR')) {
+      $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    }
     
     sfSimpleAutoload::getInstance()->unregister();
     sfSimpleAutoload::getInstance()->register();
@@ -70,33 +72,19 @@ EOF;
     if (count($options['dir']))
     {
       $fixturesDirs = $options['dir'];
-    }
-    else
-    {
+    } else {
       if (!$pluginDirs = glob(sfConfig::get('sf_root_dir').'/plugins/*/data'))
       {
         $pluginDirs = array();
       }
-      $fixturesDirs = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
-    }
-
-    $delete = isset($options['append']) ? ($options['append'] ? false : true) : true;
-    
-    if ($delete)
-    {
-      $models = Doctrine::loadModels(sfConfig::get('sf_model_lib_dir'). DIRECTORY_SEPARATOR . 'doctrine');
       
-      foreach ($models as $model)
-      {
-        $model = new $model();
-        
-        $model->getTable()->createQuery()->delete($model)->execute();
-      }
+      $fixturesDirs = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
     }
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('load data from "%s"', implode(',', $fixturesDirs))))));
     
-    $data = new Doctrine_Data();
-    $data->importData($fixturesDirs, 'yml');
+    $append = (isset($options['append']) && $options['append']) ? true:false;
+    
+    Doctrine_Facade::loadData($fixturesDirs, $append);
   }
 }

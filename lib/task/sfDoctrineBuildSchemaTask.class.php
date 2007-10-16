@@ -24,7 +24,7 @@ class sfDoctrineBuildSchemaTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+      new sfCommandArgument('application', sfCommandArgument::OPTIONAL, 'The application name'),
     ));
     
     $this->addOptions(array(
@@ -55,11 +55,6 @@ EOF;
     
     $schema = sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR . 'schema.yml';
     
-    $directory = '/tmp/tmp_doctrine_models';
-    
-    Doctrine::importSchema($directory);
-      
-    $export = new Doctrine_Export_Schema();
-    $export->exportSchema($schema, 'yml', $directory);
+    Doctrine_Facade::generateYamlFromDb($schema);
   }
 }
