@@ -33,8 +33,8 @@ The [doctrine:build-model|INFO] task creates model classes from the schema:
 
   [./symfony doctrine:build-model|INFO]
 
-The task read the schema information in [config/*schema.xml|COMMENT] and/or
-[config/*schema.yml|COMMENT] from the project and all installed plugins.
+The task read the schema information in [config/doctrine/*.yml|COMMENT] 
+from the project and all installed plugins.
 
 You mix and match YML and XML schema files. The task will convert
 YML ones to XML before calling the Doctrine task.
@@ -42,7 +42,7 @@ YML ones to XML before calling the Doctrine task.
 The model classes files are created in [lib/model|COMMENT].
 
 This task never overrides custom classes in [lib/model|COMMENT].
-It only replaces files in [lib/model/om|COMMENT] and [lib/model/map|COMMENT].
+It only replaces files in [lib/model/generated|COMMENT].
 EOF;
   }
 
@@ -51,9 +51,9 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $directory = sfConfig::get('sf_model_lib_dir').'/doctrine';
+    $directory = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
     
-    $this->importSchema(sfConfig::get('sf_root_dir').'/config/doctrine', $directory);
+    $this->importSchema(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine', $directory);
     
     $plugins = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_plugins_dir'));
     
@@ -72,6 +72,8 @@ EOF;
     $writePath = $path . DIRECTORY_SEPARATOR . $name . ".class.php";
     
     if (!file_exists($writePath)) {
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', $name, $writePath)))));
+      
       file_put_contents($writePath, $code);
     }
   }
@@ -98,6 +100,8 @@ EOF;
         $options['override_parent'] = true;
         
         $this->writeModelTableClass($options['className'] . 'Table', $outputDirectory);
+        
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', 'Base' . $options['className'], $outputDirectory . DIRECTORY_SEPARATOR . 'Base' . $options['className'] . '.class.php')))));
         
         $builder->buildRecord($options, $columns, $relations);
     }
@@ -143,7 +147,11 @@ EOF;
     
     $this->writeModelTableClass($options['className'] . 'Table', $modelPath, $options['inheritance']['extends'] . 'Table');
     
-    $builder->writeDefinition($options, array(), array());
+    if (!file_exists($options['fileName'])) {
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', $options['className'], $options['fileName'])))));
+      
+      $builder->writeDefinition($options, array(), array());
+    }
   }
   
   protected function writePluginBaseDefinition($path, $options, $columns, $relations)
@@ -163,6 +171,8 @@ EOF;
     $options['inheritance']['extends'] = 'sfDoctrineRecord';
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['override_parent'] = true;
+    
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', $options['className'], $options['fileName'])))));
     
     $builder->writeDefinition($options, $columns, $relations);
   }
@@ -187,6 +197,8 @@ EOF;
     
     // We only want to generate this file if it doesn't exist.
     if (!file_exists($options['fileName'])) {
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', $options['className'], $options['fileName'])))));
+      
       $builder->writeDefinition($options, array(), array());
     }
   }

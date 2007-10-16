@@ -55,6 +55,9 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $buildDb = new sfDoctrineBuildDbTask($this->dispatcher, $this->formatter);
+    $buildDb->run();
+    
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
     $buildModel->run();
 

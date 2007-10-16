@@ -59,6 +59,8 @@ EOF;
     $append = (isset($options['append']) && $options['append']) ? true:false;
     $num = isset($arguments['num']) ? $arguments['num']:5;
     
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('loading %s records of dummy data for each model', $num)))));
+    
     Doctrine_Facade::loadDummyData($append, $num);
   }
 }

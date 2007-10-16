@@ -81,9 +81,12 @@ EOF;
       $fixturesDirs = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
     }
     
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('load data from "%s"', implode(',', $fixturesDirs))))));
-    
     $append = (isset($options['append']) && $options['append']) ? true:false;
+    
+    foreach ($fixturesDirs as $dir)
+    {
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('loading fixtures from %s', $dir)))));
+    }
     
     Doctrine_Facade::loadData($fixturesDirs, $append);
   }

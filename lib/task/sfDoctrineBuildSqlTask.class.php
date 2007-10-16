@@ -60,6 +60,10 @@ EOF;
     
     $sql = Doctrine_Facade::generateSqlFromModels();
     
-    file_put_contents($sqlPath. DIRECTORY_SEPARATOR . 'doctrine-schema.sql', $sql);
+    $path = $sqlPath. DIRECTORY_SEPARATOR . 'doctrine-schema.sql';
+    
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing sql to %s', $path)))));
+    
+    file_put_contents($path, $sql);
   }
 }

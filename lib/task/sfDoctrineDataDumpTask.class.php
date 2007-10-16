@@ -74,9 +74,9 @@ EOF;
       $filename = $dir.DIRECTORY_SEPARATOR.$filename;
     }
 
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('dumping data to "%s"', $filename)))));
-    
     $individualFiles = (isset($arguments['individual_files']) && $arguments['individual_files']) ? true:false;
+    
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('dumping data to "%s"', $filename)))));
     
     Doctrine_Facade::dumpData($filename, $individualFiles);
   }
