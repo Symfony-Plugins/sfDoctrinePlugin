@@ -94,16 +94,18 @@ EOF;
     foreach ($array as $name => $properties) {
         $options = $import->getOptions($properties, $outputDirectory);
         $columns = $import->getColumns($properties);
-        $relations = $import->getRelations($properties);            
+        $relations = $import->getRelations($properties);        
+        $indexes = $import->getIndexes($properties);
+        $attributes = $import->getAttributes($properties);  
         
-        $options['inheritance']['extends'] = 'sfDoctrineRecord';
+        $options['inheritance']['extends'] = !isset($options['inheritance']['extends']) ? 'sfDoctrineRecord':$options['inheritance']['extends'];
         $options['override_parent'] = true;
         
         $this->writeModelTableClass($options['className'] . 'Table', $outputDirectory);
         
         $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', 'Base' . $options['className'], $outputDirectory . DIRECTORY_SEPARATOR . 'Base' . $options['className'] . '.class.php')))));
         
-        $builder->buildRecord($options, $columns, $relations);
+        $builder->buildRecord($options, $columns, $relations, $indexes, $attributes);
     }
   }
   
@@ -121,10 +123,12 @@ EOF;
     foreach ($array as $name => $properties) {
         $options = $import->getOptions($properties, null);
         $columns = $import->getColumns($properties);
-        $relations = $import->getRelations($properties);            
+        $relations = $import->getRelations($properties);
+        $indexes = $import->getIndexes($properties);         
+        $attributes = $import->getAttributes($properties);
         
         $this->writePluginProjectDefinition($path, $options);
-        $this->writePluginBaseDefinition($path, $options, $columns, $relations);
+        $this->writePluginBaseDefinition($path, $options, $columns, $relations, $indexes, $attributes);
         $this->writePluginDefinition($path, $options);
     }
   }
@@ -142,7 +146,7 @@ EOF;
     }
     
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
-    $options['inheritance']['extends'] = 'Plugin' . $options['className'];
+    $options['inheritance']['extends'] = !isset($options['inheritance']['extends']) ? 'Plugin' . $options['className']:$options['inheritance']['extends'];
     $options['no_definition'] = true;
     
     $this->writeModelTableClass($options['className'] . 'Table', $modelPath, $options['inheritance']['extends'] . 'Table');
@@ -154,7 +158,7 @@ EOF;
     }
   }
   
-  protected function writePluginBaseDefinition($path, $options, $columns, $relations)
+  protected function writePluginBaseDefinition($path, $options, $columns, $relations, $indexes, $attributes)
   {
     $name = basename($path);
     
@@ -168,13 +172,13 @@ EOF;
     
     $options['className'] = 'Base' . $options['className'];
     $options['abstract'] = true;
-    $options['inheritance']['extends'] = 'sfDoctrineRecord';
+    $options['inheritance']['extends'] = !isset($options['inheritance']['extends']) ? 'sfDoctrineRecord':$options['inheritance']['extends'];
     $options['fileName'] = $modelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['override_parent'] = true;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', $options['className'], $options['fileName'])))));
     
-    $builder->writeDefinition($options, $columns, $relations);
+    $builder->writeDefinition($options, $columns, $relations, $indexes, $attributes);
   }
   
   protected function writePluginDefinition($path, $options)
@@ -187,7 +191,7 @@ EOF;
       $this->filesystem->mkdirs($pluginModelPath);
     }
     
-    $options['inheritance']['extends'] = 'Base' . $options['className'];
+    $options['inheritance']['extends'] = !isset($options['inheritance']['extends']) ? 'Base' . $options['className']:$options['inheritance']['extends'];
     $options['className'] = 'Plugin' . $options['className'];
     $options['fileName'] = $pluginModelPath . DIRECTORY_SEPARATOR . $options['className'] . '.class.php';
     $options['abstract'] = true;
