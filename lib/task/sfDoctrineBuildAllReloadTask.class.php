@@ -1,0 +1,71 @@
+<?php
+
+/*
+ * This file is part of the symfony package.
+ * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
+ * 
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * Generates Doctrine model, SQL, initializes database, and load data.
+ *
+ * @package    symfony
+ * @subpackage command
+ * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @version    SVN: $Id: sfDoctrineBuildAllReloadTask.class.php 5232 2007-09-22 14:50:33Z fabien $
+ */
+class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
+{
+  /**
+   * @see sfTask
+   */
+  protected function configure()
+  {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+    
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
+    ));
+
+    $this->aliases = array('doctrine-build-all-reload');
+    $this->namespace = 'doctrine';
+    $this->name = 'build-all-reload';
+    $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, and load data';
+
+    $this->detailedDescription = <<<EOF
+The [doctrine:build-all-reload|INFO] task is a shortcut for four other tasks:
+
+  [./symfony doctrine:build-all-reload frontend|INFO]
+
+The task is equivalent to:
+  
+  [./symfony doctrine:drop-db|INFO]
+  [./symfony doctrine:build-db|INFO]
+  [./symfony doctrine:build-model|INFO]
+  [./symfony doctrine:insert-sql|INFO]
+  [./symfony doctrine:data-load frontend|INFO]
+
+The task takes an application argument because of the [doctrine:data-load|COMMENT]
+task. See [doctrine:data-load|COMMENT] help page for more information.
+EOF;
+  }
+
+  /**
+   * @see sfTask
+   */
+  protected function execute($arguments = array(), $options = array())
+  {
+    $dropDb = new sfDoctrineDropDbTask($this->dispatcher, $this->formatter);
+    $dropDb->run();
+    
+    $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
+    $buildAll->run(array('application' => $arguments['application']));
+
+    $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
+    $loadData->run(array('application' => $arguments['application']));
+  }
+}
