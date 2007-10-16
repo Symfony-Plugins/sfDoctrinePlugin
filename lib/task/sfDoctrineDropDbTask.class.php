@@ -54,12 +54,22 @@ EOF;
       
       $connection = $manager->openConnection($dsn, $name);
       
-      try {
+      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('are you sure you want to drop "%s"? y/n', $info['database'])))));
+      
+      $confirmation = strtolower(trim(fgets(STDIN)));
+      
+      if ($confirmation != 'y') {
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('cancelled drop database: "%s"', $info['database'])))));
+        
+        continue;
+      }
+      
+      try {        
         $connection->export->dropDatabase($info['database']);
         
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('drop database: %s succeeded', $info['database'])))));
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('drop database: "%s" succeeded', $info['database'])))));
       } catch(Exception $e) {
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('drop database: %s failed with error: %s', $info['database'], $e->getMessage())))));
+        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('drop database: "%s" failed with error: %s', $info['database'], $e->getMessage())))));
       }
       
       $manager->closeConnection($connection);
