@@ -96,7 +96,9 @@ EOF;
         $columns = $import->getColumns($properties);
         $relations = $import->getRelations($properties);        
         $indexes = $import->getIndexes($properties);
-        $attributes = $import->getAttributes($properties);  
+        $attributes = $import->getAttributes($properties);
+        $templates = $import->getTemplates($properties);
+        $actAs = $import->getActAs($properties);
         
         $options['inheritance']['extends'] = !isset($options['inheritance']['extends']) ? 'sfDoctrineRecord':$options['inheritance']['extends'];
         $options['override_parent'] = true;
@@ -105,7 +107,7 @@ EOF;
         
         $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('generating %s: %s', 'Base' . $options['className'], $outputDirectory . DIRECTORY_SEPARATOR . 'Base' . $options['className'] . '.class.php')))));
         
-        $builder->buildRecord($options, $columns, $relations, $indexes, $attributes);
+        $builder->buildRecord($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
     }
   }
   
@@ -126,9 +128,11 @@ EOF;
         $relations = $import->getRelations($properties);
         $indexes = $import->getIndexes($properties);         
         $attributes = $import->getAttributes($properties);
+        $templates = $import->getTemplates($properties);
+        $actAs = $import->getActAs($properties);
         
         $this->writePluginProjectDefinition($path, $options);
-        $this->writePluginBaseDefinition($path, $options, $columns, $relations, $indexes, $attributes);
+        $this->writePluginBaseDefinition($path, $options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         $this->writePluginDefinition($path, $options);
     }
   }
