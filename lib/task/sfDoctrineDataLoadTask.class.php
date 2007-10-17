@@ -68,7 +68,9 @@ EOF;
     
     sfSimpleAutoload::getInstance()->unregister();
     sfSimpleAutoload::getInstance()->register();
-
+    
+    $this->loadModels();
+    
     if (count($options['dir']))
     {
       $fixturesDirs = $options['dir'];
