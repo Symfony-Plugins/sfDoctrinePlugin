@@ -53,7 +53,9 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    
     $this->loadConnections();
+    
     $this->loadModels();
     
     $sqlPath = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'sql';
