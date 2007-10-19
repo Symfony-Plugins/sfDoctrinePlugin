@@ -61,6 +61,6 @@ EOF;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('loading %s records of dummy data for each model', $num)))));
     
-    Doctrine_Facade::loadDummyData($append, $num);
+    Doctrine::loadDummyData($append, $num);
   }
 }

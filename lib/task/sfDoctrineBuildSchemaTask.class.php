@@ -58,6 +58,6 @@ EOF;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing schema to %s', $schema)))));
     
-    Doctrine_Facade::generateYamlFromDb($schema);
+    Doctrine::generateYamlFromDb($schema);
   }
 }

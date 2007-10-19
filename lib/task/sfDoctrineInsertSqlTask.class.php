@@ -59,6 +59,6 @@ EOF;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('inserting sql for models: %s', $modelsDirectory)))));
     
-    Doctrine_Facade::createTablesFromModels($modelsDirectory);
+    Doctrine::createTablesFromModels($modelsDirectory);
   }
 }

@@ -90,6 +90,6 @@ EOF;
       $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('loading fixtures from %s', $dir)))));
     }
     
-    Doctrine_Facade::loadData($fixturesDirs, $append);
+    Doctrine::loadData($fixturesDirs, $append);
   }
 }

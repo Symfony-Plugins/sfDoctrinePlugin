@@ -60,7 +60,7 @@ EOF;
     
     $sqlPath = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'sql';
     
-    $sql = Doctrine_Facade::generateSqlFromModels();
+    $sql = Doctrine::generateSqlFromModels();
     
     $path = $sqlPath. DIRECTORY_SEPARATOR . 'doctrine-schema.sql';
     

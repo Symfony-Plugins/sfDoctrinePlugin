@@ -42,7 +42,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $databases = sfYaml::load(sfConfig::get('sf_config_dir').'/databases.yml');
+    $databases = sfYaml::load(sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'databases.yml');
     $databases = $databases['all'];
     
     $manager = Doctrine_Manager::getInstance();

@@ -78,6 +78,6 @@ EOF;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('dumping data to "%s"', $filename)))));
     
-    Doctrine_Facade::dumpData($filename, $individualFiles);
+    Doctrine::dumpData($filename, $individualFiles);
   }
 }

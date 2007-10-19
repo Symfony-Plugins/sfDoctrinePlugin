@@ -59,6 +59,6 @@ EOF;
     
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing migration class: %s', $arguments['name'])))));
     
-    Doctrine_Facade::generateMigrationClass($arguments['name'], $migrationsDirectory);
+    Doctrine::generateMigrationClass($arguments['name'], $migrationsDirectory);
   }
 }
