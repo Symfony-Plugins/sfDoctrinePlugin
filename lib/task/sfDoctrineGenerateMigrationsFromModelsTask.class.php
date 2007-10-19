@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the sfDoctrinePlugin package.
+ * This file is part of the symfony package.
  * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
  * 
  * For the full copyright and license information, please view the LICENSE
@@ -14,9 +14,9 @@
  * @package    symfony
  * @subpackage command
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineMigrateTask.class.php 4743 2007-07-30 10:21:06Z fabien $
+ * @version    SVN: $Id: sfDoctrineGenerateMigrationsFromModelsTask.class.php 4743 2007-07-30 10:21:06Z fabien $
  */
-class sfDoctrineMigrateTask extends sfDoctrineBaseTask
+class sfDoctrineGenerateMigrationsFromModelsTask extends sfDoctrineBaseTask
 {
   /**
    * @see sfTask
@@ -25,22 +25,21 @@ class sfDoctrineMigrateTask extends sfDoctrineBaseTask
   {
     $this->addArguments(array(
       new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-      new sfCommandArgument('version', sfCommandArgument::OPTIONAL, 'The version to migrate to', null),
     ));
     
     $this->addOptions(array(
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
     ));
     
-    $this->aliases = array('doctrine-migrate');
+    $this->aliases = array('doctrine-generate-migrations-from-models', 'doctrine-gen-migrations-from-models');
     $this->namespace = 'doctrine';
-    $this->name = 'migrate';
-    $this->briefDescription = 'Migrates database to current/specified version';
+    $this->name = 'generate-migrations-from-models';
+    $this->briefDescription = 'Generate migration classes from an existing set of models';
 
     $this->detailedDescription = <<<EOF
-The [doctrine:migrate|INFO] task migrates database to current/specified version
+The [doctrine:generate-migration|INFO] task generates migration classes from an existing set of models
 
-  [./symfony doctrine:migrate|INFO]
+  [./symfony doctrine:generate-migration|INFO]
 EOF;
   }
 
@@ -55,14 +54,12 @@ EOF;
     
     $migrationsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
     
+    $modelsDirectory = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
+    
     $this->filesystem->mkdirs($migrationsDirectory);
     
-    $migration = new Doctrine_Migration($migrationsDirectory);
+    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', 'generating migrations from models'))));
     
-    $to = (isset($arguments['version']) && $arguments['version'] !== null) ? $arguments['version']:$migration->getLatestVersion();
-  
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('migrating to version: %s', $to)))));
-    
-    $migration->migrate($to);
+    Doctrine::generateMigrationsFromModels($migrationsDirectory, $modelsDirectory);
   }
 }
