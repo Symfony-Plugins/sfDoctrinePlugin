@@ -25,7 +25,7 @@
  * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id: sfDoctrineUniqueValidator.php 5284 2007-09-26 08:55:32Z hartym $
  */
-class sfDoctrineUniqueValidator extends sfValidator
+class sfDoctrineUniqueValidator extends sfValidatorBase 
 {
   /**
    * execute
