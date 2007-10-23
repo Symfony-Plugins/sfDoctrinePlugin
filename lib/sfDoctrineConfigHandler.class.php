@@ -67,7 +67,7 @@ class sfDoctrineConfigHandler extends sfYamlConfigHandler
       {
         if (is_bool($value))
         {
-          $val = is_bool($value) ? 'true':'false';
+          $val = $value ? 'true':'false';
         } else {
           $val = "Doctrine::" . strtoupper($key) . '_' . strtoupper($value);
         }
