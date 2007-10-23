@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage helper
  * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
- * @version    SVN: $Id: ObjectDoctrineAdminHelper.php 3339 2007-01-28 09:47:52Z chtito $
+ * @version    SVN: $Id$
  */
 
 use_helper('ObjectAdmin');

@@ -12,7 +12,7 @@
  * 
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineUniqueValidator.php 5284 2007-09-26 08:55:32Z hartym $
+ * @version    SVN: $Id$
  */
 class sfDoctrineRecordListener extends Doctrine_Record_Listener
 {

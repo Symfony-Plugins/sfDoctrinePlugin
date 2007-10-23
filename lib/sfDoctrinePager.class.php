@@ -10,7 +10,7 @@
 /**
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrinePager.class.php 4401 2007-06-26 05:02:41Z hansbrix $
+ * @version    SVN: $Id$
  */
 class sfDoctrinePager extends sfPager implements Serializable
 {

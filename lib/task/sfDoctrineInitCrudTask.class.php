@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     2006-2007 Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineInitCrudTask.class.php 5260 2007-09-24 09:22:11Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineInitCrudTask extends sfDoctrineBaseTask
 {

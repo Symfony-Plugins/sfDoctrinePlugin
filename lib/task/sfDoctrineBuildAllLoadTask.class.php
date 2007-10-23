@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineBuildAllLoadTask.class.php 5232 2007-09-22 14:50:33Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
 {

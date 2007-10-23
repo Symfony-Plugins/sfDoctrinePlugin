@@ -10,7 +10,7 @@
 /**
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineQueryLogger.class.php 4728 2007-07-27 10:42:49Z mahono $
+ * @version    SVN: $Id$
  */
 
 class sfDoctrineQueryLogger extends Doctrine_EventListener

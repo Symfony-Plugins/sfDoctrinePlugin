@@ -14,7 +14,7 @@
  *
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineDatabase.class.php 5288 2007-09-26 14:40:43Z michal $
+ * @version    SVN: $Id$
  */
 class sfDoctrineDatabase extends sfDatabase
 {

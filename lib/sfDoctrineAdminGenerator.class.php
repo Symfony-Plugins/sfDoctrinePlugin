@@ -10,7 +10,7 @@
 /**
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineAdminGenerator.class.php 5271 2007-09-25 13:50:13Z hartym $
+ * @version    SVN: $Id$
  */
 class sfDoctrineAdminGenerator extends sfAdminGenerator
 {

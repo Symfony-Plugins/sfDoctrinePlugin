@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     2006-2007 Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineBuildDbTask.class.php 4743 2007-07-30 10:21:06Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineBuildDbTask extends sfDoctrineBaseTask
 {

@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     2006-2007 Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineGenerateCrudTask.class.php 4957 2007-09-03 08:58:56Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineGenerateCrudTask extends sfDoctrineBaseTask
 {

@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineGenerateMigrationsModelsTask.class.php 4743 2007-07-30 10:21:06Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineGenerateMigrationsModelsTask extends sfDoctrineBaseTask
 {

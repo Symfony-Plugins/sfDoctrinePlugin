@@ -10,7 +10,7 @@
 /**
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineException.class.php 2675 2006-11-14 07:00:59Z chtito $
+ * @version    SVN: $Id$
  */
 class sfDoctrineException extends sfException
 {

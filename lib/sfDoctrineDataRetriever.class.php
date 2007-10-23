@@ -10,7 +10,7 @@
 /**
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineDataRetriever.class.php 3437 2007-02-10 09:04:27Z chtito $
+ * @version    SVN: $Id$
  */
 class sfDoctrineDataRetriever
 {

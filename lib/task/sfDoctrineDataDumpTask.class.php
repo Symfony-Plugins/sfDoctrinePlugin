@@ -13,7 +13,7 @@
  * @package    sfDoctrinePlugin
  * @subpackage Task
  * @author     2006-2007 Jonathan H. Wage <jwage@mac.com>
- * @version    SVN: $Id: sfDoctrineDataDumpTask.class.php 5232 2007-09-22 14:50:33Z fabien $
+ * @version    SVN: $Id$
  */
 class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
 {
