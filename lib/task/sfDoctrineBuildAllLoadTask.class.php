@@ -1,18 +1,17 @@
 <?php
-
 /*
- * This file is part of the symfony package.
- * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
- * 
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * Generates Doctrine model, SQL, initializes database, and load data.
+ * Creates Databases, Generates Doctrine model, SQL, initializes database, and load data.
  *
- * @package    symfony
- * @subpackage command
+ * @package    sfDoctrinePlugin
+ * @subpackage Task
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: sfDoctrineBuildAllLoadTask.class.php 5232 2007-09-22 14:50:33Z fabien $
  */

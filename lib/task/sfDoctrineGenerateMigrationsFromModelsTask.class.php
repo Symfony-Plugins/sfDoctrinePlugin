@@ -1,9 +1,8 @@
 <?php
-
 /*
- * This file is part of the symfony package.
- * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
- * 
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -11,21 +10,21 @@
 /**
  * Inserts SQL for current model.
  *
- * @package    symfony
- * @subpackage command
+ * @package    sfDoctrinePlugin
+ * @subpackage Task
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineGenerateMigrationsFromModelsTask.class.php 4743 2007-07-30 10:21:06Z fabien $
+ * @version    SVN: $Id: sfDoctrineGenerateMigrationsModelsTask.class.php 4743 2007-07-30 10:21:06Z fabien $
  */
-class sfDoctrineGenerateMigrationsFromModelsTask extends sfDoctrineBaseTask
+class sfDoctrineGenerateMigrationsModelsTask extends sfDoctrineBaseTask
 {
   /**
    * @see sfTask
    */
   protected function configure()
   {    
-    $this->aliases = array('doctrine-generate-migrations-from-models', 'doctrine-gen-migrations-from-models');
+    $this->aliases = array('doctrine-generate-migrations-models', 'doctrine-gen-migrations-from-models');
     $this->namespace = 'doctrine';
-    $this->name = 'generate-migrations-from-models';
+    $this->name = 'generate-migrations-models';
     $this->briefDescription = 'Generate migration classes from an existing set of models';
 
     $this->detailedDescription = <<<EOF
@@ -42,6 +41,6 @@ EOF;
   {
     $this->bootstrapSymfony();
     
-    $this->callDoctrineCli('generate-migrations-from-db');
+    $this->callDoctrineCli('generate-migrations-db');
   }
 }
