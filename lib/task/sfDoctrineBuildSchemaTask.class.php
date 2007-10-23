@@ -22,15 +22,7 @@ class sfDoctrineBuildSchemaTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
+  {    
     $this->aliases = array('doctrine-build-schema');
     $this->namespace = 'doctrine';
     $this->name = 'build-schema';
@@ -50,14 +42,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $schema = sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR . 'schema.yml';
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing schema to %s', $schema)))));
-    
-    Doctrine::generateYamlFromDb($schema);
+    $this->callDoctrineCli('generate-yaml-from-db');
   }
 }

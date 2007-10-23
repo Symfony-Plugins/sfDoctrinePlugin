@@ -23,14 +23,6 @@ class sfDoctrineInsertSqlTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
     $this->aliases = array('doctrine-insert-sql');
     $this->namespace = 'doctrine';
     $this->name = 'insert-sql';
@@ -51,14 +43,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $modelsDirectory = sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('inserting sql for models: %s', $modelsDirectory)))));
-    
-    Doctrine::createTablesFromModels($modelsDirectory);
+    $this->callDoctrineCli('create-tables');
   }
 }

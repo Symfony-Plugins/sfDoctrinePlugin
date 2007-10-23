@@ -1,11 +1,21 @@
 all:
   attributes:
-
-    #automatic table creation (none, tables, constraints, all)
+    # export sql (none, tables, constraints, all)
     export:  all
-    
-    #enable doctrine side validation (true, false)
+
+    # enable doctrine side validation (true, false)
     validate: false
 
     # enable quoting
     quote_identifier: false
+
+  listeners:        -
+  record_listeners: -
+
+# Configuration for specific connection names 
+#  connections:
+#    connection_name1:
+#      attributes:
+#        export: all
+#      listeners:        -
+#      record_listeners: -

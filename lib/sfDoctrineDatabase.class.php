@@ -1,22 +1,18 @@
 <?php
 /*
- * This file is part of the symfony package.
- * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
- * (c) 2004-2006 Sean Kerr.
- * (c) 2006-2007 Olivier Verdier <olivier.verdier@gmail.com>
- * (c) 2007-2008 Jonathan H. Wage <jwage@mac.com>
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * sfDoctrineDatabase provides connectivity for the Doctrine.
+ * sfDoctrineDatabase
+ * 
+ * Provides connectivity for the Doctrine.
  *
  * @package    sfDoctrinePlugin
- * @author     Maarten den Braber <mdb@twister.cx>
- * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
- * @author     Dan Porter
  * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id: sfDoctrineDatabase.class.php 5288 2007-09-26 14:40:43Z michal $
  */
@@ -54,41 +50,35 @@ class sfDoctrineDatabase extends sfDatabase
       }
     }
     
-    $this->loadConfig($name);
-    $this->loadSchemas();
-
-    $this->loadConnection();
-
-    $this->loadAttributes();
-    $this->loadListeners();  
-  }
-  
-  /**
-   * loadSchemas
-   *
-   * Load schemas file for connection/component binding
-   *
-   * @return void
-   * @author Jonathan H. Wage
-   */
-  protected function loadSchemas()
-  {
+    // Load the doctrine configuration
+    require(sfConfigCache::getInstance()->checkConfig('config/doctrine.yml'));
+    
+    // Load config in to parameter
+    $this->setParameter('config', $config);
+    
     // Load schemas information for connection binding
     if ($schemas = sfConfigCache::getInstance()->checkConfig('config/schemas.yml', true))
     {
       require_once($schemas);
     }
+    
+    $this->setParameter('name', $name);
+
+    $this->loadConnections();
+
+    $this->loadAttributes($name);
+    $this->loadListeners($name);
   }
   
   /**
-   * loadConnection
+   * loadConnections
    *
-   * Create and load the Doctrine connection
+   * Create and load the Doctrine connections
    *
    * @return void
    * @author Jonathan H. Wage
    */
-  protected function loadConnection()
+  protected function loadConnections()
   {
     // Get Connection method
     $method = $this->getParameter('method', 'dsn');
@@ -128,14 +118,34 @@ class sfDoctrineDatabase extends sfDatabase
    * @return void
    * @author Jonathan H. Wage
    */
-  protected function loadAttributes()
+  protected function loadAttributes($name)
   {
-    // Load attributes to Doctrine connection
-    $attributes = $this->getParameter('attributes');
+    $config = $this->getParameter('config');
     
+    $attributes = $config['global_attributes'];
+    
+    $this->setAttributes($attributes);
+    
+    $connectionAttributesName = $name.'_attributes';
+    if (isset($config[$connectionAttributesName]))
+    {
+      $attributes = $config[$connectionAttributesName];
+      
+      $this->setAttributes($attributes);
+    }
+  }
+  
+  /**
+   * setAttributes
+   *
+   * @param string $attributes 
+   * @return void
+   */
+  protected function setAttributes($attributes)
+  {
     foreach($attributes as $k => $v)
     {
-      $this->doctrineConnection->setAttribute(constant('Doctrine::'.$k), $v);
+      $this->doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
     }
   }
   
@@ -147,7 +157,7 @@ class sfDoctrineDatabase extends sfDatabase
    * @return void
    * @author Jonathan H. Wage
    */
-  protected function loadListeners()
+  protected function loadListeners($name)
   {
     // Get encoding
     $encoding = $this->getParameter('encoding', 'UTF8');
@@ -163,25 +173,25 @@ class sfDoctrineDatabase extends sfDatabase
     }
     
     $this->doctrineConnection->addRecordListener(new sfDoctrineRecordListener());
+    
+    $config = $this->getParameter('config');
+    
+    $this->setListeners($config['global_listeners']);
+    $this->setListeners($config['global_record_listeners'], 'addRecordListener');
   }
   
   /**
-   * loadConfig
+   * setListeners
    *
-   * Load the Doctrine configuration for the connection
-   * 
-   * @param string $name Name of the Doctrine connection
+   * @param string $listeners 
    * @return void
-   * @author Jonathan H. Wage
    */
-  protected function loadConfig($name)
+  protected function setListeners($listeners, $type = 'addListener')
   {
-    // Load the doctrine configuration
-    require(sfConfigCache::getInstance()->checkConfig('config/doctrine.yml'));
-    
-    // Load everything in to parameters
-    $this->setParameter('attributes', $default_attributes);
-    $this->setParameter('name', $name);
+    foreach ($listeners as $listener)
+    {
+      $this->doctrineConnection->$type(new $listener());
+    }
   }
   
   /**

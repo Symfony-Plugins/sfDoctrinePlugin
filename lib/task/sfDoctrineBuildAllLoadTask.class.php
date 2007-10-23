@@ -23,14 +23,6 @@ class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-
     $this->aliases = array('doctrine-build-all-load');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-load';
@@ -59,9 +51,9 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
-    $buildAll->run(array('application' => $arguments['application']));
+    $buildAll->run();
 
     $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->run(array('application' => $arguments['application']));
+    $loadData->run();
   }
 }

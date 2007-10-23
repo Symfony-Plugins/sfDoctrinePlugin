@@ -1,7 +1,6 @@
 <?php
 /*
  * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
  * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,11 +8,13 @@
  */
 
 /**
- * Represents a column for the doctrine admin generator
+ * sfDoctrineAdminColumn
+ *
+ * Represents a doctrine column
  *
  * @package    sfDoctrinePlugin
- * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
- * @version    SVN: $Id: sfDoctrineAdminGenerator.class.php 5271 2007-09-25 13:50:13Z hartym $
+ * @author     Jonathan H. Wage <jwage@mac.com>
+ * @version    SVN: $Id: sfDoctrineDatabase.class.php 5288 2007-09-26 14:40:43Z michal $
  */
 class sfDoctrineAdminColumn extends sfAdminColumn
 {

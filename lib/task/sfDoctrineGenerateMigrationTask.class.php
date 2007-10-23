@@ -24,12 +24,7 @@ class sfDoctrineGenerateMigrationTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('name', sfCommandArgument::REQUIRED, 'The name of the migration'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
     ));
     
     $this->aliases = array('doctrine-generate-migration');
@@ -49,16 +44,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $migrationsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $this->filesystem->mkdirs($migrationsDirectory);
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing migration class: %s', $arguments['name'])))));
-    
-    Doctrine::generateMigrationClass($arguments['name'], $migrationsDirectory);
+    $this->callDoctrineCli('generate-migration', array('name' => $arguments['name']));
   }
 }

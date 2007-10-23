@@ -23,14 +23,6 @@ class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-
     $this->aliases = array('doctrine-build-all-reload');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-reload';
@@ -63,9 +55,9 @@ EOF;
     $dropDb->run();
     
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
-    $buildAll->run(array('application' => $arguments['application']));
+    $buildAll->run();
 
     $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->run(array('application' => $arguments['application']));
+    $loadData->run();
   }
 }

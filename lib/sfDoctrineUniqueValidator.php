@@ -1,12 +1,11 @@
 <?php
 /*
-* This file is part of the sfDoctrinePlugin package.
-* (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
-* (c) 2007-2008 Jonathan H. Wage <jwage@mac.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /**
  * sfDoctrineUniqueValidator validates that the value does not already exists
@@ -24,10 +23,9 @@
  *
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
- * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
  * @version    SVN: $Id: sfDoctrineUniqueValidator.php 5284 2007-09-26 08:55:32Z hartym $
  */
-class sfDoctrineUniqueValidator extends sfValidatorBase
+class sfDoctrineUniqueValidator extends sfValidator
 {
   /**
    * execute
@@ -41,20 +39,20 @@ class sfDoctrineUniqueValidator extends sfValidatorBase
     $className  = $this->getParameter('class');
     $columnName = $className.'.'.$this->getParameter('column');
 
-    $primaryKeys = Doctrine_Manager::getInstance()->getTable($className)->getIdentifier();
+    $primaryKeys = Doctrine::getTable($className)->getIdentifier();
     if (!is_array($primaryKeys))
     {
       $primaryKeys = array($primaryKeys);
     }
     
     // implied assumption: the is at least one primary key
-
-    foreach($primaryKeys as $primaryKey)
+    foreach ($primaryKeys as $primaryKey)
     {
-      if(is_null($primaryKeyValue = $this->getContext()->getRequest()->getParameter($primaryKey)));
-      break;
+      if (is_null($primaryKeyValue = $this->getContext()->getRequest()->getParameter($primaryKey)))
+      {
+        break;
+      }
     }
-
 
     $query = new Doctrine_Query();
     $query->from($className);
@@ -71,9 +69,10 @@ class sfDoctrineUniqueValidator extends sfValidatorBase
     if (sizeof($res))
     {
       $error = $this->getParameterHolder()->get('unique_error');
-       return false;
+      
+      return false;
     }
-    
+
     return true;
   }
 
@@ -85,7 +84,7 @@ class sfDoctrineUniqueValidator extends sfValidatorBase
    *
    * @return bool true, if initialization completes successfully, otherwise false.
    */
-  public function initialize($context, $parameters = null)
+  public function initialize ($context, $parameters = null)
   {
     // initialize parent
     parent::initialize($context);

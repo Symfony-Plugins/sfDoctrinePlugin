@@ -24,12 +24,7 @@ class sfDoctrineMigrateTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('version', sfCommandArgument::OPTIONAL, 'The version to migrate to', null),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
     ));
     
     $this->aliases = array('doctrine-migrate');
@@ -49,20 +44,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $migrationsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $this->filesystem->mkdirs($migrationsDirectory);
-    
-    $migration = new Doctrine_Migration($migrationsDirectory);
-    
-    $to = (isset($arguments['version']) && $arguments['version'] !== null) ? $arguments['version']:$migration->getLatestVersion();
-  
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('migrating to version: %s', $to)))));
-    
-    $migration->migrate($to);
+    $this->callDoctrineCli('migrate', array('version' => $arguments['version']));
   }
 }

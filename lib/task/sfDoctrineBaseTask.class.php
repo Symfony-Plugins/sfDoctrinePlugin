@@ -18,29 +18,71 @@
  */
 abstract class sfDoctrineBaseTask extends sfBaseTask
 {
-  public function loadModels()
+  /**
+   * bootstrapSymfony
+   *
+   * @param string $app 
+   * @param string $env 
+   * @param string $debug 
+   * @return void
+   */
+  public function bootstrapSymfony($app = null, $env = 'dev', $debug = true)
   {
-    $directories = array();
-    $directories[] = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $plugins = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_plugins_dir'));
-    
-    foreach ($plugins as $plugin)
-    {
-      $name = basename($plugin);  
-      $pluginModels = sfConfig::get('sf_plugins_dir').'/'.$name.'/lib/model/doctrine';
-      
-      if (file_exists($pluginModels)) {
-        $directories[] = $pluginModels;
-      }
+    if (defined('SF_ROOT_DIR')) {
+      return;
     }
     
-    return Doctrine::loadModels($directories);
+    if (!isset($app))
+    {
+      $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps');
+    
+      if (isset($applications[0])) {
+        $app = basename($applications[0]);
+      } else {
+        throw new Exception('You must have at least one application');
+      }
+    }
+  
+    return parent::bootstrapSymfony($app, $env, $debug);
   }
   
-  public function loadConnections()
+  /**
+   * callDoctrineCli
+   *
+   * @param string $task 
+   * @param string $args 
+   * @return void
+   */
+  public function callDoctrineCli($task, $args = array())
   {
-    $databaseManager = new sfDatabaseManager();
-    $databaseManager->initialize();
+    $pluginDirs = glob(sfConfig::get('sf_root_dir').'/plugins/*/data');
+    $fixtures = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
+    $models = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
+    $migrations = sfConfig::get('sf_lib_dir') . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
+    $sql = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'sql';
+    $yaml = sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'doctrine';
+  
+    $config = array('data_fixtures_path'  =>  $fixtures,
+                    'models_path'         =>  $models,
+                    'migrations_path'     =>  $migrations,
+                    'sql_path'            =>  $sql,
+                    'yaml_schema_path'    =>  $yaml);
+  
+    $arguments = array('./symfony', $task);
+  
+    foreach ($args as $key => $arg)
+    {
+      if (isset($config[$key]))
+      {
+        $config[$key] = $arg;
+      } else {
+        $arguments[] = $arg;
+      }
+    }
+  
+    $cli = new sfDoctrineCli($config);
+    $cli->setDispatcher($this->dispatcher);
+    $cli->setFormatter($this->formatter);
+    $cli->run($arguments);
   }
 }

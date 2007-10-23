@@ -42,31 +42,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $databases = sfYaml::load(sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'databases.yml');
-    $databases = $databases['all'];
+    $this->bootstrapSymfony();
     
-    $manager = Doctrine_Manager::getInstance();
-    
-    foreach ($databases as $name => $database)
-    {
-      $dsn = $database['param']['dsn'];
-      $info = $manager->parseDsn($dsn);
-      
-      $dsn = $info['scheme'].':host='.$info['host'];
-      $user = $info['user'];
-      $password = $info['pass'];
-      
-      $connection = $manager->openConnection(new PDO($dsn, $user, $password), $name);
-      
-      try {
-        $connection->export->createDatabase($info['database']);
-        
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('build database: %s succeeded', $info['database'])))));
-      } catch(Exception $e) {
-        $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('build database: %s failed with error: %s', $info['database'], $e->getMessage())))));
-      }
-      
-      $manager->closeConnection($connection);
-    }
+    $this->callDoctrineCli('create-db');
   }
 }

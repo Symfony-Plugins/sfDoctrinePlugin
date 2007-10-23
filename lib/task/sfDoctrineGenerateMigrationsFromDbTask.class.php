@@ -23,14 +23,6 @@ class sfDoctrineGenerateMigrationsFromDbTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
     $this->aliases = array('doctrine-generate-migrations-from-db', 'doctrine-gen-migrations-from-db');
     $this->namespace = 'doctrine';
     $this->name = 'generate-migrations-from-db';
@@ -48,16 +40,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $migrationsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $this->filesystem->mkdirs($migrationsDirectory);
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', 'generating migrations from databases'))));
-    
-    Doctrine::generateMigrationsFromDb($migrationsDirectory);
+    $this->callDoctrineCli('generate-migrations-from-db');
   }
 }

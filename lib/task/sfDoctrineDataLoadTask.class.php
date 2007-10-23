@@ -23,16 +23,6 @@ class sfDoctrineLoadDataTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
-      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
-    ));
-
     $this->aliases = array('doctrine-load-data');
     $this->namespace = 'doctrine';
     $this->name = 'data-load';
@@ -62,34 +52,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    if (!defined('SF_ROOT_DIR')) {
-      $this->bootstrapSymfony($arguments['application'], $options['env'], true);
-    }
+    $this->bootstrapSymfony();
     
-    sfSimpleAutoload::getInstance()->unregister();
-    sfSimpleAutoload::getInstance()->register();
-    
-    $this->loadModels();
-    
-    if (count($options['dir']))
-    {
-      $fixturesDirs = $options['dir'];
-    } else {
-      if (!$pluginDirs = glob(sfConfig::get('sf_root_dir').'/plugins/*/data'))
-      {
-        $pluginDirs = array();
-      }
-      
-      $fixturesDirs = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
-    }
-    
-    $append = (isset($options['append']) && $options['append']) ? true:false;
-    
-    foreach ($fixturesDirs as $dir)
-    {
-      $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('loading fixtures from %s', $dir)))));
-    }
-    
-    Doctrine::loadData($fixturesDirs, $append);
+    $this->callDoctrineCli('load-data');
   }
 }

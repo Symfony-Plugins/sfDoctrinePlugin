@@ -22,15 +22,7 @@ class sfDoctrineGenerateMigrationsFromModelsTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
+  {    
     $this->aliases = array('doctrine-generate-migrations-from-models', 'doctrine-gen-migrations-from-models');
     $this->namespace = 'doctrine';
     $this->name = 'generate-migrations-from-models';
@@ -48,18 +40,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $migrationsDirectory = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $modelsDirectory = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
-    
-    $this->filesystem->mkdirs($migrationsDirectory);
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', 'generating migrations from models'))));
-    
-    Doctrine::generateMigrationsFromModels($migrationsDirectory, $modelsDirectory);
+    $this->callDoctrineCli('generate-migrations-from-db');
   }
 }

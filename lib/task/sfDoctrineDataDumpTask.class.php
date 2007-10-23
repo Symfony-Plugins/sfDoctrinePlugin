@@ -24,14 +24,7 @@ class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('target', sfCommandArgument::REQUIRED, 'The target filename'),
-      new sfCommandArgument('individual_files', sfCommandArgument::OPTIONAL, 'Whether or not to have individiaul fixtures file for each model.')
-    ));
-
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environement', 'dev'),
-      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
     ));
 
     $this->aliases = array('doctrine-dump-data');
@@ -61,23 +54,22 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadModels();
-    
-    $filename = $arguments['target'];
-
-    if (!sfToolkit::isPathAbsolute($filename))
+    $args = array();
+    if (isset($arguments['target']))
     {
-      $dir = sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'fixtures';
-      $this->filesystem->mkdirs($dir);
-      $filename = $dir.DIRECTORY_SEPARATOR.$filename;
+      $filename = $arguments['target'];
+
+      if (!sfToolkit::isPathAbsolute($filename))
+      {
+        $dir = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'fixtures';
+        $filename = $dir . DIRECTORY_SEPARATOR . $filename;
+      }
+    
+      $args = array('data_fixtures_path' => $filename);
     }
 
-    $individualFiles = (isset($arguments['individual_files']) && $arguments['individual_files']) ? true:false;
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('dumping data to "%s"', $filename)))));
-    
-    Doctrine::dumpData($filename, $individualFiles);
+    $this->callDoctrineCli('dump-data', $args);
   }
 }

@@ -23,14 +23,6 @@ class sfDoctrineBuildAllTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
     $this->aliases = array('doctrine-build-all');
     $this->namespace = 'doctrine';
     $this->name = 'build-all';
@@ -62,6 +54,6 @@ EOF;
     $buildModel->run();
 
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
-    $insertSql->run(array('application' => $arguments['application']));
+    $insertSql->run();
   }
 }

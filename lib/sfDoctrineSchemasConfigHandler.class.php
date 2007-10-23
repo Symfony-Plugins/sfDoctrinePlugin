@@ -1,7 +1,7 @@
 <?php
 /*
- * This file is part of the sfDoctrine package.
- * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,56 +12,39 @@
  * sfDoctrineSchemasConfigHandler parses the config/schemas.yml config file
  *
  * @package    sfDoctrinePlugin
- * @author     Stephen Leavitt <stephen.leavitt@gmail.com>
+ * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id$
  */
 class sfDoctrineSchemasConfigHandler extends sfYamlConfigHandler
 {
-  public function execute( $configFiles )
+  /**
+   * execute
+   *
+   * @param string $configFiles 
+   * @return void
+   */
+  public function execute($configFiles)
   {
     $this->initialize();
 
-    $mappings = $this->parseYamls($configFiles);
-    
+    $mappings = $this->parseYamls( $configFiles );
+
     $data = array();
 
     $data[] = '$manager = Doctrine_Manager::getInstance();'."\n";
 
-    foreach ($mappings as $mapping => $schemas )
+    foreach ( $mappings as $mapping => $schemas )
     {
-        foreach ($schemas as $schemaFile)
+      foreach ( $schemas as $schema )
+      {
+        $path = sfConfig::get( 'sf_config_dir' ) . '/doctrine/' . $schema . '.yml';
+        $components = array_keys( sfYaml::load( $path ) );
+
+        foreach ( $components as $component )
         {
-            $path = sfConfig::get('sf_config_dir') . '/doctrine/'.$schemaFile.'.yml';
-            
-            $import = new Doctrine_Import_Schema();
-            $schema = $import->parseSchema($path, 'yml');
-            
-            $components = array_keys($schema);
-            
-            // If empty lets see if the schema is in a plugin
-            if (empty($components)) {
-                $schema = explode('/', $schemaFile);
-                
-                if (!isset($schema[1])) {
-                  continue;
-                }
-                
-                $pluginName = $schema[0];
-                $schema = $schema[1];
-                
-                $path = sfConfig::get('sf_plugins_dir') . '/'.$pluginName.'/config/doctrine/'.$schema.'.yml';
-                
-                $import = new Doctrine_Import_Schema();
-                $schema = $import->parseSchema($path, 'yml');
-                
-                $components = array_keys($schema);
-            }
-            
-            foreach ($components as $component)
-            {
-                $data[] = "\$manager->bindComponent('{$component}', '{$mapping}');";
-            }
+          $data[] = "\$manager->bindComponent('{$component}', '{$mapping}');";
         }
+      }
     }
 
     // compile data

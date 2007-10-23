@@ -1,7 +1,7 @@
 <?php
 /*
- * This file is part of the sfDoctrine package.
- * (c) 2006-2007 Olivier Verdier <Olivier.Verdier@gmail.com>
+ * This file is part of the sfDoctrinePlugin package.
+ * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,25 +9,15 @@
 
 /**
  * @package    sfDoctrinePlugin
- * @author     Olivier Verdier <Olivier.Verdier@gmail.com>
+ * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id: sfDoctrineQueryLogger.class.php 4728 2007-07-27 10:42:49Z mahono $
  */
+
 class sfDoctrineQueryLogger extends Doctrine_EventListener
 {
-  /**
-   * connection
-   *
-   * @var string
-   */
   protected $connection = null;
-  
-  /**
-   * encoding
-   *
-   * @var string
-   */
   protected $encoding = 'UTF8';
-  
+
   /**
    * preExecute
    *
@@ -49,7 +39,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   {
     $this->sfAddTime();
   }
-  
+
   /**
    * postPrepare
    *
@@ -60,7 +50,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   {
     $this->sfAddTime();
   }
-  
+
   /**
    * preStmtExecute
    *
@@ -71,7 +61,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   {
     $this->sfLogQuery('{sfDoctrine Statement} executeQuery : ', $event);
   }
-  
+
   /**
    * postStmtExecute
    *
@@ -84,7 +74,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
   
   /**
-   * preQuery
+   * postStmtExecute
    *
    * @param string $Doctrine_Event 
    * @return void
@@ -93,7 +83,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   {
     $this->sfLogQuery('{sfDoctrine Query} executeQuery : ', $event);
   }
-  
+
   /**
    * postQuery
    *
@@ -124,7 +114,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
     sfContext::getInstance()->getLogger()->log($message);
     $sqlTimer = sfTimerManager::getTimer('Database (Doctrine)');
   }
-  
+
   /**
    * sfAddTime
    *

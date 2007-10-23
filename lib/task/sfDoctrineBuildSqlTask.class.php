@@ -22,15 +22,7 @@ class sfDoctrineBuildSqlTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {    
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-    
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev')
-    ));
-    
+  {        
     $this->aliases = array('doctrine-build-sql');
     $this->namespace = 'doctrine';
     $this->name = 'build-sql';
@@ -52,20 +44,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony($arguments['application'], $options['env'], true);
+    $this->bootstrapSymfony();
     
-    $this->loadConnections();
-    
-    $this->loadModels();
-    
-    $sqlPath = sfConfig::get('sf_root_dir'). DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'sql';
-    
-    $sql = Doctrine::generateSqlFromModels();
-    
-    $path = $sqlPath. DIRECTORY_SEPARATOR . 'doctrine-schema.sql';
-    
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', sprintf('writing sql to %s', $path)))));
-    
-    file_put_contents($path, $sql);
+    $this->callDoctrineCli('generate-sql');
   }
 }
