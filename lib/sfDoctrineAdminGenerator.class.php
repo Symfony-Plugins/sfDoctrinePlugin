@@ -16,7 +16,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
 {
   protected $table;
 
-  public function initialize($generatorManager)
+  public function initialize(sfGeneratorManager $generatorManager)
   {
     // otherwise the class never gets loaded... don't ask me why...
     include_once(sfConfig::get('sf_symfony_lib_dir').'/vendor/creole/CreoleTypes.php');
