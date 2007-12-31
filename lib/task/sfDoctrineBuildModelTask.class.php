@@ -82,10 +82,8 @@ EOF;
     $schemas = sfFinder::type('file')->ignore_version_control()->name('*.yml')->in($directory);
     
     $import = new Doctrine_Import_Schema();
-    $schema = $import->buildSchema($schemas, 'yml');
+    $array = $import->buildSchema($schemas, 'yml');
      
-    $array = $schema['schema'];
-    
     $builder = new Doctrine_Import_Builder();
     $builder->setTargetPath($outputDirectory);
     $builder->generateBaseClasses(true);
@@ -117,9 +115,7 @@ EOF;
     $pluginSchemas = sfFinder::type('file')->ignore_version_control()->name('*.yml')->in($path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine');
     
     $import = new Doctrine_Import_Schema();
-    $schema = $import->buildSchema($pluginSchemas, 'yml');
-    
-    $array = $schema['schema'];
+    $array = $import->buildSchema($pluginSchemas, 'yml');
     
     foreach ($array as $name => $properties) {
         $options = $import->getOptions($properties, null);
