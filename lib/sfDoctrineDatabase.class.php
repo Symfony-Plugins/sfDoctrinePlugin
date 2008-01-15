@@ -32,19 +32,19 @@ class sfDoctrineDatabase extends sfDatabase
    * @param string $name 
    * @return void
    */
-  public function initialize($parameters = array(), $name = null)
+  public function initialize($parameters = array())
   {
     if (!$parameters)
     {
       return;
     }
-    
+
     parent::initialize($parameters);
 
     // Load default database connection to load if specified
     if ($defaultDatabase = sfConfig::get('sf_default_database'))
     {
-      if ($name != $defaultDatabase)
+      if ($parameters['name'] != $defaultDatabase)
       {
         return;
       }
@@ -61,13 +61,11 @@ class sfDoctrineDatabase extends sfDatabase
     {
       require_once($schemas);
     }
-    
-    $this->setParameter('name', $name);
 
     $this->loadConnections();
 
-    $this->loadAttributes($name);
-    $this->loadListeners($name);
+    $this->loadAttributes($parameters['name']);
+    $this->loadListeners($parameters['name']);
   }
   
   /**
