@@ -25,7 +25,7 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
    * @param string $debug 
    * @return void
    */
-  public function bootstrapSymfony($app = null, $env = 'dev', $debug = true)
+  public function bootstrapSymfony($app, $env = 'dev', $debug = true)
   {
     if (defined('SF_ROOT_DIR')) {
       return;
