@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
+
 /**
  * Drops Databases, Creates Databases, Generates Doctrine model, SQL, initializes database, and load data.
  *
