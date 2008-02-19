@@ -17,34 +17,25 @@
  */
 abstract class sfDoctrineBaseTask extends sfBaseTask
 {
-  /**
-   * bootstrapSymfony
-   *
-   * @param string $app 
-   * @param string $env 
-   * @param string $debug 
-   * @return void
-   */
-  public function bootstrapSymfony($app, $env = 'dev', $debug = true)
+
+  static protected $done = false;
+
+  public function initialize(sfEventDispatcher $dispatcher, sfFormatter $formatter)
   {
-    if (defined('SF_ROOT_DIR')) {
-      return;
-    }
-    
-    if (!isset($app))
+    parent::initialize($dispatcher, $formatter);
+
+    if (!self::$done)
     {
-      $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps');
-    
-      if (isset($applications[0])) {
-        $app = basename($applications[0]);
-      } else {
-        throw new Exception('You must have at least one application');
-      }
+      $libDir = dirname(__FILE__).'/..';
+
+      $autoloader = sfSimpleAutoload::getInstance();
+      $autoloader->addDirectory($libDir);
+      $autoloader->register();
+
+      self::$done = true;
     }
-  
-    return parent::bootstrapSymfony($app, $env, $debug);
   }
-  
+
   /**
    * callDoctrineCli
    *

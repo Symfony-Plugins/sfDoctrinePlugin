@@ -55,8 +55,6 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
-    
     $args = array();
     if (isset($arguments['target']))
     {
