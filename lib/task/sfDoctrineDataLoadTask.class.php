@@ -53,6 +53,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->bootstrapSymfony();
     $this->callDoctrineCli('load-data');
   }
 }

@@ -45,6 +45,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->bootstrapSymfony();
     $this->callDoctrineCli('migrate', array('version' => $arguments['version']));
   }
 }

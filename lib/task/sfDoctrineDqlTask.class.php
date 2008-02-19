@@ -43,6 +43,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->bootstrapSymfony();
     $this->callDoctrineCli('dql', array('dql_query' => $arguments['dql_query']));
   }
 }

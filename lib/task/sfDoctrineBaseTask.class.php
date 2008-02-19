@@ -36,6 +36,26 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
     }
   }
 
+  public function bootstrapSymfony($app = null, $env = 'dev', $debug = true)
+  {
+    // if we've already bootstrapped....
+    if (defined('SF_ROOT_DIR'))
+      return;
+
+    if (!isset($app)) 
+    {
+       $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps'); 
+
+       if (isset($applications[0])) {
+         $app = basename($applications[0]);
+       } else {
+         throw new Exception('You must have at least one application');
+       }
+    }
+    return parent::bootstrapSymfony($app, $env, $debug);
+
+  }
+
   /**
    * callDoctrineCli
    *
