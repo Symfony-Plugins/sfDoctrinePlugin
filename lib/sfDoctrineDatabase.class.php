@@ -51,13 +51,13 @@ class sfDoctrineDatabase extends sfDatabase
     }
     
     // Load the doctrine configuration
-    require(sfConfigCache::getInstance()->checkConfig('config/doctrine.yml'));
+    require(sfContext::getInstance()->getConfigCache()->checkConfig('config/doctrine.yml'));
     
     // Load config in to parameter
     $this->setParameter('config', $config);
     
     // Load schemas information for connection binding
-    if ($schemas = sfConfigCache::getInstance()->checkConfig('config/schemas.yml', true))
+    if ($schemas = sfContext::getInstance()->getConfigCache()->checkConfig('config/schemas.yml', true))
     {
       require_once($schemas);
     }
