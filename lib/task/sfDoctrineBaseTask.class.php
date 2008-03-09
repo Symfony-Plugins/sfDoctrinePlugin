@@ -17,7 +17,6 @@
  */
 abstract class sfDoctrineBaseTask extends sfBaseTask
 {
-
   static protected $done = false;
 
   public function initialize(sfEventDispatcher $dispatcher, sfFormatter $formatter)
@@ -38,13 +37,9 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
 
   public function bootstrapSymfony($app = null, $env = 'dev', $debug = true)
   {
-    // if we've already bootstrapped....
-    if (defined('SF_ROOT_DIR'))
-      return;
-
-    if (!isset($app)) 
+    if (!isset($app))
     {
-       $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps'); 
+       $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps');
 
        if (isset($applications[0])) {
          $app = basename($applications[0]);
@@ -59,8 +54,8 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
   /**
    * callDoctrineCli
    *
-   * @param string $task 
-   * @param string $args 
+   * @param string $task
+   * @param string $args
    * @return void
    */
   public function callDoctrineCli($task, $args = array())
@@ -71,15 +66,15 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
     $migrations = sfConfig::get('sf_lib_dir') . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
     $sql = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'sql';
     $yaml = sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'doctrine';
-  
+
     $config = array('data_fixtures_path'  =>  $fixtures,
                     'models_path'         =>  $models,
                     'migrations_path'     =>  $migrations,
                     'sql_path'            =>  $sql,
                     'yaml_schema_path'    =>  $yaml);
-  
+
     $arguments = array('./symfony', $task);
-  
+
     foreach ($args as $key => $arg)
     {
       if (isset($config[$key]))
@@ -89,7 +84,7 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
         $arguments[] = $arg;
       }
     }
-  
+
     $cli = new sfDoctrineCli($config);
     $cli->setDispatcher($this->dispatcher);
     $cli->setFormatter($this->formatter);
