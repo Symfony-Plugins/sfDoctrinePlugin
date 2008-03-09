@@ -53,7 +53,6 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    print_r(sfConfig::getAll());
     $directory = sfConfig::get('sf_lib_dir').'/model/doctrine';
 
     $this->importSchema(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine', $directory);
