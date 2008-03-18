@@ -1,5 +1,7 @@
 config/doctrine.yml:
   class:    sfDoctrineConfigHandler
+  file:     %SF_PLUGINS_DIR%/sfDoctrinePlugin/lib/sfDoctrineConfigHandler.class.php
 
 config/schemas.yml:
   class:    sfDoctrineSchemasConfigHandler
+  file:     %SF_PLUGINS_DIR%/sfDoctrinePlugin/lib/sfDoctrineSchemasConfigHandler.class.php
