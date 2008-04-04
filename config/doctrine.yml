@@ -9,8 +9,8 @@ all:
     # enable quoting
     quote_identifier: false
 
-  listeners:        -
-  record_listeners: -
+  listeners:        []
+  record_listeners: []
 
 # Configuration for specific connection names 
 #  connections:
