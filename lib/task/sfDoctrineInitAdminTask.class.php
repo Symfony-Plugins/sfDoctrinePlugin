@@ -72,22 +72,22 @@ EOF;
       'THEME'        => $options['theme'],
     );
 
-    $moduleDir = sfConfig::get('sf_root_dir').'/'.sfConfig::get('sf_apps_dir_name').'/'.$arguments['application'].'/'.sfConfig::get('sf_app_module_dir_name').'/'.$arguments['module'];
+    $moduleDir = sfConfig::get('sf_apps_dir').'/'.$arguments['application'].'/modules/'.$arguments['module'];
 
     // create module structure
     $finder = sfFinder::type('any')->ignore_version_control()->discard('.sf');
-    $dirs = sfLoader::getGeneratorSkeletonDirs('sfDoctrineAdmin', $options['theme']);
+    $dirs = sfProjectConfiguration::getActive()->getGeneratorSkeletonDirs('sfDoctrineAdmin', $options['theme']);
     foreach ($dirs as $dir)
     {
       if (is_dir($dir))
       {
-        $this->filesystem->mirror($dir, $moduleDir, $finder);
+        $this->getFileSystem()->mirror($dir, $moduleDir, $finder);
         break;
       }
     }
 
     // customize php and yml files
     $finder = sfFinder::type('file')->name('*.php', '*.yml');
-    $this->filesystem->replaceTokens($finder->in($moduleDir), '##', '##', $constants);
+    $this->getFileSystem()->replaceTokens($finder->in($moduleDir), '##', '##', $constants);
   }
 }

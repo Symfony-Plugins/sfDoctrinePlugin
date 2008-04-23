@@ -24,6 +24,16 @@ class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
+      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
+    ));
+
     $this->aliases = array('doctrine-build-all-load');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-load';
@@ -36,13 +46,14 @@ The [doctrine:build-all-load|INFO] task is a shortcut for four other tasks:
 
 The task is equivalent to:
 
+  [./symfony doctrine-build-db|INFO]
   [./symfony doctrine:build-model|INFO]
-  [./symfony doctrine:build-sql|INFO]
   [./symfony doctrine:insert-sql|INFO]
   [./symfony doctrine:data-load frontend|INFO]
 
-The task takes an application argument because of the [doctrine:data-load|COMMENT]
-task. See [doctrine:data-load|COMMENT] help page for more information.
+The task takes an application argument because of the [doctrine:build-db|COMMENT], 
+[doctrine:insert-sql|COMMENT], and [doctrine:data-load|COMMENT] task. See 
+[doctrine:data-load|COMMENT] help page for more information.
 EOF;
   }
 
@@ -52,9 +63,20 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
-    $buildAll->run();
+    $buildAll->setCommandApplication($this->commandApplication);
+    $buildAll->run(array('application' => $arguments['application']), array('--env='.$options['env']));
 
     $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->run();
+    $loadData->setCommandApplication($this->commandApplication);
+
+    $loadDataOptions = array();
+    $loadDataOptions[] = '--env='.$options['env'];
+    $loadDataOptions[] = '--dir='.$options['dir'];
+    if (isset($options['append']) && $options['append'])
+    {
+      $loadDataOptions[] = '--append';
+    }
+
+    $loadData->run(array('application' => $arguments['application']), $loadDataOptions);
   }
 }

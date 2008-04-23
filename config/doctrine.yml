@@ -8,6 +8,9 @@ all:
 
     # enable quoting
     quote_identifier: false
+    
+    # enable autoloading of table class
+    autoload_table_classes: true
 
   listeners:        []
   record_listeners: []
@@ -17,5 +20,5 @@ all:
 #    connection_name1:
 #      attributes:
 #        export: all
-#      listeners:        -
-#      record_listeners: -
+#      listeners:        []
+#      record_listeners: []

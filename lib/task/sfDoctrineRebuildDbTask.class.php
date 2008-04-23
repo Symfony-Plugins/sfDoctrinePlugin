@@ -24,6 +24,14 @@ class sfDoctrineRebuildDbTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+    ));
+
     $this->aliases = array('doctrine-rebuild-db');
     $this->namespace = 'doctrine';
     $this->name = 'rebuild-db';
@@ -43,7 +51,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
+    $databaseManager = new sfDatabaseManager($this->configuration);
     $this->callDoctrineCli('rebuild-db');
   }
 }

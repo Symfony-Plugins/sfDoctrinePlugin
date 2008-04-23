@@ -24,6 +24,17 @@ class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
+      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
+      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database'),
+    ));
+
     $this->aliases = array('doctrine-build-all-reload');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-reload';
@@ -53,12 +64,28 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $dropDb = new sfDoctrineDropDbTask($this->dispatcher, $this->formatter);
-    $dropDb->run();
-    
-    $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
-    $buildAll->run();
+    $dropDb->setCommandApplication($this->commandApplication);
 
-    $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->run();
+    $dropDbOptions = array();
+    $dropDbOptions[] = '--env='.$options['env'];
+    if (isset($options['force']) && $options['force'])
+    {
+      $dropDbOptions[] = '--force';
+    }
+
+    $dropDb->run(array('application' => $arguments['application']), $dropDbOptions);
+    
+    $buildAllLoad = new sfDoctrineBuildAllLoadTask($this->dispatcher, $this->formatter);
+    $buildAllLoad->setCommandApplication($this->commandApplication);
+
+    $loadDataOptions = array();
+    $loadDataOptions[] = '--env='.$options['env'];
+    $loadDataOptions[] = '--dir='.$options['dir'];
+    if (isset($options['append']) && $options['append'])
+    {
+      $loadDataOptions[] = '--append';
+    }
+
+    $buildAllLoad->run(array('application' => $arguments['application']), $loadDataOptions);
   }
 }

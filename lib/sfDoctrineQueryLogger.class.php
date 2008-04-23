@@ -111,7 +111,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
       $message .= ' - ('.implode(', ', $params) . ' )';
     }
 
-    sfContext::getInstance()->getLogger()->log($message);
+    //sfContext::getInstance()->getLogger()->log($message);
     $sqlTimer = sfTimerManager::getTimer('Database (Doctrine)');
   }
 

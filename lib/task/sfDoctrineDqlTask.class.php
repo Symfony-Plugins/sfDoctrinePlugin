@@ -25,9 +25,14 @@ class sfDoctrineDqlTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('dql_query', sfCommandArgument::REQUIRED, 'The DQL query to execute', null),
     ));
-    
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+    ));
+
     $this->aliases = array('doctrine-dql');
     $this->namespace = 'doctrine';
     $this->name = 'dql';
@@ -43,7 +48,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
+    $databaseManager = new sfDatabaseManager($this->configuration);
     $this->callDoctrineCli('dql', array('dql_query' => $arguments['dql_query']));
   }
 }

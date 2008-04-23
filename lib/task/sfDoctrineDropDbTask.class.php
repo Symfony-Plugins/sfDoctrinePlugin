@@ -24,6 +24,15 @@ class sfDoctrineDropDbTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database')
+    ));
+
     $this->aliases = array('doctrine-drop-db');
     $this->namespace = 'doctrine';
     $this->name = 'drop-db';
@@ -43,7 +52,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
-    $this->callDoctrineCli('drop-db');
+    $databaseManager = new sfDatabaseManager($this->configuration);
+    $this->callDoctrineCli('drop-db', array('force' => $options['force']));
   }
 }

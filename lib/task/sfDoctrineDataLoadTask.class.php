@@ -24,6 +24,16 @@ class sfDoctrineLoadDataTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
+      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
+    ));
+
     $this->aliases = array('doctrine-load-data');
     $this->namespace = 'doctrine';
     $this->name = 'data-load';
@@ -53,7 +63,19 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
-    $this->callDoctrineCli('load-data');
+    $databaseManager = new sfDatabaseManager($this->configuration);
+
+    $arguments = array();
+    if (isset($options['append']) && $options['append'])
+    {
+      $arguments['append'] = $options['append'];
+    }
+
+    if (isset($options['dir']) && $options['dir'])
+    {
+      $arguments['data_fixtures_path'] = $options['dir'];
+    }
+
+    $this->callDoctrineCli('load-data', $arguments);
   }
 }

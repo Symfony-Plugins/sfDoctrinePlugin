@@ -24,6 +24,14 @@ class sfDoctrineBuildAllTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+    ));
+
     $this->aliases = array('doctrine-build-all');
     $this->namespace = 'doctrine';
     $this->name = 'build-all';
@@ -36,6 +44,7 @@ The [doctrine:build-all|INFO] task is a shortcut for three other tasks:
 
 The task is equivalent to:
 
+  [./symfony doctrine-build-db|INFO]
   [./symfony doctrine:build-model|INFO]
   [./symfony doctrine:insert-sql|INFO]
 
@@ -49,12 +58,15 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $buildDb = new sfDoctrineBuildDbTask($this->dispatcher, $this->formatter);
-    $buildDb->run();
-    
+    $buildDb->setCommandApplication($this->commandApplication);
+    $buildDb->run(array('application' => $arguments['application']), array('--env='.$options['env']));
+
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
+    $buildModel->setCommandApplication($this->commandApplication);
     $buildModel->run();
 
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
-    $insertSql->run();
+    $insertSql->setCommandApplication($this->commandApplication);
+    $insertSql->run(array('application' => $arguments['application']), array('--env='.$options['env']));
   }
 }

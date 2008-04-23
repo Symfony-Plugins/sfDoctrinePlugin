@@ -23,7 +23,15 @@ class sfDoctrineBuildSqlTask extends sfDoctrineBaseTask
    * @see sfTask
    */
   protected function configure()
-  {        
+  {
+    $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+    ));
+
     $this->aliases = array('doctrine-build-sql');
     $this->namespace = 'doctrine';
     $this->name = 'build-sql';
@@ -45,7 +53,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
+    $databaseManager = new sfDatabaseManager($this->configuration);
     $this->callDoctrineCli('generate-sql');
   }
 }

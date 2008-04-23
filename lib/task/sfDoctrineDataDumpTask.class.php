@@ -25,7 +25,12 @@ class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('target', sfCommandArgument::REQUIRED, 'The target filename'),
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
+      new sfCommandArgument('target', sfCommandArgument::OPTIONAL, 'The target filename'),
+    ));
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environement', 'dev'),
     ));
 
     $this->aliases = array('doctrine-dump-data');
@@ -36,17 +41,14 @@ class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
     $this->detailedDescription = <<<EOF
 The [doctrine:data-dump|INFO] task dumps database data:
 
-  [./symfony doctrine:data-dump frontend dump|INFO]
+  [./symfony doctrine:data-dump frontend|INFO]
 
 The task dumps the database data in [data/fixtures/%target%|COMMENT].
 
 The dump file is in the YML format and can be reimported by using
 the [doctrine:data-load|INFO] task.
 
-By default, the task use the [doctrine|COMMENT] connection as defined in [config/databases.yml|COMMENT].
-You can use another connection by using the [connection|COMMENT] option:
-
-  [./symfony doctrine:data-load --connection="name" frontend|INFO]
+  [./symfony doctrine:data-load frontend|INFO]
 EOF;
   }
 
@@ -55,7 +57,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $this->bootstrapSymfony();
+    $databaseManager = new sfDatabaseManager($this->configuration);
 
     $args = array();
     if (isset($arguments['target']))

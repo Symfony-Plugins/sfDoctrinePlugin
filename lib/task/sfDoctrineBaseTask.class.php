@@ -35,34 +35,16 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
     }
   }
 
-  public function bootstrapSymfony($app = null, $env = 'dev', $debug = true)
-  {
-    if (!isset($app))
-    {
-       $applications = sfFinder::type('dir')->maxdepth(0)->ignore_version_control()->in(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'apps');
-
-       if (isset($applications[0])) {
-         $app = basename($applications[0]);
-       } else {
-         throw new Exception('You must have at least one application');
-       }
-    }
-    return parent::bootstrapSymfony($app, $env, $debug);
-
-  }
-
   /**
-   * callDoctrineCli
+   * Get array of configuration variables for the Doctrine cli
    *
-   * @param string $task
-   * @param string $args
-   * @return void
+   * @return array $config
    */
-  public function callDoctrineCli($task, $args = array())
+  public function getCliConfig()
   {
     $pluginDirs = glob(sfConfig::get('sf_root_dir').'/plugins/*/data');
-    $fixtures = sfFinder::type('dir')->name('fixtures')->in(array_merge($pluginDirs, array(sfConfig::get('sf_data_dir'))));
-    $models = sfConfig::get('sf_model_lib_dir') . DIRECTORY_SEPARATOR . 'doctrine';
+    $fixtures = sfFinder::type('dir')->name('fixtures')->in(array_merge(array(sfConfig::get('sf_data_dir')), $pluginDirs));
+    $models = sfConfig::get('sf_lib_dir') . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR . 'doctrine';
     $migrations = sfConfig::get('sf_lib_dir') . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR . 'doctrine';
     $sql = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'sql';
     $yaml = sfConfig::get('sf_config_dir') . DIRECTORY_SEPARATOR . 'doctrine';
@@ -72,6 +54,20 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
                     'migrations_path'     =>  $migrations,
                     'sql_path'            =>  $sql,
                     'yaml_schema_path'    =>  $yaml);
+
+    return $config;
+  }
+
+  /**
+   * Call a command from the Doctrine CLI
+   *
+   * @param string $task Name of the Doctrine task to call
+   * @param string $args Arguments for the task
+   * @return void
+   */
+  public function callDoctrineCli($task, $args = array())
+  {
+    $config = $this->getCliConfig();
 
     $arguments = array('./symfony', $task);
 
