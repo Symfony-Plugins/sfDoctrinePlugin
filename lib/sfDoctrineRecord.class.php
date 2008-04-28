@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
- 
+
 /**
  * sfDoctrineRecord
- * 
+ *
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id$
@@ -41,7 +41,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
 
     return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
   }
-  
+
   /**
    * getPrimaryKey
    *
@@ -51,75 +51,75 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   {
     return $this->identifier();
   }
-  
+
   /**
    * get
    *
-   * @param string $name 
-   * @param string $load 
+   * @param string $name
+   * @param string $load
    * @return void
    */
   public function get($name, $load = true)
   {
     $getter = 'get' . Doctrine::classify($name);
-    
+
     if (method_exists($this, $getter))
     {
       return $this->$getter($load);
     }
-    
+
     return parent::get($name, $load);
   }
-  
+
   /**
    * rawGet
    *
-   * @param string $name 
-   * @param string $load 
+   * @param string $name
+   * @param string $load
    * @return void
    */
   public function rawGet($name)
   {
     return parent::rawGet($name);
   }
-  
+
   /**
    * set
    *
-   * @param string $name 
-   * @param string $value 
-   * @param string $load 
+   * @param string $name
+   * @param string $value
+   * @param string $load
    * @return void
    */
   public function set($name, $value, $load = true)
   {
     $setter = 'set' . Doctrine::classify($name);
-    
+
     if (method_exists($this, $setter))
     {
       return $this->$setter($value, $load);
     }
-    
+
     return parent::set($name, $value, $load);
   }
-  
+
   /**
    * rawSet
    *
-   * @param string $name 
-   * @param string $value 
+   * @param string $name
+   * @param string $value
    * @return void
    */
   public function rawSet($name, $value)
   {
     parent::set($name, $value);
   }
-  
+
   /**
    * __call
    *
-   * @param string $m 
-   * @param string $a 
+   * @param string $m
+   * @param string $a
    * @return void
    */
   public function __call($m, $a)
@@ -130,7 +130,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
       if ($verb == 'set' || $verb == 'get')
       {
         $camelColumn = substr($m, 3);
-        
+
         // If is a relation
         if (in_array($camelColumn, array_keys($this->getTable()->getRelations())))
         {

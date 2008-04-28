@@ -14,16 +14,14 @@
  */
 class sfDoctrinePager extends sfPager implements Serializable
 {
-  protected
-    $query;
+  protected $query;
 
   public function __construct($class, $defaultMaxPerPage = 10)
   {
     parent::__construct($class, $defaultMaxPerPage);
-    
+
     $this->setQuery(Doctrine_Query::create()->from($class));
   }
-  
 
   public function serialize()
   {
@@ -43,11 +41,11 @@ class sfDoctrinePager extends sfPager implements Serializable
 
   public function init()
   {
-    
+
     $count = $this->getQuery()->offset(0)->limit(0)->count();
-    
+
     $this->setNbResults($count);
-    
+
     $p = $this->getQuery();
     $p->offset(0);
     $p->limit(0);
@@ -58,9 +56,9 @@ class sfDoctrinePager extends sfPager implements Serializable
     else
     {
       $this->setLastPage(ceil($this->getNbResults() / $this->getMaxPerPage()));
-      
+
       $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
-      
+
       $p->offset($offset);
       $p->limit($this->getMaxPerPage());
     }
@@ -90,10 +88,10 @@ class sfDoctrinePager extends sfPager implements Serializable
   public function getResults($fetchtype = null)
   {
     $p = $this->getQuery();
-    
+
     if ($fetchtype == 'array')
       return $p->execute(array(), Doctrine::FETCH_ARRAY);
-    
+
     return $p->execute();
   }
 }

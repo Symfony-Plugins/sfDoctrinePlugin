@@ -18,45 +18,45 @@ class sfDoctrineCli extends Doctrine_Cli
 {
   protected $dispatcher;
   protected $formatter;
-  
+
   /**
    * setDispatcher
    *
-   * @param string $dispatcher 
+   * @param string $dispatcher
    * @return void
    */
   public function setDispatcher($dispatcher)
   {
     $this->dispatcher = $dispatcher;
   }
-  
+
   /**
    * setFormatter
    *
-   * @param string $formatter 
+   * @param string $formatter
    * @return void
    */
   public function setFormatter($formatter)
   {
     $this->formatter = $formatter;
   }
-  
+
   /**
    * notify
    *
-   * @param string $notification 
-   * @param string $style 
+   * @param string $notification
+   * @param string $style
    * @return void
    */
   public function notify($notification = null, $style = 'HEADER')
   {
     $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', $notification))));
   }
-  
+
   /**
    * notifyException
    *
-   * @param string $exception 
+   * @param string $exception
    * @return void
    */
   public function notifyException($exception)

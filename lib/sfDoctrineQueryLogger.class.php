@@ -12,7 +12,6 @@
  * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id$
  */
-
 class sfDoctrineQueryLogger extends Doctrine_EventListener
 {
   protected $connection = null;
@@ -21,18 +20,18 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * preExecute
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function preExecute(Doctrine_Event $event)
   {
     $this->sfLogQuery('{sfDoctrine Execute} executeQuery : ', $event);
   }
-  
+
   /**
    * postExecute
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function postExecute(Doctrine_Event $event)
@@ -43,7 +42,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * postPrepare
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function postPrepare(Doctrine_Event $event)
@@ -54,7 +53,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * preStmtExecute
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function preStmtExecute(Doctrine_Event $event)
@@ -65,18 +64,18 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * postStmtExecute
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function postStmtExecute(Doctrine_Event $event)
   {
     $this->sfAddTime();
   }
-  
+
   /**
    * postStmtExecute
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function preQuery(Doctrine_Event $event)
@@ -87,19 +86,19 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * postQuery
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    */
   public function postQuery(Doctrine_Event $event)
   {
     $this->sfAddTime();
   }
-  
+
   /**
    * sfLogQuery
    *
-   * @param string $message 
-   * @param string $event 
+   * @param string $message
+   * @param string $event
    * @return void
    */
   protected function sfLogQuery($message, $event)
@@ -111,7 +110,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
       $message .= ' - ('.implode(', ', $params) . ' )';
     }
 
-    //sfContext::getInstance()->getLogger()->log($message);
+    sfContext::getInstance()->getLogger()->log($message);
     $sqlTimer = sfTimerManager::getTimer('Database (Doctrine)');
   }
 

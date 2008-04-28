@@ -20,7 +20,7 @@ class sfDoctrineSchemasConfigHandler extends sfYamlConfigHandler
   /**
    * execute
    *
-   * @param string $configFiles 
+   * @param string $configFiles
    * @return void
    */
   public function execute($configFiles)

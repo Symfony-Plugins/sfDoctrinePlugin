@@ -25,13 +25,13 @@
  * @author     Jonathan H. Wage <jwage@mac.com>
  * @version    SVN: $Id$
  */
-class sfDoctrineUniqueValidator extends sfValidatorBase 
+class sfDoctrineUniqueValidator extends sfValidatorBase
 {
   /**
    * execute
    *
-   * @param string $value 
-   * @param string $error 
+   * @param string $value
+   * @param string $error
    * @return void
    */
   public function execute(&$value, &$error)
@@ -44,7 +44,7 @@ class sfDoctrineUniqueValidator extends sfValidatorBase
     {
       $primaryKeys = array($primaryKeys);
     }
-    
+
     // implied assumption: the is at least one primary key
     foreach ($primaryKeys as $primaryKey)
     {
@@ -69,7 +69,7 @@ class sfDoctrineUniqueValidator extends sfValidatorBase
     if (sizeof($res))
     {
       $error = $this->getParameterHolder()->get('unique_error');
-      
+
       return false;
     }
 

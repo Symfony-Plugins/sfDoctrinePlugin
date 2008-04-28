@@ -43,17 +43,18 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
       {
         $this->primaryKey[] = new sfDoctrineAdminColumn($_key);
       }
-    }
-    else
-    {
+    } else {
       $this->primaryKey[] = new sfDoctrineAdminColumn($identifier);
     }
-    // FIXME: check that there is at least one primary key [ and if there is not, what to do???? ]
+
+    if (!empty($this->primaryKeys))
+    {
+      throw new sfException('You cannot use the admin generator on a model which does not have any primary keys defined');
+    }
   }
 
   public function getColumns($paramName, $category='NONE')
   {
-
     $columns = parent::getColumns($paramName, $category);
 
     // set the foreign key indicator
@@ -104,6 +105,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
       }
       $columns[] = new sfDoctrineAdminColumn($name, $col);
     }
+
     return $columns;
   }
 
@@ -123,13 +125,17 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     {
       $column = new sfDoctrineAdminColumn($column->getColumnName(), null, null);
     }
+
     return sprintf ('object_%s($%s, %s, %s)', $helperName, $this->getSingularName(), var_export($this->getColumnGetter($column), true), $params);
   }
 
   function getColumnGetter($column, $developed = false, $prefix = '')
   {
     if ($developed)
+    {
       return sprintf("$%s%s->get('%s')", $prefix, $this->getSingularName(), $column->getName());
+    }
+
     // no parenthesis, we return a method+parameters array
     return array('get', array($column->getName()));
   }
@@ -137,7 +143,10 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
   function getColumnSetter($column, $value, $singleQuotes = false, $prefix = 'this->')
   {
     if ($singleQuotes)
+    {
       $value = sprintf("'%s'", $value);
+    }
+
     return sprintf('$%s%s->set(\'%s\', %s)', $prefix, $this->getSingularName(), $column->getName(), $value);
   }
 
@@ -157,7 +166,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
       $params = array_merge(array('enumValues'=>$values), $params);
       return $this->getPHPObjectHelper('enum_tag', $column, $params);
     }
+
     return parent::getColumnEditTag($column, $params);
   }
-
 }

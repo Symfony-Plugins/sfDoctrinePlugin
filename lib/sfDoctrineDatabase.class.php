@@ -9,7 +9,7 @@
 
 /**
  * sfDoctrineDatabase
- * 
+ *
  * Provides connectivity for the Doctrine.
  *
  * @package    sfDoctrinePlugin
@@ -19,17 +19,14 @@
 class sfDoctrineDatabase extends sfDatabase
 {
   /**
-   * doctrineConnection
-   *
-   * @var string
+   * @var object Doctrine_Connection
    */
   protected $doctrineConnection = null;
-  
+
   /**
    * initialize
    *
-   * @param string $parameters 
-   * @param string $name 
+   * @param array $parameters
    * @return void
    */
   public function initialize($parameters = array())
@@ -49,13 +46,13 @@ class sfDoctrineDatabase extends sfDatabase
         return;
       }
     }
-    
+
     // Load the doctrine configuration
     require(sfProjectConfiguration::getActive()->getConfigCache()->checkConfig('config/doctrine.yml'));
-    
+
     // Load config in to parameter
     $this->setParameter('config', $config);
-    
+
     // Load schemas information for connection binding
     if ($schemas = sfProjectConfiguration::getActive()->getConfigCache()->checkConfig('config/schemas.yml', true))
     {
@@ -65,9 +62,9 @@ class sfDoctrineDatabase extends sfDatabase
     $this->loadConnections();
 
     $this->loadAttributes($parameters['name']);
-    $this->loadListeners($parameters['name']);
+    $this->loadListeners();
   }
-  
+
   /**
    * loadConnections
    *
@@ -94,7 +91,7 @@ class sfDoctrineDatabase extends sfDatabase
 
           throw new sfDatabaseException($error);
         }
-        
+
         break;
     }
 
@@ -103,40 +100,37 @@ class sfDoctrineDatabase extends sfDatabase
     {
       $dsn = array($dsn, $this->getParameter('username'), $this->getParameter('password'));
     }
-    
+
     // Make the Doctrine connection for $dsn and $name
     $this->doctrineConnection = Doctrine_Manager::connection($dsn, $this->getParameter('name'));
   }
-  
+
   /**
-   * loadAttributes
-   *
-   * Load all the Doctrine attributes that we loaded from doctrine.yml
+   * Loads and sets all the Doctrine attributes that we loaded from doctrine.yml
    *
    * @return void
-   * @author Jonathan H. Wage
    */
   protected function loadAttributes($name)
   {
     $config = $this->getParameter('config');
-    
+
     $attributes = $config['global_attributes'];
-    
+
     $this->setAttributes($attributes);
-    
+
     $connectionAttributesName = $name.'_attributes';
     if (isset($config[$connectionAttributesName]))
     {
       $attributes = $config[$connectionAttributesName];
-      
+
       $this->setAttributes($attributes);
     }
   }
-  
+
   /**
-   * setAttributes
+   * Set the passed attributes on the connection
    *
-   * @param string $attributes 
+   * @param array $attributes
    * @return void
    */
   protected function setAttributes($attributes)
@@ -146,42 +140,40 @@ class sfDoctrineDatabase extends sfDatabase
       $this->doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
     }
   }
-  
+
   /**
-   * loadListeners
-   *
    * Load all the listeners
    *
    * @return void
-   * @author Jonathan H. Wage
    */
-  protected function loadListeners($name)
+  protected function loadListeners()
   {
     // Get encoding
     $encoding = $this->getParameter('encoding', 'UTF8');
-    
+
     // Add the default sfDoctrineConnectionListener
     $eventListener = new sfDoctrineConnectionListener($this->doctrineConnection, $encoding);
     $this->doctrineConnection->addListener($eventListener);
-    
+
     // Load Query Logger Listener
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
       $this->doctrineConnection->addListener(new sfDoctrineQueryLogger());
     }
-    
-    $this->doctrineConnection->addRecordListener(new sfDoctrineRecordListener());
-    
+
     $config = $this->getParameter('config');
-    
+
+    // Add global listeners
     $this->setListeners($config['global_listeners']);
+
+    // Add record listeners
     $this->setListeners($config['global_record_listeners'], 'addRecordListener');
   }
-  
+
   /**
-   * setListeners
+   * Set the listeners to the connection
    *
-   * @param string $listeners 
+   * @param array $listeners
    * @return void
    */
   protected function setListeners($listeners, $type = 'addListener')
@@ -191,20 +183,17 @@ class sfDoctrineDatabase extends sfDatabase
       $this->doctrineConnection->$type(new $listener());
     }
   }
-  
+
   /**
-   * connect
-   *
-   * Sets the connection to Doctrine PDO Instance
+   * Initializes the connection and sets it to object
    *
    * @return void
-   * @author Jonathan H. Wage
    */
   public function connect()
   {
     $this->connection = $this->doctrineConnection->getDbh();
   }
-  
+
   /**
    * Execute the shutdown procedure.
    *
@@ -212,7 +201,8 @@ class sfDoctrineDatabase extends sfDatabase
    */
   public function shutdown()
   {
-    if ($this->connection !== null) {
+    if ($this->connection !== null)
+    {
       $this->connection = null;
     }
   }

@@ -35,23 +35,23 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     'blob'      => 15,
     'object'    => 7,
     'array'     => 7,
-    'decimal'	  => 18,
+    'decimal'   => 18,
   );
-  
+
   /**
    * relatedClassName
    *
    * @var string
    */
   protected $relatedClassName = null;
-  
+
   /**
    * name
    *
    * @var string
    */
   protected $name = null;
-  
+
   /**
    * columnName
    *
@@ -88,7 +88,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
 
     return $dType ? self::$docToCreole[$dType] : -1;
   }
-  
+
   /**
    * getSize
    *
@@ -98,7 +98,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   {
     return $this->column['length'];
   }
-  
+
   /**
    * isNotNull
    *
@@ -111,7 +111,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
       return $this->column[2]['notnull'];
     return false;
   }
-  
+
   /**
    * isPrimaryKey
    *
@@ -123,18 +123,18 @@ class sfDoctrineAdminColumn extends sfAdminColumn
       return $this->column['primary'];
     return false;
   }
-  
+
   /**
    * setRelatedClassName
    *
-   * @param string $newName 
+   * @param string $newName
    * @return void
    */
   function setRelatedClassName($newName)
   {
     $this->relatedClassName = $newName;
   }
-  
+
   /**
    * getRelatedClassName
    *
@@ -144,18 +144,18 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   {
     return $this->relatedClassName;
   }
-  
+
   /**
    * setColumnName
    *
-   * @param string $newName 
+   * @param string $newName
    * @return void
    */
   function setColumnName($newName)
   {
     $this->columnName = $newName;
   }
-  
+
   /**
    * getColumnName
    *
@@ -165,11 +165,11 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   {
     return $this->columnName;
   }
-  
+
   /**
    * setColumnInfo
    *
-   * @param string $col 
+   * @param string $col
    * @return void
    */
   function setColumnInfo($col)
@@ -182,14 +182,14 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * // FIXME: Should this be removed? it is not used anywhere
    *
-   * @param string $newName 
+   * @param string $newName
    * @return void
    */
   function setName($newName)
   {
     $this->name = $newName;
   }
-  
+
   /**
    * getName
    *
@@ -204,7 +204,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     // a bit kludgy: the field name is actually in $this->phpName
     return parent::getPhpName();
   }
-  
+
   /**
    * isForeignKey
    *
@@ -214,15 +214,15 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   {
     return isset($this->relatedClassName);
   }
-  
+
   /**
    * __call
    *
    * all the calls that were forwarded to the table object with propel
    * have to be dealt with explicitly here, otherwise:
    *
-   * @param string $name 
-   * @param string $arguments 
+   * @param string $name
+   * @param string $arguments
    * @return void
    */
   public function __call($name, $arguments)
