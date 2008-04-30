@@ -4,7 +4,8 @@ sfDoctrinePlugin
 Overview
 --------
 
-The sfDoctrinePlugin allows you to totally replace propel with doctrine (http://www.phpdoctrine.com/) which is a powerful and easy-to-use ORM.
+The sfDoctrinePlugin allows you to totally replace propel with doctrine (http://www.phpdoctrine.org/) which is 
+a powerful and easy-to-use ORM.
 
 Contents
 --------
@@ -13,8 +14,8 @@ This plugin contains:
 - pake tasks that convert between doctrine and propel schema formats and build doctrine model classes automatically
 - an admin generator: to use it just specify sfDoctrineAdmin as the main class in your generator.yml config
 
-You will find more information in the wiki page dedicated to sfDoctrine: http://www.symfony-project.com/trac/wiki/sfDoctrinePlugin
-
+You will find more information in the wiki page dedicated to sfDoctrinePlugin: 
+http://www.symfony-project.com/trac/wiki/sfDoctrinePlugin
 
 License
 -------
