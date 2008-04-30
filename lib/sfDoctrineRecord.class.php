@@ -61,7 +61,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function get($name, $load = true)
   {
-    $getter = 'get' . Doctrine::classify($name);
+    $getter = 'get' . Doctrine_Inflector::classify($name);
 
     if (method_exists($this, $getter))
     {
@@ -93,7 +93,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function set($name, $value, $load = true)
   {
-    $setter = 'set' . Doctrine::classify($name);
+    $setter = 'set' . Doctrine_Inflector::classify($name);
 
     if (method_exists($this, $setter))
     {
