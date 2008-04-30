@@ -72,7 +72,16 @@ function _get_doctrine_object_list($object, $method, $options)
   $foreignTable = $object->getTable()->getRelation($method[1][0])->getTable();
   $foreignClass = $foreignTable->getComponentName();
 
-  $allObjects = $foreignTable->findAll();
+  if (isset($options['dql']))
+  {
+    $dql = $options['dql'];
+    unset($options['dql']); # Otherwise it will show up in the html
+
+    $allObjects = $foreignTable->findByDQL($dql);
+  } else {
+    $allObjects = $foreignTable->findAll();
+  }
+
   $associatedObjects = $object->get($method[1][0]);
   
   $ids = array();
