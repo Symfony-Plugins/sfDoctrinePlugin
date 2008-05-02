@@ -63,7 +63,7 @@ EOF;
 
    	if ( ! file_exists($tmpPath))
    	{
-   	  Doctrine::makeDirectories($tmpPath);
+   	  Doctrine_Lib::makeDirectories($tmpPath);
    	}
 
    	foreach ($pluginSchemas as $schema)
