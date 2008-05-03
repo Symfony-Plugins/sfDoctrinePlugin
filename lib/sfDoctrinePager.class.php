@@ -16,6 +16,11 @@ class sfDoctrinePager extends sfPager implements Serializable
 {
   protected $query;
 
+  /**
+   * __construct
+   *
+   * @return void
+   */
   public function __construct($class, $defaultMaxPerPage = 10)
   {
     parent::__construct($class, $defaultMaxPerPage);
@@ -23,6 +28,11 @@ class sfDoctrinePager extends sfPager implements Serializable
     $this->setQuery(Doctrine_Query::create()->from($class));
   }
 
+  /**
+   * Serialize the pager object
+   *
+   * @return string $serialized
+   */
   public function serialize()
   {
     $vars = get_object_vars($this);
@@ -30,18 +40,29 @@ class sfDoctrinePager extends sfPager implements Serializable
     return serialize($vars);
   }
 
+  /**
+   * Unserialize a pager object
+   *
+   * @param string $serialized 
+   * @return void
+   */
   public function unserialize($serialized)
   {
     $array = unserialize($serialized);
 
-    foreach($array as $name => $values) {
-        $this->$name = $values;
+    foreach($array as $name => $values)
+    {
+      $this->$name = $values;
     }
   }
 
+  /**
+   * init pager
+   *
+   * @return void
+   */
   public function init()
   {
-
     $count = $this->getQuery()->offset(0)->limit(0)->count();
 
     $this->setNbResults($count);
@@ -64,16 +85,33 @@ class sfDoctrinePager extends sfPager implements Serializable
     }
   }
 
+  /**
+   * Get the query for the pager
+   *
+   * @return Doctrine_Query $query
+   */
   public function getQuery()
   {
     return $this->query;
   }
 
+  /**
+   * Set query object for the pager
+   *
+   * @param Doctrine_Query $query
+   * @return void
+   */
   public function setQuery($query)
   {
     $this->query = $query;
   }
 
+  /**
+   * Retrieve the object for a certain offset
+   *
+   * @param integer $offset 
+   * @return Doctrine_Record $record
+   */
   protected function retrieveObject($offset)
   {
     $cForRetrieve = clone $this->getQuery();
@@ -85,6 +123,12 @@ class sfDoctrinePager extends sfPager implements Serializable
     return $results[0];
   }
 
+  /**
+   * Get all the results for the pager instance
+   *
+   * @param integer $fetchtype Doctrine::HYDRATE_* constants
+   * @return Doctrine_Collection
+   */
   public function getResults($fetchtype = null)
   {
     $p = $this->getQuery();

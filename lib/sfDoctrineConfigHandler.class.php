@@ -52,6 +52,13 @@ class sfDoctrineConfigHandler extends sfYamlConfigHandler
     return $code;
   }
 
+  /**
+   * Build the php code array for the doctrine php config file
+   *
+   * @param string $name 
+   * @param array $config 
+   * @return array $data
+   */
   public function buildPhpCodeArray($name, $config)
   {
     $data = array();

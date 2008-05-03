@@ -18,9 +18,9 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   protected $encoding = 'UTF8';
 
   /**
-   * preExecute
+   * Log a query before it is executed
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function preExecute(Doctrine_Event $event)
@@ -29,9 +29,9 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * postExecute
+   * Add the time after a query is executed
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function postExecute(Doctrine_Event $event)
@@ -40,9 +40,9 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * postPrepare
+   * Add the time after a query is prepared
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function postPrepare(Doctrine_Event $event)
@@ -51,9 +51,9 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * preStmtExecute
+   * Before a query statement is executed log it
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function preStmtExecute(Doctrine_Event $event)
@@ -64,7 +64,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   /**
    * postStmtExecute
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function postStmtExecute(Doctrine_Event $event)
@@ -73,9 +73,9 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * postStmtExecute
+   * Log a query before it is executed
    *
-   * @param string $Doctrine_Event
+   * @param Doctrine_Event $event
    * @return void
    */
   public function preQuery(Doctrine_Event $event)
@@ -84,7 +84,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * postQuery
+   * Post query add the time
    *
    * @param string $Doctrine_Event
    * @return void
@@ -95,7 +95,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * sfLogQuery
+   * Log a Doctrine_Query
    *
    * @param string $message
    * @param string $event
@@ -115,7 +115,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
   }
 
   /**
-   * sfAddTime
+   * Add the time to the log
    *
    * @return void
    */
