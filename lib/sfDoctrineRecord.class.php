@@ -58,4 +58,105 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   {
     return $this->identifier();
   }
+
+  /**
+   * Get a record attribute. Allows overriding Doctrine record accessors with Propel style functions
+   *
+   * @param string $name 
+   * @param string $load 
+   * @return void
+   */
+  public function get($name, $load = true)
+  {
+    $getter = 'get' . Doctrine_Inflector::classify($name);
+
+    if (method_exists($this, $getter))
+    {
+      return $this->$getter($load);
+    }
+
+    return parent::get($name, $load);
+  }
+
+  /**
+   * Use inside of overriden Doctrine accessors
+   *
+   * @param string $name 
+   * @param string $load 
+   * @return void
+   */
+  public function rawGet($name)
+  {
+    return parent::rawGet($name);
+  }
+
+  /**
+   * Set a record attribute. Allows overriding Doctrine record accessors with Propel style functions
+   *
+   * @param string $name 
+   * @param string $value 
+   * @param string $load 
+   * @return void
+   */
+  public function set($name, $value, $load = true)
+  {
+    $setter = 'set' . Doctrine_Inflector::classify($name);
+
+    if (method_exists($this, $setter))
+    {
+      return $this->$setter($value, $load);
+    }
+
+    return parent::set($name, $value, $load);
+  }
+
+  /**
+   * Use inside of overriden Doctrine accessors
+   *
+   * @param string $name 
+   * @param string $value 
+   * @return void
+   */
+  public function rawSet($name, $value)
+  {
+    parent::set($name, $value);
+  }
+
+  /**
+   * This magic __call is used to provide propel style accessors to Doctrine models
+   *
+   * @param string $m 
+   * @param string $a 
+   * @return void
+   */
+  public function __call($m, $a)
+  {
+    try {
+      $verb = substr($m, 0, 3);
+
+      if ($verb == 'set' || $verb == 'get')
+      {
+        $camelColumn = substr($m, 3);
+
+        // If is a relation
+        if (in_array($camelColumn, array_keys($this->getTable()->getRelations())))
+        {
+          $column = $camelColumn;
+        } else {
+          $column = sfInflector::underscore($camelColumn);
+        }
+
+        if ($verb == 'get')
+        {
+          return $this->get($column);
+        } else {
+          return $this->set($column, $a[0]);
+        }
+      } else {
+        return parent::__call($m, $a);
+      }
+    } catch(Exception $e) {
+      return parent::__call($m, $a);
+    }
+  }
 }
