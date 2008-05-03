@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ * (c) 2006-2007 Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,7 +14,7 @@ require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
  *
  * @package    sfDoctrinePlugin
  * @subpackage Task
- * @author     2006-2007 Jonathan H. Wage <jwage@mac.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id$
  */
 class sfDoctrineGenerateCrudTask extends sfDoctrineBaseTask

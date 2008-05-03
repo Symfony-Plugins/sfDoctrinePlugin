@@ -15,12 +15,24 @@
  *
  * @package    symfony
  * @subpackage generator
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: sfDoctrineFormGenerator.class.php 8512 2008-04-17 18:06:12Z fabien $
  */
 class sfDoctrineFormGenerator extends sfGenerator
 {
+  /**
+   * Array of all the loaded models
+   *
+   * @var array
+   */
   public $models = array();
+
+  /**
+   * Array of all plugin models
+   *
+   * @var array
+   */
   public $pluginModels = array();
 
   /**
@@ -101,6 +113,12 @@ class sfDoctrineFormGenerator extends sfGenerator
     }
   }
 
+  /**
+   * Get all the models which are a part of a plugin and the name of the plugin.
+   * The array format is modelName => pluginName
+   *
+   * @return array $pluginModels
+   */
   public function getPluginModels()
   {
     if (!$this->pluginModels)
@@ -126,11 +144,23 @@ class sfDoctrineFormGenerator extends sfGenerator
     return $this->pluginModels;
   }
 
+  /**
+   * Check to see if a model is part of a plugin
+   *
+   * @param string $modelName 
+   * @return boolean $bool
+   */
   public function isPluginModel($modelName)
   {
     return isset($this->pluginModels[$modelName]) ? true:false;
   }
 
+  /**
+   * Get the name of the plugin a model belongs to
+   *
+   * @param string $modelName 
+   * @return string $pluginName
+   */
   public function getPluginNameForModel($modelName)
   {
     if ($this->isPluginModel($modelName))

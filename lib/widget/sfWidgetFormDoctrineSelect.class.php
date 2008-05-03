@@ -2,7 +2,7 @@
 
 /*
  * This file is part of the symfony package.
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,7 +13,7 @@
  *
  * @package    symfony
  * @subpackage widget
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfWidgetFormDoctrineSelect.class.php 7746 2008-03-05 12:10:27Z fabien $
  */
 class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
@@ -72,16 +72,15 @@ class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
       $choices[''] = true === $this->getOption('add_empty') ? '' : $this->getOption('add_empty');
     }
 
-    $class = $this->getOption('model').'Peer';
+    $q = Doctrine_Query::create()
+          ->from($this->getOption('model') . ' a');
 
-    $criteria = is_null($this->getOption('criteria')) ? new Criteria() : $this->getOption('criteria');
     if ($order = $this->getOption('order_by'))
     {
-      $method = sprintf('add%sOrderByColumn', 0 === strpos(strtoupper($order[1]), 'ASC') ? 'Ascending' : 'Descending');
-      $criteria->$method(call_user_func(array($class, 'translateFieldName'), $order[0], BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME));
+      $q->orderBy('a.' . $order[0] . ' ' . $order[1]);
     }
-    $objects = call_user_func(array($class, 'doSelect'), $criteria, $this->getOption('connection'));
 
+    $objects = $q->execute();
     $method = $this->getOption('method');
     foreach ($objects as $object)
     {

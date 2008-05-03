@@ -1,17 +1,18 @@
 <?php
 /*
  * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Jonathan H. Wage <jwage@mac.com>
+ * (c) 2006-2007 Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * sfDoctrineRecord
+ * Base sfDoctrineRecord extends the base Doctrine_Record in Doctrine to provide some
+ * symfony specific functionality to Doctrine_Records
  *
  * @package    sfDoctrinePlugin
- * @author     Jonathan H. Wage <jwage@mac.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id$
  */
 abstract class sfDoctrineRecord extends Doctrine_Record
