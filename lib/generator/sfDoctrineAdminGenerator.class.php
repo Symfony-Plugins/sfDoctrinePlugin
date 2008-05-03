@@ -16,8 +16,19 @@
  */
 class sfDoctrineAdminGenerator extends sfAdminGenerator
 {
+  /**
+   * Doctrine_Table instance for this admin generator
+   *
+   * @var Doctrine_Table $table
+   */
   protected $table;
 
+  /**
+   * Initialize a doctrine admin generator instance
+   *
+   * @param sfGeneratorManager $generatorManager
+   * @return void
+   */
   public function initialize(sfGeneratorManager $generatorManager)
   {
     parent::initialize($generatorManager);
@@ -25,16 +36,32 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     $this->setGeneratorClass('sfDoctrineAdmin');
   }
 
+  /**
+   * Load all Doctrine_Table class to generate instance
+   *
+   * @return void
+   */
   protected function loadMapBuilderClasses()
   {
     $this->table = Doctrine::getTable($this->getClassName());
   }
 
+  /**
+   * Get Doctrine_Table instance for admin generator
+   *
+   * @return Doctrine_Table $table
+   */
   protected function getTable()
   {
     return $this->table;
   }
 
+  /**
+   * Load primary key columns as array of sfDoctrineAdminColumn instances
+   *
+   * @return void
+   * @throws sfException
+   */
   protected function loadPrimaryKeys()
   {
     $identifier = $this->getTable()->getIdentifier();
@@ -54,6 +81,13 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     }
   }
 
+  /**
+   * Get columns for admin generator instance
+   *
+   * @param string $paramName 
+   * @param string $category 
+   * @return array $columns
+   */
   public function getColumns($paramName, $category = 'NONE')
   {
     $columns = parent::getColumns($paramName, $category);
@@ -74,8 +108,11 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
           $column->setRelatedClassName($fkcolumn->getTable()->getComponentName());
           $column->setColumnName($columnName);
 
-          if (isset($cols[$columnName])) // if it is not a many2many
+          // if it is not a many2many
+          if (isset($cols[$columnName]))
+          {
             $column->setColumnInfo($cols[$columnName]);
+          }
 
           $columns[$index] = $column;
         }
@@ -85,6 +122,11 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     return $columns;
   }
 
+  /**
+   * Get array of all columns as sfDoctrineAdminColumn instances
+   *
+   * @return array $columns
+   */
   function getAllColumns()
   {
     $cols = $this->getTable()->getColumns();
@@ -94,29 +136,48 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     {
       // we set out to replace the foreign key to their corresponding aliases
       $found = null;
-      foreach ($rels as $alias=>$rel)
+      foreach ($rels as $alias => $rel)
       {
         $relType = $rel->getType();
         if ($rel->getLocal() == $name && $relType != Doctrine_Relation::MANY_AGGREGATE && $relType != Doctrine_Relation::MANY_COMPOSITE)
+        {
           $found = $alias;
+        }
       }
+
       if ($found)
       {
         $name = $found;
       }
+
       $columns[] = new sfDoctrineAdminColumn($name, $col);
     }
 
     return $columns;
   }
 
+  /**
+   * Get an sfDoctrineAdminColumn instance for a field/column
+   *
+   * @param string $field 
+   * @param string $flag 
+   * @return sfDoctrineAdminColumn $column
+   */
   function getAdminColumnForField($field, $flag = null)
   {
     $cols = $this->getTable()->getColumns(); // put this in an internal variable?
     return  new sfDoctrineAdminColumn($field, (isset($cols[$field]) ? $cols[$field] : null), $flag);
   }
 
-
+  /**
+   * Get symfony php object helper
+   *
+   * @param string $helperName 
+   * @param string $column 
+   * @param string $params 
+   * @param string $localParams 
+   * @return string $helperCode
+   */
   function getPHPObjectHelper($helperName, $column, $params, $localParams = array())
   {
     $params = $this->getObjectTagParams($params, $localParams);
@@ -127,9 +188,17 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
       $column = new sfDoctrineAdminColumn($column->getColumnName(), null, null);
     }
 
-    return sprintf ('object_%s($%s, %s, %s)', $helperName, $this->getSingularName(), var_export($this->getColumnGetter($column), true), $params);
+    return sprintf('object_%s($%s, %s, %s)', $helperName, $this->getSingularName(), var_export($this->getColumnGetter($column), true), $params);
   }
 
+  /**
+   * Get php code for column getter
+   *
+   * @param string $column 
+   * @param string $developed 
+   * @param string $prefix 
+   * @return string $getterCode
+   */
   function getColumnGetter($column, $developed = false, $prefix = '')
   {
     if ($developed)
@@ -141,6 +210,15 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     return array('get', array($column->getName()));
   }
 
+  /**
+   * Get php code for column setter
+   *
+   * @param string $column 
+   * @param string $value 
+   * @param string $singleQuotes 
+   * @param string $prefix 
+   * @return string $setterCode
+   */
   function getColumnSetter($column, $value, $singleQuotes = false, $prefix = 'this->')
   {
     if ($singleQuotes)
@@ -151,16 +229,28 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     return sprintf('$%s%s->set(\'%s\', %s)', $prefix, $this->getSingularName(), $column->getName(), $value);
   }
 
+  /**
+   * Get related class name for a column
+   *
+   * @param string $column 
+   * @return string $className
+   */
   function getRelatedClassName($column)
   {
     return $column->getRelatedClassName();
   }
 
+  /**
+   * Get php code for column edit tag
+   *
+   * @param string $column 
+   * @param string $params 
+   * @return string $columnEditTag
+   */
   public function getColumnEditTag($column, $params = array())
   {
     if ($column->getDoctrineType() == 'enum')
     {
-      // FIXME: this is called already in the sfAdminGenerator class!!!
       $params = array_merge(array('control_name' => $this->getSingularName().'['.$column->getName().']'), $params);
 
       $values = $this->getTable()->getEnumValues($column->getName());

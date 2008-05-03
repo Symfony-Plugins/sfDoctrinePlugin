@@ -1,20 +1,20 @@
 [?php
 
 /**
- * <?php echo $this->table->getOption('name') ?> form base class.
+ * <?php echo $this->modelName ?> form base class.
  *
  * @package    form
- * @subpackage <?php echo $this->underscore($this->table->getOption('name')) ?>
+ * @subpackage <?php echo $this->underscore($this->modelName) ?>
 
  * @version    SVN: $Id: sfDoctrineFormGeneratedTemplate.php 8508 2008-04-17 17:39:15Z fabien $
  */
-class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoctrine
+class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
 {
   public function setup()
   {
     $this->setWidgets(array(
 <?php foreach ($this->table->getColumns() as $name => $column): ?>
-      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($column) ?>(<?php echo $this->getWidgetOptionsForColumn($column) ?>),
+      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($name) ?>(<?php echo $this->getWidgetOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
       '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>')),
@@ -23,14 +23,14 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
 
     $this->setValidators(array(
 <?php foreach ($this->table->getColumns() as $name => $column): ?>
-      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($column) ?>(<?php echo $this->getValidatorOptionsForColumn($name, $column) ?>),
+      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($name) ?>(<?php echo $this->getValidatorOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
       '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>', 'required' => false)),
 <?php endforeach; ?>
     ));
 
-    $this->widgetSchema->setNameFormat('<?php echo $this->underscore($this->table->getOption('name')) ?>[%s]');
+    $this->widgetSchema->setNameFormat('<?php echo $this->underscore($this->modelName) ?>[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 
@@ -39,7 +39,7 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
 
   public function getModelName()
   {
-    return '<?php echo $this->table->getOption('name') ?>';
+    return '<?php echo $this->modelName ?>';
   }
 <?php if ($this->isI18n()): ?>
   public function getI18nModelName()

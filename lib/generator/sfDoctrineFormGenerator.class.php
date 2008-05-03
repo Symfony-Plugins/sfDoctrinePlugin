@@ -92,6 +92,7 @@ class sfDoctrineFormGenerator extends sfGenerator
     foreach ($models as $model)
     {
       $this->table = Doctrine::getTable($model);
+      $this->modelName = $model;
 
       if ($this->isPluginModel($model))
       {
@@ -205,17 +206,18 @@ class sfDoctrineFormGenerator extends sfGenerator
   public function getForeignKeyNames()
   {
     $names = array();
-    foreach ($this->table->getColumns() as $column)
+    foreach ($this->table->getRelations() as $relation)
     {
-      if (!$this->isColumnPrimaryKey() && $column->isForeignKey())
+      if ($relation->getType() === Doctrine_Relation::ONE)
       {
-        $names[] = array($this->getForeignTable($column)->getOption('name'), $column->getOption('name'), $this->isColumnNotNull($column), false);
+        $foreignDef = $relation->getTable()->getDefinitionOf($relation->getForeignFieldName());
+        $names[] = array($relation['table']->getOption('name'), $relation->getForeignFieldName(), $this->isColumnNotNull($relation->getForeignFieldName(), $foreignDef), false);
       }
     }
 
-    foreach ($this->getManyToManyRelations() as $tables)
+    foreach ($this->getManyToManyRelations() as $relation)
     {
-      $names[] = array($tables['relatedTable']->getOption('name'), $tables['middleTable']->getOption('name'), false, true);
+      $names[] = array($relation['table']->getOption('name'), $relation['refTable']->getOption('name'), false, true);
     }
 
     return $names;
@@ -228,11 +230,11 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function getPrimaryKey()
   {
-    foreach ($this->table->getColumns() as $column)
+    foreach (array_keys($this->table->getColumns()) as $name)
     {
-      if ($this->isColumnPrimaryKey())
+      if ($this->isColumnPrimaryKey($name))
       {
-        return $column;
+        return $this->table->getDefinitionOf($name);
       }
     }
   }
@@ -244,8 +246,9 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfWidgetForm
    */
-  public function getWidgetClassForColumn($column)
+  public function getWidgetClassForColumn($name)
   {
+    $column = $this->table->getDefinitionOf($name);
     switch ($column['type'])
     {
       case 'boolean':
@@ -269,11 +272,11 @@ class sfDoctrineFormGenerator extends sfGenerator
     }
 
 
-    if ($this->isColumnPrimaryKey($column))
+    if ($this->isColumnPrimaryKey($name))
     {
       $name = 'InputHidden';
     }
-    else if ($this->isColumnForeignKey($column))
+    else if ($this->isColumnForeignKey($name))
     {
       $name = 'DoctrineSelect';
     }
@@ -281,18 +284,64 @@ class sfDoctrineFormGenerator extends sfGenerator
     return sprintf('sfWidgetForm%s', $name);
   }
 
-  public function isColumnForeignKey($column)
+  /**
+   * Check if a column is a foreign key
+   *
+   * @param array $column 
+   * @return boolean $bool
+   */
+  public function isColumnForeignKey($name)
   {
+    foreach ($this->table->getRelations() as $relation)
+    {
+      if ($relation['local'] == $name)
+      {
+        return true;
+      }
+    }
     return false;
   }
 
-  public function isColumnPrimaryKey($column)
+  /**
+   * Get the foreign table object for a column
+   *
+   * @param string $name 
+   * @param string $column 
+   * @return Doctrine_Table $table
+   */
+  public function getForeignTable($name)
   {
+    foreach ($this->table->getRelations() as $relation)
+    {
+      if ($relation['local'] == $name)
+      {
+        return $relation['table'];
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Check if a column is a primary key
+   *
+   * @param string $name
+   * @return boolean $bool
+   */
+  public function isColumnPrimaryKey($name)
+  {
+    $column = $this->table->getDefinitionOf($name);
     return (isset($column['primary']) && $column['primary']);
   }
 
-  public function isColumnNotNull($column)
+  /**
+   * Check if a column is not null
+   *
+   * @param array $column 
+   * @return boolean $bool
+   */
+  public function isColumnNotNull($name)
   {
+    $column = $this->table->getDefinitionOf($name);
     return (isset($column['notnull']) && $column['notnull']);
   }
 
@@ -303,13 +352,14 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The options to pass to the widget as a PHP string
    */
-  public function getWidgetOptionsForColumn($column)
+  public function getWidgetOptionsForColumn($name)
   {
+    $column = $this->table->getDefinitionOf($name);
     $options = array();
 
-    if (!isset($column['primary']) && $this->isColumnForeignKey($column))
+    if (!$this->isColumnPrimaryKey($name) && $this->isColumnForeignKey($name))
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($column)->getOption('name'), isset($column['notnull']) ? 'false' : 'true');
+      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($name)->getOption('name'), isset($column['notnull']) ? 'false' : 'true');
     }
 
     return count($options) ? sprintf('array(%s)', implode(', ', $options)) : '';
@@ -322,8 +372,9 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfValidator
    */
-  public function getValidatorClassForColumn($column)
+  public function getValidatorClassForColumn($colName)
   {
+    $column = $this->table->getDefinitionOf($colName);
     switch ($column['type'])
     {
       case 'boolean':
@@ -355,7 +406,7 @@ class sfDoctrineFormGenerator extends sfGenerator
         $name = 'Pass';
     }
 
-    if ($this->isColumnPrimaryKey($column) || $this->isColumnForeignKey($column))
+    if ($this->isColumnPrimaryKey($colName) || $this->isColumnForeignKey($colName))
     {
       $name = 'DoctrineChoice';
     }
@@ -370,17 +421,18 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The options to pass to the validator as a PHP string
    */
-  public function getValidatorOptionsForColumn($name, $column)
+  public function getValidatorOptionsForColumn($name)
   {
+    $column = $this->table->getDefinitionOf($name);
     $options = array();
 
-    if ($this->isColumnForeignKey($column))
+    if ($this->isColumnForeignKey($name))
     {
-      $options[] = sprintf('\'model\' => \'%s\'', $this->getForeignTable($column)->getOption('name'));
+      $options[] = sprintf('\'model\' => \'%s\'', $this->getForeignTable($name)->getOption('name'));
     }
-    else if ($this->isColumnPrimaryKey($column))
+    else if ($this->isColumnPrimaryKey($name))
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->table->getOption('name'), $name);
+      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->modelName, $name);
     }
     else
     {
@@ -395,7 +447,7 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
     }
 
-    if (!$this->isColumnNotNull($column) || $this->isColumnPrimaryKey())
+    if (!$this->isColumnNotNull($name) || $this->isColumnPrimaryKey($name))
     {
       $options[] = '\'required\' => false';
     }
@@ -419,9 +471,9 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
     }
 
-    foreach ($this->getManyToManyRelations() as $tables)
+    foreach ($this->getManyToManyRelations() as $relation)
     {
-      if (($m = strlen($this->underscore($tables['refTable']->getOption('name')).'_list')) > $max)
+      if (($m = strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) > $max)
       {
         $max = $m;
       }
@@ -437,7 +489,7 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function getPrimaryKeyColumNames()
   {
-    return $this->table->getIdentifier();
+    return $this->table->getIdentifierColumnNames();
   }
 
   /**
@@ -459,7 +511,7 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function isI18n()
   {
-    return method_exists($this->table->getOption('name').'Peer', 'getI18nModel');
+    return $this->table->hasRelation('Translation');
   }
 
   /**
@@ -469,7 +521,7 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function getI18nModel()
   {
-    return call_user_func(array($this->table->getOption('name').'Peer', 'getI18nModel'));
+    return $this->table->getRelation('Translation')->getTable()->create();
   }
 
   public function underscore($name)
