@@ -39,7 +39,7 @@ abstract class sfFormDoctrine extends sfForm
    *
    * @see sfForm
    */
-  public function __construct(BaseObject $object = null, $options = array(), $CSRFSecret = null)
+  public function __construct($object = null, $options = array(), $CSRFSecret = null)
   {
     $class = $this->getModelName();
     if (is_null($object))
@@ -54,7 +54,7 @@ abstract class sfFormDoctrine extends sfForm
       }
 
       $this->object = $object;
-      $this->isNew = false;
+      $this->isNew = $this->object->exists();
     }
 
     parent::__construct(array(), $options, $CSRFSecret);
@@ -69,8 +69,7 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function getConnection()
   {
-    return Propel::getConnection(constant(sprintf('%sPeer::DATABASE_NAME', $this->getModelName())));
-    return Propel::getConnection(constant(sprintf('%s::DATABASE_NAME', get_class($this->object->getPeer()))));
+    return Doctrine_Manager::getInstance()->getConnectionForComponent($this->getModelName());
   }
 
   /**
@@ -85,7 +84,7 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function isNew()
   {
-    return $this->isNew;
+    return $this->object->exists();
   }
 
   /**
@@ -170,7 +169,7 @@ abstract class sfFormDoctrine extends sfForm
 
     try
     {
-      $con->begin();
+      $con->beginTransaction();
 
       $this->doSave($con);
 
@@ -203,7 +202,7 @@ abstract class sfFormDoctrine extends sfForm
     // remove special columns that are updated automatically
     unset($values['updated_at'], $values['updated_on'], $values['created_at'], $values['created_on']);
 
-    $this->object->fromArray($values, BasePeer::TYPE_FIELDNAME);
+    $this->object->fromArray($values);
 
     return $this->object;
   }
@@ -231,13 +230,13 @@ abstract class sfFormDoctrine extends sfForm
     }
 
     $values = $this->getValues();
-    $method = sprintf('getCurrent%s', $this->getI18nModelName());
+    $alias = 'Translation';
     foreach ($this->cultures as $culture)
     {
       unset($values[$culture]['id'], $values[$culture]['culture']);
 
-      $i18n = $this->object->$method($culture);
-      $i18n->fromArray($values[$culture], BasePeer::TYPE_FIELDNAME);
+      $i18n = $this->object->$alias[$culture];
+      $i18n->fromArray($values[$culture]);
       $i18n->save($con);
     }
   }

@@ -16,17 +16,17 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
 <?php foreach ($this->table->getColumns() as $name => $column): ?>
       '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($column) ?>(<?php echo $this->getWidgetOptionsForColumn($column) ?>),
 <?php endforeach; ?>
-<?php foreach ($this->getManyToManyTables() as $tables): ?>
-      '<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($tables['middleTable']->getOption('name')).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $tables['relatedTable']->getOption('name') ?>')),
+<?php foreach ($this->getManyToManyRelations() as $relation): ?>
+      '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>')),
 <?php endforeach; ?>
     ));
 
     $this->setValidators(array(
-<?php foreach ($this->table->getColumns() as $column): ?>
-      '<?php echo strtolower($column->getColumnName()) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($column->getColumnName())) ?> => new <?php echo $this->getValidatorClassForColumn($column) ?>(<?php echo $this->getValidatorOptionsForColumn($column) ?>),
+<?php foreach ($this->table->getColumns() as $name => $column): ?>
+      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($column) ?>(<?php echo $this->getValidatorOptionsForColumn($name, $column) ?>),
 <?php endforeach; ?>
-<?php foreach ($this->getManyToManyTables() as $tables): ?>
-      '<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($tables['middleTable']->getOption('name')).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $tables['relatedTable']->getOption('name') ?>', 'required' => false)),
+<?php foreach ($this->getManyToManyRelations() as $relation): ?>
+      '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>', 'required' => false)),
 <?php endforeach; ?>
     ));
 
@@ -41,7 +41,6 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
   {
     return '<?php echo $this->table->getOption('name') ?>';
   }
-
 <?php if ($this->isI18n()): ?>
   public function getI18nModelName()
   {
@@ -54,21 +53,21 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
   }
 <?php endif; ?>
 
-<?php if ($this->getManyToManyTables()): ?>
+<?php if ($this->getManyToManyRelations()): ?>
   public function updateDefaultsFromObject()
   {
     parent::updateDefaultsFromObject();
 
-<?php foreach ($this->getManyToManyTables() as $tables): ?>
-    if (isset($this->widgetSchema['<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list']))
+<?php foreach ($this->getManyToManyRelations() as $relation): ?>
+    if (isset($this->widgetSchema['<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list']))
     {
       $values = array();
-      foreach ($this->object->get<?php echo $tables['middleTable']->getOption('name') ?>s() as $obj)
+      foreach ($this->object-><?php echo $relation['alias']; ?> as $obj)
       {
-        $values[] = $obj->get<?php echo $tables['relatedColumn']->getOption('name') ?>();
+        $values[] = $obj-><?php echo $relation->getForeignFieldName(); ?>;
       }
 
-      $this->setDefault('<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list', $values);
+      $this->setDefault('<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list', $values);
     }
 
 <?php endforeach; ?>
@@ -78,20 +77,20 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
   {
     parent::doSave($con);
 
-<?php foreach ($this->getManyToManyTables() as $tables): ?>
-    $this->save<?php echo $tables['middleTable']->getOption('name') ?>List($con);
+<?php foreach ($this->getManyToManyRelations() as $relation): ?>
+    $this->save<?php echo $relation['refTable']->getOption('name') ?>List($con);
 <?php endforeach; ?>
   }
 
-<?php foreach ($this->getManyToManyTables() as $tables): ?>
-  public function save<?php echo $tables['middleTable']->getOption('name') ?>List($con = null)
+<?php foreach ($this->getManyToManyRelations() as $relation): ?>
+  public function save<?php echo $relation['refTable']->getOption('name') ?>List($con = null)
   {
     if (!$this->isValid())
     {
       throw $this->getErrorSchema();
     }
 
-    if (!isset($this->widgetSchema['<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list']))
+    if (!isset($this->widgetSchema['<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list']))
     {
       // somebody has unset this widget
       return;
@@ -102,18 +101,20 @@ class Base<?php echo $this->table->getOption('name') ?>Form extends BaseFormDoct
       $con = $this->getConnection();
     }
 
-    $c = new Criteria();
-    $c->add(<?php echo $tables['middleTable']->getOption('name') ?>Peer::<?php echo strtoupper($tables['column']->getColumnName()) ?>, $this->object->getPrimaryKey());
-    <?php echo $tables['middleTable']->getOption('name') ?>Peer::doDelete($c, $con);
+    $q = Doctrine_Query::create()
+          ->delete()
+          ->from('<?php echo $relation['refTable']->getOption('name') ?> r')
+          ->where('r.<?php echo $relation->getLocalFieldName() ?>', $this->object->identifier())
+          ->execute();
 
-    $values = $this->getValue('<?php echo $this->underscore($tables['middleTable']->getOption('name')) ?>_list');
+    $values = $this->getValue('<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list');
     if (is_array($values))
     {
       foreach ($values as $value)
       {
-        $obj = new <?php echo $tables['middleTable']->getOption('name') ?>();
-        $obj->set<?php echo $tables['column']->getOption('name') ?>($this->object->getPrimaryKey());
-        $obj->set<?php echo $tables['relatedColumn']->getOption('name') ?>($value);
+        $obj = new <?php echo $relation['refTable']->getOption('name') ?>();
+        $obj-><?php echo $relation->getLocalFieldName() ?> = $this->object->getPrimaryKey();
+        $obj-><?php echo $relation->getForeignFieldName() ?> = $value;
         $obj->save();
       }
     }

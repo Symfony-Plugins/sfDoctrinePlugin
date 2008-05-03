@@ -25,8 +25,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
 
   protected function loadMapBuilderClasses()
   {
-    $conn = Doctrine_Manager::getInstance()->openConnection('mock://no-one@localhost/empty', null, false);
-    $this->table = $conn->getTable($this->getClassName());
+    $this->table = Doctrine::getTable($this->getClassName());
   }
 
   protected function getTable()
@@ -53,7 +52,7 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     }
   }
 
-  public function getColumns($paramName, $category='NONE')
+  public function getColumns($paramName, $category = 'NONE')
   {
     $columns = parent::getColumns($paramName, $category);
 

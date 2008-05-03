@@ -21,6 +21,7 @@
 class sfDoctrineFormGenerator extends sfGenerator
 {
   public $models = array();
+  public $pluginModels = array();
 
   /**
    * Initializes the current sfGenerator instance.
@@ -31,6 +32,7 @@ class sfDoctrineFormGenerator extends sfGenerator
   {
     parent::initialize($generatorManager);
 
+    $this->getPluginModels();
     $this->setGeneratorClass('sfDoctrineForm');
   }
 
@@ -61,7 +63,6 @@ class sfDoctrineFormGenerator extends sfGenerator
     }
 
     $models = $this->loadModels();
-    $files = Doctrine::getLoadedModelFiles();
 
     // create the project base class for all forms
     $file = sfConfig::get('sf_lib_dir').'/form/BaseFormDoctrine.class.php';
@@ -80,9 +81,13 @@ class sfDoctrineFormGenerator extends sfGenerator
     {
       $this->table = Doctrine::getTable($model);
 
-      $baseDir = dirname($files[$model]);
-      // FIXME: ewwwww. please how can we do this differently?
-      $baseDir = str_replace('model', 'form', $baseDir);
+      if ($this->isPluginModel($model))
+      {
+        $baseDir = sfConfig::get('sf_plugins_dir') . '/' . $this->getPluginNameForModel($model) . '/lib/form/doctrine';
+      } else {
+        $baseDir = sfConfig::get('sf_lib_dir') . '/form/doctrine';
+      }
+
       if (!is_dir($baseDir.'/base'))
       {
         mkdir($baseDir.'/base', 0777, true);
@@ -96,27 +101,64 @@ class sfDoctrineFormGenerator extends sfGenerator
     }
   }
 
+  public function getPluginModels()
+  {
+    if (!$this->pluginModels)
+    {
+      $dirs = $this->generatorManager->getConfiguration()->getModelDirs();
+      unset($dirs[0]);
+      $dirs = array_values($dirs);
+
+      $models = sfFinder::type('*.php')->in($dirs);
+      foreach ($models as $path)
+      {
+        $info = pathinfo($path);
+        $pluginName = explode(DIRECTORY_SEPARATOR, dirname(dirname(dirname($info['dirname']))));
+        $pluginName = end($pluginName);
+
+        $e = explode('.', $info['filename']);
+        $modelName = substr($e[0], 6, strlen($e[0]));
+
+        $this->pluginModels[$modelName] = $pluginName;
+      }
+    }
+
+    return $this->pluginModels;
+  }
+
+  public function isPluginModel($modelName)
+  {
+    return isset($this->pluginModels[$modelName]) ? true:false;
+  }
+
+  public function getPluginNameForModel($modelName)
+  {
+    if ($this->isPluginModel($modelName))
+    {
+      return $this->pluginModels[$modelName];
+    } else {
+      return false;
+    }
+  }
+
   /**
-   * Returns an array of tables that represents a many to many relationship.
+   * Returns an array of relations that represents a many to many relationship.
    *
    * A table is considered to be a m2m table if it has 2 foreign keys that are also primary keys.
    *
-   * @return array An array of tables.
+   * @return array An array of relations.
    */
-  public function getManyToManyTables()
+  public function getManyToManyRelations()
   {
-    $tables = array();
+    $relations = array();
     foreach ($this->table->getRelations() as $relation)
     {
-      print_r($relation->toArray());
-      exit;
-      $tables[] = array(
-        'middleTable'   => $table,
-        'relatedTable'  => $this->getForeignTable($relatedColumn),
-        'column'        => $column,
-        'relatedColumn' => $relatedColumn,
-      );
+      if ($relation->getType() === Doctrine_Relation::MANY && isset($relation['refTable']))
+      {
+        $relations[] = $relation;
+      }
     }
+    return $relations;
   }
 
   /**
@@ -135,13 +177,13 @@ class sfDoctrineFormGenerator extends sfGenerator
     $names = array();
     foreach ($this->table->getColumns() as $column)
     {
-      if (!$column->isPrimaryKey() && $column->isForeignKey())
+      if (!$this->isColumnPrimaryKey() && $column->isForeignKey())
       {
-        $names[] = array($this->getForeignTable($column)->getOption('name'), $column->getOption('name'), $column->isNotNull(), false);
+        $names[] = array($this->getForeignTable($column)->getOption('name'), $column->getOption('name'), $this->isColumnNotNull($column), false);
       }
     }
 
-    foreach ($this->getManyToManyTables() as $tables)
+    foreach ($this->getManyToManyRelations() as $tables)
     {
       $names[] = array($tables['relatedTable']->getOption('name'), $tables['middleTable']->getOption('name'), false, true);
     }
@@ -158,23 +200,11 @@ class sfDoctrineFormGenerator extends sfGenerator
   {
     foreach ($this->table->getColumns() as $column)
     {
-      if ($column->isPrimaryKey())
+      if ($this->isColumnPrimaryKey())
       {
         return $column;
       }
     }
-  }
-
-  /**
-   * Returns the foreign table associated with a column.
-   *
-   * @param  ColumnMap A ColumnMap object
-   *
-   * @return TableMap  A TableMap object
-   */
-  public function getForeignTable(ColumnMap $column)
-  {
-    return $this->dbMap->getTable($column->getRelatedTableName());
   }
 
   /**
@@ -184,39 +214,56 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfWidgetForm
    */
-  public function getWidgetClassForColumn(ColumnMap $column)
+  public function getWidgetClassForColumn($column)
   {
-    switch ($column->getCreoleType())
+    switch ($column['type'])
     {
-      case CreoleTypes::BOOLEAN:
+      case 'boolean':
         $name = 'InputCheckbox';
         break;
-      case CreoleTypes::LONGVARCHAR:
+      case 'glob':
+      case 'clob':
         $name = 'Textarea';
         break;
-      case CreoleTypes::DATE:
+      case 'date':
         $name = 'Date';
         break;
-      case CreoleTypes::TIME:
+      case 'time':
         $name = 'Time';
         break;
-      case CreoleTypes::TIMESTAMP:
+      case 'timestamp':
         $name = 'DateTime';
         break;
       default:
         $name = 'Input';
     }
 
-    if ($column->isPrimaryKey())
+
+    if ($this->isColumnPrimaryKey($column))
     {
       $name = 'InputHidden';
     }
-    else if ($column->isForeignKey())
+    else if ($this->isColumnForeignKey($column))
     {
       $name = 'DoctrineSelect';
     }
 
     return sprintf('sfWidgetForm%s', $name);
+  }
+
+  public function isColumnForeignKey($column)
+  {
+    return false;
+  }
+
+  public function isColumnPrimaryKey($column)
+  {
+    return (isset($column['primary']) && $column['primary']);
+  }
+
+  public function isColumnNotNull($column)
+  {
+    return (isset($column['notnull']) && $column['notnull']);
   }
 
   /**
@@ -226,13 +273,13 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The options to pass to the widget as a PHP string
    */
-  public function getWidgetOptionsForColumn(ColumnMap $column)
+  public function getWidgetOptionsForColumn($column)
   {
     $options = array();
 
-    if (!$column->isPrimaryKey() && $column->isForeignKey())
+    if (!isset($column['primary']) && $this->isColumnForeignKey($column))
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($column)->getOption('name'), $column->isNotNull() ? 'false' : 'true');
+      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($column)->getOption('name'), isset($column['notnull']) ? 'false' : 'true');
     }
 
     return count($options) ? sprintf('array(%s)', implode(', ', $options)) : '';
@@ -245,46 +292,40 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfValidator
    */
-  public function getValidatorClassForColumn(ColumnMap $column)
+  public function getValidatorClassForColumn($column)
   {
-    switch ($column->getCreoleType())
+    switch ($column['type'])
     {
-      case CreoleTypes::BOOLEAN:
+      case 'boolean':
         $name = 'Boolean';
         break;
-      case CreoleTypes::CHAR:
-      case CreoleTypes::VARCHAR:
-      case CreoleTypes::LONGVARCHAR:
+      case 'string':
+      case 'clob':
+      case 'glob':
         $name = 'String';
         break;
-      case CreoleTypes::DOUBLE:
-      case CreoleTypes::FLOAT:
-      case CreoleTypes::NUMERIC:
-      case CreoleTypes::DECIMAL:
-      case CreoleTypes::REAL:
+      case 'float':
+      case 'decimal':
+      case 'integer':
         $name = 'Number';
         break;
-      case CreoleTypes::INTEGER:
-      case CreoleTypes::SMALLINT:
-      case CreoleTypes::TINYINT:
-      case CreoleTypes::BIGINT:
-      case CreoleTypes::YEAR:
+      case 'integer':
         $name = 'Integer';
         break;
-      case CreoleTypes::DATE:
+      case 'date':
         $name = 'Date';
         break;
-      case CreoleTypes::TIME:
+      case 'time':
         $name = 'Time';
         break;
-      case CreoleTypes::TIMESTAMP:
+      case 'timestamp':
         $name = 'DateTime';
         break;
       default:
         $name = 'Pass';
     }
 
-    if ($column->isPrimaryKey() || $column->isForeignKey())
+    if ($this->isColumnPrimaryKey($column) || $this->isColumnForeignKey($column))
     {
       $name = 'DoctrineChoice';
     }
@@ -299,34 +340,32 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The options to pass to the validator as a PHP string
    */
-  public function getValidatorOptionsForColumn(ColumnMap $column)
+  public function getValidatorOptionsForColumn($name, $column)
   {
     $options = array();
 
-    if ($column->isForeignKey())
+    if ($this->isColumnForeignKey($column))
     {
       $options[] = sprintf('\'model\' => \'%s\'', $this->getForeignTable($column)->getOption('name'));
     }
-    else if ($column->isPrimaryKey())
+    else if ($this->isColumnPrimaryKey($column))
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $column->getTable()->getOption('name'), $column->getOption('name'));
+      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->table->getOption('name'), $name);
     }
     else
     {
-      switch ($column->getCreoleType())
+      switch ($column['type'])
       {
-        case CreoleTypes::CHAR:
-        case CreoleTypes::VARCHAR:
-        case CreoleTypes::LONGVARCHAR:
-          if ($column->getSize())
+        case 'string':
+          if ($column['length'])
           {
-            $options[] = sprintf('\'max_length\' => %s', $column->getSize());
+            $options[] = sprintf('\'max_length\' => %s', $column['length']);
           }
           break;
       }
     }
 
-    if (!$column->isNotNull() || $column->isPrimaryKey())
+    if (!$this->isColumnNotNull($column) || $this->isColumnPrimaryKey())
     {
       $options[] = '\'required\' => false';
     }
@@ -350,9 +389,9 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
     }
 
-    foreach ($this->getManyToManyTables() as $tables)
+    foreach ($this->getManyToManyRelations() as $tables)
     {
-      if (($m = strlen($this->underscore($tables['middleTable']->getOption('name')).'_list')) > $max)
+      if (($m = strlen($this->underscore($tables['refTable']->getOption('name')).'_list')) > $max)
       {
         $max = $m;
       }
@@ -417,6 +456,6 @@ class sfDoctrineFormGenerator extends sfGenerator
                                     Doctrine::MODEL_LOADING_CONSERVATIVE);
     $models =  Doctrine::initializeModels($models);
     $this->models = Doctrine::filterInvalidModels($models);
-    return $models;
+    return $this->models;
   }
 }
