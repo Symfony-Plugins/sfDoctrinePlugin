@@ -71,7 +71,10 @@ EOF;
 
     $loadDataOptions = array();
     $loadDataOptions[] = '--env='.$options['env'];
-    $loadDataOptions[] = '--dir='.$options['dir'];
+    if (!empty($options['dir']))
+    {
+      $loadDataOptions[] = '--dir=' . implode(' --dir=', $options['dir']);
+    }
     if (isset($options['append']) && $options['append'])
     {
       $loadDataOptions[] = '--append';

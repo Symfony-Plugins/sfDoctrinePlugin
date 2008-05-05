@@ -387,7 +387,7 @@ $dateArg = "\$this->filters['{$column->getName()}']['%s']";
   {
     if ($sort_column = $this->getUser()->getAttribute('sort', null, 'sf_admin/<?php echo $this->getSingularName() ?>/sort'))
     {
-      $table = okgetTable('<?php echo $this->getClassName()?>');
+      $table = Doctrine::getTable('<?php echo $this->getClassName()?>');
       $colNames = array_keys($table->getColumns());
       if (!in_array($sort_column, $colNames)) // illegal column name
         return;

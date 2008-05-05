@@ -112,7 +112,18 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
       $message .= ' - ('.implode(', ', $params) . ' )';
     }
 
-    sfContext::getInstance()->getLogger()->log($message);
+    if (sfContext::hasInstance())
+    {
+      sfContext::getInstance()->getLogger()->log($message);
+    } else {
+      $config = sfProjectConfiguration::getActive();
+      sfContext::createInstance($config);
+      $logger = sfContext::getInstance()->getLogger();
+      $config->getEventDispatcher()->connect('command.log', array($logger, 'listenToLogEvent'));
+    }
+
+    //sfProjectConfiguration::getActive()->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array($message)));
+    //sfContext::getInstance()->getLogger()->log($message);
     $sqlTimer = sfTimerManager::getTimer('Database (Doctrine)');
   }
 

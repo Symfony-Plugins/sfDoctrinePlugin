@@ -19,12 +19,12 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 
   public function executeList ()
   {
-  	$this-><?php echo $this->getPluralName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->findAll();
+  	$this-><?php echo $this->getPluralName() ?> = Doctrine::getTableable('<?php echo $this->getClassName() ?>')->findAll();
   }
 
   public function executeShow ()
   {
-    $this-><?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
+    $this-><?php echo $this->getSingularName() ?> = Doctrine::getTableable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
     $this->forward404Unless($this-><?php echo $this->getSingularName() ?>);
   }
 
@@ -36,13 +36,13 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 
   public function executeEdit ()
   {
-    $this-><?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
+    $this-><?php echo $this->getSingularName() ?> = Doctrine::getTableable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
     $this->forward404Unless($this-><?php echo $this->getSingularName() ?>);
   }
 
   public function executeDelete ()
   {
-    $this-><?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
+    $this-><?php echo $this->getSingularName() ?> = Doctrine::getTableable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);    
     
     $this->forward404Unless($this-><?php echo $this->getSingularName() ?>);
 
@@ -66,7 +66,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     }
     else
     {
-      $<?php echo $this->getSingularName() ?> = Doctrine_Manager::getInstance()->getTable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);
+      $<?php echo $this->getSingularName() ?> = Doctrine::getTableable('<?php echo $this->getClassName() ?>')->find(<?php echo $this->getRetrieveByPkParamsForAction('') ?>);
       $this->forward404Unless($<?php echo $this->getSingularName() ?>);
     }
 
