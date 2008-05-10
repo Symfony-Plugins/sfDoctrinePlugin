@@ -78,9 +78,9 @@ class sfDoctrinePager extends sfPager implements Serializable
     }
     else
     {
-      $this->setLastPage(ceil($this->getNbResults() / $this->getMaxPerPage()));
-
       $offset = ($this->getPage() - 1) * $this->getMaxPerPage();
+
+      $this->setLastPage(ceil($this->getNbResults() / $this->getMaxPerPage()));
 
       $p->offset($offset);
       $p->limit($this->getMaxPerPage());
