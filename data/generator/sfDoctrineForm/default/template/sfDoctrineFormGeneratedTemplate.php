@@ -64,7 +64,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
       $values = array();
       foreach ($this->object-><?php echo $relation['alias']; ?> as $obj)
       {
-        $values[] = $obj-><?php echo $relation->getForeignFieldName(); ?>;
+        $values[] = current($obj->identifier());
       }
 
       $this->setDefault('<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list', $values);
