@@ -30,6 +30,7 @@ class sfDoctrineRebuildDbTask extends sfDoctrineBaseTask
 
     $this->addOptions(array(
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database')
     ));
 
     $this->aliases = array('doctrine-rebuild-db');
@@ -51,7 +52,20 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $databaseManager = new sfDatabaseManager($this->configuration);
-    $this->callDoctrineCli('rebuild-db');
+    $dropDb = new sfDoctrineDropDbTask($this->dispatcher, $this->formatter);
+    $dropDb->setCommandApplication($this->commandApplication);
+
+    $dropDbOptions = array();
+    $dropDbOptions[] = '--env='.$options['env'];
+    if (isset($options['force']) && $options['force'])
+    {
+      $dropDbOptions[] = '--force';
+    }
+
+    $dropDb->run(array('application' => $arguments['application']), $dropDbOptions);
+
+    $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
+    $buildAll->setCommandApplication($this->commandApplication);
+    $buildAll->run(array('application' => $arguments['application']), array('--env='.$options['env']));
   }
 }
