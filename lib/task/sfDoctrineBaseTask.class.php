@@ -55,6 +55,15 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
                     'sql_path'            =>  $sql,
                     'yaml_schema_path'    =>  $yaml);
 
+    foreach ($config as $dir)
+    {
+      $dirs = (array) $dir;
+      foreach ($dirs as $dir)
+      {
+        Doctrine_Lib::makeDirectories($dir);
+      }
+    }
+
     return $config;
   }
 
