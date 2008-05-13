@@ -246,42 +246,42 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfWidgetForm
    */
-  public function getWidgetClassForColumn($name)
+  public function getWidgetClassForColumn($columnName)
   {
-    $column = $this->table->getDefinitionOf($name);
+    $column = $this->table->getDefinitionOf($columnName);
     switch ($column['type'])
     {
       case 'boolean':
-        $name = 'InputCheckbox';
+        $widgetSubclass = 'InputCheckbox';
         break;
       case 'glob':
       case 'clob':
-        $name = 'Textarea';
+        $widgetSubclass = 'Textarea';
         break;
       case 'date':
-        $name = 'Date';
+        $widgetSubclass = 'Date';
         break;
       case 'time':
-        $name = 'Time';
+        $widgetSubclass = 'Time';
         break;
       case 'timestamp':
-        $name = 'DateTime';
+        $widgetSubclass = 'DateTime';
         break;
       default:
-        $name = 'Input';
+        $widgetSubclass = 'Input';
     }
 
 
-    if ($this->isColumnPrimaryKey($name))
+    if ($this->isColumnPrimaryKey($columnName))
     {
-      $name = 'InputHidden';
+      $widgetSubclass = 'InputHidden';
     }
-    else if ($this->isColumnForeignKey($name))
+    else if ($this->isColumnForeignKey($columnName))
     {
-      $name = 'DoctrineSelect';
+      $widgetSubclass = 'DoctrineSelect';
     }
 
-    return sprintf('sfWidgetForm%s', $name);
+    return sprintf('sfWidgetForm%s', $widgetSubclass);
   }
 
   /**
@@ -372,46 +372,46 @@ class sfDoctrineFormGenerator extends sfGenerator
    *
    * @return string    The name of a subclass of sfValidator
    */
-  public function getValidatorClassForColumn($colName)
+  public function getValidatorClassForColumn($columnName)
   {
-    $column = $this->table->getDefinitionOf($colName);
+    $column = $this->table->getDefinitionOf($columnName);
     switch ($column['type'])
     {
       case 'boolean':
-        $name = 'Boolean';
+        $validatorSubclass = 'Boolean';
         break;
       case 'string':
       case 'clob':
       case 'glob':
-        $name = 'String';
+        $validatorSubclass = 'String';
         break;
       case 'float':
       case 'decimal':
       case 'integer':
-        $name = 'Number';
+        $validatorSubclass = 'Number';
         break;
       case 'integer':
-        $name = 'Integer';
+        $validatorSubclass = 'Integer';
         break;
       case 'date':
-        $name = 'Date';
+        $validatorSubclass = 'Date';
         break;
       case 'time':
-        $name = 'Time';
+        $validatorSubclass = 'Time';
         break;
       case 'timestamp':
-        $name = 'DateTime';
+        $validatorSubclass = 'DateTime';
         break;
       default:
-        $name = 'Pass';
+        $validatorSubclass = 'Pass';
     }
 
-    if ($this->isColumnPrimaryKey($colName) || $this->isColumnForeignKey($colName))
+    if ($this->isColumnPrimaryKey($columnName) || $this->isColumnForeignKey($columnName))
     {
-      $name = 'DoctrineChoice';
+      $validatorSubclass = 'DoctrineChoice';
     }
 
-    return sprintf('sfValidator%s', $name);
+    return sprintf('sfValidator%s', $validatorSubclass);
   }
 
   /**
