@@ -25,9 +25,14 @@ class sfDoctrineMigrateTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
+      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('version', sfCommandArgument::OPTIONAL, 'The version to migrate to', null),
     ));
-    
+
+    $this->addOptions(array(
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+    ));
+
     $this->aliases = array('doctrine-migrate');
     $this->namespace = 'doctrine';
     $this->name = 'migrate';
@@ -45,6 +50,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $databaseManager = new sfDatabaseManager($this->configuration);
+
     $this->callDoctrineCli('migrate', array('version' => $arguments['version']));
   }
 }
