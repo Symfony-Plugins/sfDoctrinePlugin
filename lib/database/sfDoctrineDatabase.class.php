@@ -116,7 +116,7 @@ class sfDoctrineDatabase extends sfDatabase
 
     $attributes = $config['global_attributes'];
 
-    $this->setAttributes($attributes);
+    $this->setAttributes($attributes, true);
 
     $connectionAttributesName = $name.'_attributes';
     if (isset($config[$connectionAttributesName]))
@@ -128,16 +128,22 @@ class sfDoctrineDatabase extends sfDatabase
   }
 
   /**
-   * Set the passed attributes on the connection
+   * Set the passed attributes on the Doctrine_Manager or Doctrine_Connection
    *
-   * @param array $attributes
+   * @param  array   $attributes
+   * @param  boolean $global
    * @return void
    */
-  protected function setAttributes($attributes)
+  protected function setAttributes($attributes, $global = false)
   {
     foreach($attributes as $k => $v)
     {
-      $this->doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
+      if ($global)
+      {
+        Doctrine_Manager::getInstance()->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
+      } else {
+        $this->doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
+      }
     }
   }
 
