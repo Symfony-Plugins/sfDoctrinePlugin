@@ -292,6 +292,11 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function isColumnForeignKey($name)
   {
+    if ($this->isColumnPrimaryKey($name))
+    {
+      return false;
+    }
+
     foreach ($this->table->getRelations() as $relation)
     {
       if ($relation['local'] == $name)
