@@ -29,7 +29,6 @@
 abstract class sfFormDoctrine extends sfForm
 {
   protected
-    $isNew    = true,
     $cultures = array(),
     $object   = null;
 
@@ -57,7 +56,6 @@ abstract class sfFormDoctrine extends sfForm
       }
 
       $this->object = $object;
-      $this->isNew = $this->object->exists();
     }
 
     parent::__construct(array(), $options, $CSRFSecret);
@@ -87,7 +85,7 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function isNew()
   {
-    return $this->object->exists();
+    return !$this->object->exists();
   }
 
   /**
@@ -306,7 +304,7 @@ abstract class sfFormDoctrine extends sfForm
   protected function updateDefaultsFromObject()
   {
     // update defaults for the main object
-    if ($this->isNew)
+    if ($this->isNew())
     {
       $this->setDefaults(array_merge($this->object->toArray(BasePeer::TYPE_FIELDNAME), $this->getDefaults()));
     }
@@ -321,7 +319,7 @@ abstract class sfFormDoctrine extends sfForm
       $method = sprintf('getCurrent%s', $this->getI18nModelName());
       foreach ($this->cultures as $culture)
       {
-        if ($this->isNew)
+        if ($this->isNew())
         {
           $this->setDefault($culture, array_merge($this->object->$method($culture)->toArray(BasePeer::TYPE_FIELDNAME), $this->getDefault($culture)));
         }
