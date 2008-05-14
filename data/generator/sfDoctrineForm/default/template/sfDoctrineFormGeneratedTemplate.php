@@ -104,7 +104,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
     $q = Doctrine_Query::create()
           ->delete()
           ->from('<?php echo $relation['refTable']->getOption('name') ?> r')
-          ->where('r.<?php echo $relation->getLocalFieldName() ?>', $this->object->identifier())
+          ->where('r.<?php echo $relation->getLocalFieldName() ?>', current($this->object->identifier()))
           ->execute();
 
     $values = $this->getValue('<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list');
@@ -113,7 +113,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
       foreach ($values as $value)
       {
         $obj = new <?php echo $relation['refTable']->getOption('name') ?>();
-        $obj-><?php echo $relation->getLocalFieldName() ?> = $this->object->getPrimaryKey();
+        $obj-><?php echo $relation->getLocalFieldName() ?> = current($this->object->identifier());
         $obj-><?php echo $relation->getForeignFieldName() ?> = $value;
         $obj->save();
       }
