@@ -67,8 +67,9 @@ EOF;
 
    	foreach ($pluginSchemas as $schema)
    	{
-   	  $plugin = str_replace(sfConfig::get('sf_plugins_dir') . '/', '', $schema);
-   	  $e = explode('/', $plugin);
+   	  $schema = str_replace('/', DIRECTORY_SEPARATOR, $schema);
+   	  $plugin = str_replace(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR, '', $schema);
+   	  $e = explode(DIRECTORY_SEPARATOR, $plugin);
    	  $plugin = $e[0];
    	  $name = basename($schema);
 
