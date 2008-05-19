@@ -22,6 +22,7 @@
  *                                                exists in the database.
  *
  * @package    sfDoctrinePlugin
+ * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id$
  */
@@ -54,8 +55,8 @@ class sfDoctrineUniqueValidator extends sfValidator
       }
     }
 
-    $query = new Doctrine_Query();
-    $query->from($className);
+    $query = Doctrine_Query::create()
+              ->from($className);
 
     if ($primaryKeyValue === null)
     {
@@ -66,7 +67,7 @@ class sfDoctrineUniqueValidator extends sfValidator
       $res = $query->execute(array($value, $primaryKeyValue));
     }
 
-    if (sizeof($res))
+    if ($res->count())
     {
       $error = $this->getParameterHolder()->get('unique_error');
 
@@ -84,7 +85,7 @@ class sfDoctrineUniqueValidator extends sfValidator
    *
    * @return bool true, if initialization completes successfully, otherwise false.
    */
-  public function initialize ($context, $parameters = null)
+  public function initialize($context, $parameters = null)
   {
     // initialize parent
     parent::initialize($context);
