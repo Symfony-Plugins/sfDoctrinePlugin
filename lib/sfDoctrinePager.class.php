@@ -136,7 +136,9 @@ class sfDoctrinePager extends sfPager implements Serializable
     $p = $this->getQuery();
 
     if ($fetchtype == 'array')
+    {
       return $p->execute(array(), Doctrine::FETCH_ARRAY);
+    }
 
     return $p->execute();
   }
