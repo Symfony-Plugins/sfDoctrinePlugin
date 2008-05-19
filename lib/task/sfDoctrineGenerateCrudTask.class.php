@@ -61,6 +61,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $databaseManager = new sfDatabaseManager($this->configuration);
+
     // generate module
     $tmpDir = sfConfig::get('sf_cache_dir').'tmp'.DIRECTORY_SEPARATOR.md5(uniqid(rand(), true));
     sfConfig::set('sf_module_cache_dir', $tmpDir);
