@@ -104,7 +104,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
     $q = Doctrine_Query::create()
           ->delete()
           ->from('<?php echo $relation['refTable']->getOption('name') ?> r')
-          ->where('r.<?php echo $relation->getLocalFieldName() ?>', current($this->object->identifier()))
+          ->where('r.<?php echo $relation->getLocalFieldName() ?> = ?', current($this->object->identifier()))
           ->execute();
 
     $values = $this->getValue('<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list');
