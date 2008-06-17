@@ -75,7 +75,7 @@ class sfValidatorDoctrineChoice extends sfValidatorBase
     }
     else
     {
-      $identifier = $table->getIdentifier();
+      $identifier = (array) $table->getIdentifier();
       $columnName = current($identifier);
     }
 
