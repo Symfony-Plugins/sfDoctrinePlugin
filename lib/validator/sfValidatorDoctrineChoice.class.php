@@ -47,7 +47,7 @@ class sfValidatorDoctrineChoice extends sfValidatorBase
   {
     $q = is_null($this->getOption('query')) ? Doctrine_Query::create() : $this->getOption('query');
     $q->from($this->getOption('model') . ' a')
-      ->addWhere('a.' . $this->getColumn(), $value);
+      ->addWhere('a.' . $this->getColumn() . ' = ?', $value);
 
     $object = $q->fetchOne();
     

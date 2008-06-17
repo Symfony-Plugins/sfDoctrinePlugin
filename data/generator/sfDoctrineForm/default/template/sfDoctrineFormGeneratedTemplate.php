@@ -41,17 +41,6 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
   {
     return '<?php echo $this->modelName ?>';
   }
-<?php if ($this->isI18n()): ?>
-  public function getI18nModelName()
-  {
-    return '<?php echo $this->getI18nModel() ?>';
-  }
-
-  public function getI18nFormClass()
-  {
-    return '<?php echo $this->getI18nModel() ?>Form';
-  }
-<?php endif; ?>
 
 <?php if ($this->getManyToManyRelations()): ?>
   public function updateDefaultsFromObject()
