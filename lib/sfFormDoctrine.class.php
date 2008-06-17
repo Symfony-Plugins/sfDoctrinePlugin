@@ -266,6 +266,12 @@ abstract class sfFormDoctrine extends sfForm
    */
   protected function updateDefaultsFromObject()
   {
+    if ($this->isI18n() && !isset($this->Translation))
+    {
+      // lazy load translations
+      $this->getObject()->loadReference('Translation');
+    }
+
     // update defaults for the main object
     if ($this->isNew())
     {
