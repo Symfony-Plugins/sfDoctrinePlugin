@@ -77,7 +77,7 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
     {
       $colName = $table->getColumnName($column);
 
-      $q->addWhere('a.' . $colName, $values[$column]);
+      $q->addWhere('a.' . $colName . ' = ?', $values[$column]);
     }
 
     $object = $q->fetchOne();
