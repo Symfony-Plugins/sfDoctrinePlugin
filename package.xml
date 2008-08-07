@@ -10,17 +10,17 @@
   <email>jonwage@gmail.com</email>
   <active>yes</active>
  </lead>
- <date>2008-08-05</date>
- <time>16:11:03</time>
+ <date>2008-08-07</date>
+ <time>08:54:10</time>
  <version>
-  <release>1.0.0</release>
-  <api>1.0</api>
+  <release>2.0.0</release>
+  <api>1.1</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
- <license uri="http://www.symfony-project.com/license">MIT license</license>
+ <license uri="http://svn.symfony-project.com/plugins/sfDoctrinePlugin/trunk/LICENSE">MIT license</license>
  <notes>-</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -442,7 +442,7 @@
    <file baseinstalldir="/" md5sum="e792be43dd5829772cf0bcc21fc3198d" name="lib/widget/sfWidgetFormDoctrineSelect.class.php" role="php" />
    <file baseinstalldir="/" md5sum="c2358480ecb594d7663dbdc1c70f82a7" name="lib/widget/sfWidgetFormDoctrineSelectMany.class.php" role="php" />
    <file baseinstalldir="/" md5sum="80471cf84254400024258aca8bbce630" name="LICENSE" role="data" />
-   <file baseinstalldir="/" md5sum="36e8e36668bbb90f2aa8def7f6ef737a" name="README" role="data" />
+   <file baseinstalldir="/" md5sum="9b298104334f820ddb26318b8dd58b2d" name="README" role="data" />
   </dir>
  </contents>
  <dependencies>
@@ -463,4 +463,19 @@
   </required>
  </dependencies>
  <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>2.0.0</release>
+    <api>1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-08-07</date>
+   <license uri="http://svn.symfony-project.com/plugins/sfDoctrinePlugin/trunk/LICENSE">MIT license</license>
+   <notes>-</notes>
+  </release>
+ </changelog>
 </package>
