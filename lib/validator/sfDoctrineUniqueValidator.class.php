@@ -58,7 +58,7 @@ class sfDoctrineUniqueValidator extends sfValidator
     $query = Doctrine_Query::create()
               ->from($className);
 
-    if ($primaryKeyValue === null)
+    if ($primaryKeyValue == null)
     {
       $query->where($columnName.' = ?');
       $res = $query->execute(array($value));
