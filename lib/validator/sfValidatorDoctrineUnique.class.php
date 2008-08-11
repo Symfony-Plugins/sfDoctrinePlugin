@@ -104,7 +104,7 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
     // check each primary key column
     foreach ($this->getPrimaryKeys() as $column)
     {
-      if ($object->$column != $values[$column])
+      if (!isset($values[$column]) || $object->$column != $values[$column])
       {
         return false;
       }
