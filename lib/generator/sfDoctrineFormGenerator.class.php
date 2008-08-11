@@ -392,7 +392,6 @@ class sfDoctrineFormGenerator extends sfGenerator
         break;
       case 'float':
       case 'decimal':
-      case 'integer':
         $validatorSubclass = 'Number';
         break;
       case 'integer':
