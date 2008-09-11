@@ -66,7 +66,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getDoctrineType()
+  public function getDoctrineType()
   {
     return isset($this->column['type']) ? $this->column['type'] : null;
   }
@@ -76,7 +76,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getCreoleType()
+  public function getCreoleType()
   {
     $dType = $this->getDoctrineType();
 
@@ -94,7 +94,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getSize()
+  public function getSize()
   {
     return $this->column['length'];
   }
@@ -104,11 +104,12 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function isNotNull()
+  public function isNotNull()
   {
-    //FIXME THIS NEEDS TO BE UPDATE-but I don't know the format for the column array
-    if (isset($this->column[2]['notnull']))
-      return $this->column[2]['notnull'];
+    if (isset($this->column['notnull']))
+    {
+      return $this->column['notnull'];
+    }
     return false;
   }
 
@@ -117,10 +118,12 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function isPrimaryKey()
+  public function isPrimaryKey()
   {
     if (isset($this->column['primary']))
+    {
       return $this->column['primary'];
+    }
     return false;
   }
 
@@ -130,7 +133,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    * @param string $newName
    * @return void
    */
-  function setRelatedClassName($newName)
+  public function setRelatedClassName($newName)
   {
     $this->relatedClassName = $newName;
   }
@@ -140,7 +143,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getRelatedClassName()
+  public function getRelatedClassName()
   {
     return $this->relatedClassName;
   }
@@ -151,7 +154,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    * @param string $newName
    * @return void
    */
-  function setColumnName($newName)
+  public function setColumnName($newName)
   {
     $this->columnName = $newName;
   }
@@ -161,7 +164,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getColumnName()
+  public function getColumnName()
   {
     return $this->columnName;
   }
@@ -172,7 +175,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    * @param string $col
    * @return void
    */
-  function setColumnInfo($col)
+  public function setColumnInfo($col)
   {
     $this->column = $col;
   }
@@ -185,7 +188,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    * @param string $newName
    * @return void
    */
-  function setName($newName)
+  public function setName($newName)
   {
     $this->name = $newName;
   }
@@ -195,7 +198,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function getName()
+  public function getName()
   {
     if (isset($this->name))
     {
@@ -210,7 +213,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    *
    * @return void
    */
-  function isForeignKey()
+  public function isForeignKey()
   {
     return isset($this->relatedClassName);
   }
