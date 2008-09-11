@@ -124,13 +124,14 @@ abstract class sfFormDoctrine extends sfForm
    * Binds the current form and save the to the database in one step.
    *
    * @param  array      An array of tainted values to use to bind the form
+   * @param  array      An array of uploaded files (in the $_FILES or $_GET format)
    * @param  Connection An optional Doctrine Connection object
    *
    * @return Boolean    true if the form is valid, false otherwise
    */
-  public function bindAndSave($taintedValues, $con = null)
+  public function bindAndSave($taintedValues, $taintedFiles, $con = null)
   {
-    $this->bind($taintedValues);
+    $this->bind($taintedValues, $taintedFiles);
     if ($this->isValid())
     {
       $this->save($con);
