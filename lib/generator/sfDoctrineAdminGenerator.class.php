@@ -82,4 +82,39 @@ class sfDoctrineAdminGenerator extends sfDoctrineCrudGenerator
 
     return parent::getColumnEditTag($column, $params);
   }
+  
+  /**
+   * Get php code for column filter tag
+   *
+   * @param string $column 
+   * @param string $params 
+   * @return string $columnFilterTag
+   */
+  public function getColumnFilterTag($column, $params = array())
+  {
+    $defaultValue = "isset(\$filters['".$column->getName()."']) ? \$filters['".$column->getName()."'] : null";
+    $unquotedName = 'filters['.$column->getName().']';
+    $name = "'$unquotedName'";
+    if ($column->getDoctrineType() == 'enum')
+    {
+      $enumValues = $this->getTable()->getEnumValues($column->getName());
+      $enumValues = $this->getObjectTagParams(array_combine($enumValues, $enumValues));
+      $defaultIncludeCustom = '__("indifferent")';
+      $optionParams = $this->getObjectTagParams($params, array('include_custom' => $defaultIncludeCustom));
+      // little hack
+      $optionParams = preg_replace("/'".preg_quote($defaultIncludeCustom)."'/", $defaultIncludeCustom, $optionParams);
+      $params = $this->getObjectTagParams($params);
+      
+      return "select_tag($name, options_for_select($enumValues, $defaultValue, $optionParams), $params)";
+    }
+    else if ($column->getDoctrineType() == 'clob')
+    {
+      $size = ($column->getSize() < 15 ? $column->getSize() : 15);
+      $params = $this->getObjectTagParams($params, array('size' => $size));
+      return "input_tag($name, $defaultValue, $params)";
+    }
+
+    return parent::getColumnFilterTag($column, $params);
+  }
+  
 }

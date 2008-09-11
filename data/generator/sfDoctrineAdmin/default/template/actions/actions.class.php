@@ -372,7 +372,7 @@ $dateArg = "\$this->filters['{$column->getName()}']['%s']";
 <?php else: ?>
     else if (isset($this->filters['<?php echo $column->getName() ?>']) && $this->filters['<?php echo $column->getName() ?>'] !== '')
     {
-<?php if ($type == 'char' || $type == 'string'): ?>
+<?php if ($type == 'char' || $type == 'string' || $type == 'clob'): ?>
       $q->addWhere("<?php echo $queryColumn?> LIKE ?", '%'.$this->filters['<?php echo $column->getName() ?>'].'%');
 <?php else: ?>
       $q->addWhere("<?php echo $queryColumn?> = ?", $this->filters['<?php echo $column->getName() ?>']);
