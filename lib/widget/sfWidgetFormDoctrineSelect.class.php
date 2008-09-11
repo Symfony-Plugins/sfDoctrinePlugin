@@ -84,7 +84,7 @@ class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
     $method = $this->getOption('method');
     foreach ($objects as $object)
     {
-      $choices[current($object->getPrimaryKey())] = $object->$method();
+        $choices[is_array($value = $object->getPrimaryKey()) ? current($value) : $value] = $object->$method();
     }
 
     return $choices;
