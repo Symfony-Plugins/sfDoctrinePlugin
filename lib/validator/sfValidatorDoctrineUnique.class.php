@@ -70,6 +70,14 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
       $this->setOption('column', array($this->getOption('column')));
     }
 
+    //if $values isn't an array, make it one
+    if (!is_array($values))
+    {
+      //use first column for key
+      $columns = $this->getOption('column');
+      $values = array($columns[0] => $values);
+    }
+
     $q = Doctrine_Query::create()
           ->from($this->getOption('model') . ' a');
 
