@@ -14,15 +14,8 @@
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id$
  */
-class sfDoctrineAdminGenerator extends sfAdminGenerator
+class sfDoctrineAdminGenerator extends sfDoctrineCrudGenerator
 {
-  /**
-   * Doctrine_Table instance for this admin generator
-   *
-   * @var Doctrine_Table $table
-   */
-  protected $table;
-
   /**
    * Initialize a doctrine admin generator instance
    *
@@ -33,127 +26,8 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
   {
     parent::initialize($generatorManager);
 
+//    $this->setGeneratorClass('sfDoctrineCrud');
     $this->setGeneratorClass('sfDoctrineAdmin');
-  }
-
-  /**
-   * Load all Doctrine_Table class to generate instance
-   *
-   * @return void
-   */
-  protected function loadMapBuilderClasses()
-  {
-    $this->table = Doctrine::getTable($this->getClassName());
-  }
-
-  /**
-   * Get Doctrine_Table instance for admin generator
-   *
-   * @return Doctrine_Table $table
-   */
-  protected function getTable()
-  {
-    return $this->table;
-  }
-
-  /**
-   * Load primary key columns as array of sfDoctrineAdminColumn instances
-   *
-   * @return void
-   * @throws sfException
-   */
-  protected function loadPrimaryKeys()
-  {
-    $identifier = $this->getTable()->getIdentifier();
-    if (is_array($identifier))
-    {
-      foreach ($identifier as $_key)
-      {
-        $this->primaryKey[] = new sfDoctrineAdminColumn($_key);
-      }
-    } else {
-      $this->primaryKey[] = new sfDoctrineAdminColumn($identifier);
-    }
-
-    if (!empty($this->primaryKeys))
-    {
-      throw new sfException('You cannot use the admin generator on a model which does not have any primary keys defined');
-    }
-  }
-
-  /**
-   * Get columns for admin generator instance
-   *
-   * @param string $paramName 
-   * @param string $category 
-   * @return array $columns
-   */
-  public function getColumns($paramName, $category = 'NONE')
-  {
-    $columns = parent::getColumns($paramName, $category);
-
-    // set the foreign key indicator
-    $relations = $this->getTable()->getRelations();
-
-    $cols = $this->getTable()->getColumns();
-
-    foreach ($columns as $index => $column)
-    {
-      if (isset($relations[$column->getName()]))
-      {
-        $fkcolumn = $relations[$column->getName()];
-        $columnName = $relations[$column->getName()]->getLocal();
-        if ($columnName != 'id') // i don't know why this is necessary
-        {
-          $column->setRelatedClassName($fkcolumn->getTable()->getComponentName());
-          $column->setColumnName($columnName);
-
-          // if it is not a many2many
-          if (isset($cols[$columnName]))
-          {
-            $column->setColumnInfo($cols[$columnName]);
-          }
-
-          $columns[$index] = $column;
-        }
-      }
-    }
-
-    return $columns;
-  }
-
-  /**
-   * Get array of all columns as sfDoctrineAdminColumn instances
-   *
-   * @return array $columns
-   */
-  function getAllColumns()
-  {
-    $cols = $this->getTable()->getColumns();
-    $rels = $this->getTable()->getRelations();
-    $columns = array();
-    foreach ($cols as $name => $col)
-    {
-      // we set out to replace the foreign key to their corresponding aliases
-      $found = null;
-      foreach ($rels as $alias => $rel)
-      {
-        $relType = $rel->getType();
-        if ($rel->getLocal() == $name && $relType != Doctrine_Relation::MANY_AGGREGATE && $relType != Doctrine_Relation::MANY_COMPOSITE)
-        {
-          $found = $alias;
-        }
-      }
-
-      if ($found)
-      {
-        $name = $found;
-      }
-
-      $columns[] = new sfDoctrineAdminColumn($name, $col);
-    }
-
-    return $columns;
   }
 
   /**
@@ -167,47 +41,6 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
   {
     $cols = $this->getTable()->getColumns(); // put this in an internal variable?
     return  new sfDoctrineAdminColumn($field, (isset($cols[$field]) ? $cols[$field] : null), $flag);
-  }
-
-  /**
-   * Get symfony php object helper
-   *
-   * @param string $helperName 
-   * @param string $column 
-   * @param string $params 
-   * @param string $localParams 
-   * @return string $helperCode
-   */
-  function getPHPObjectHelper($helperName, $column, $params, $localParams = array())
-  {
-    $params = $this->getObjectTagParams($params, $localParams);
-
-    // special treatment for object_select_tag:
-    if ($helperName == 'select_tag')
-    {
-      $column = new sfDoctrineAdminColumn($column->getColumnName(), null, null);
-    }
-
-    return sprintf('object_%s($%s, %s, %s)', $helperName, $this->getSingularName(), var_export($this->getColumnGetter($column), true), $params);
-  }
-
-  /**
-   * Get php code for column getter
-   *
-   * @param string $column 
-   * @param string $developed 
-   * @param string $prefix 
-   * @return string $getterCode
-   */
-  function getColumnGetter($column, $developed = false, $prefix = '')
-  {
-    if ($developed)
-    {
-      return sprintf("$%s%s->get('%s')", $prefix, $this->getSingularName(), $column->getName());
-    }
-
-    // no parenthesis, we return a method+parameters array
-    return array('get', array($column->getName()));
   }
 
   /**
@@ -227,17 +60,6 @@ class sfDoctrineAdminGenerator extends sfAdminGenerator
     }
 
     return sprintf('$%s%s->set(\'%s\', %s)', $prefix, $this->getSingularName(), $column->getName(), $value);
-  }
-
-  /**
-   * Get related class name for a column
-   *
-   * @param string $column 
-   * @return string $className
-   */
-  function getRelatedClassName($column)
-  {
-    return $column->getRelatedClassName();
   }
 
   /**

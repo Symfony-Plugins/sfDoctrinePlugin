@@ -1,8 +1,9 @@
 <?php
+
 /*
- * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Jonathan H. Wage <jonwage@gmail.com>
- *
+ * This file is part of the symfony package.
+ * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
+ * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -31,8 +32,12 @@ class sfDoctrineGenerateCrudTask extends sfDoctrineBaseTask
     ));
 
     $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environement', 'dev'),
       new sfCommandOption('theme', null, sfCommandOption::PARAMETER_REQUIRED, 'The theme name', 'default'),
+      new sfCommandOption('generate-in-cache', null, sfCommandOption::PARAMETER_NONE, 'Generate the module in cache'),
+      new sfCommandOption('non-atomic-actions', null, sfCommandOption::PARAMETER_NONE, 'Generate non atomic actions'),
+      new sfCommandOption('non-verbose-templates', null, sfCommandOption::PARAMETER_NONE, 'Generate non verbose templates'),
+      new sfCommandOption('with-show', null, sfCommandOption::PARAMETER_NONE, 'Generate a show method'),
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
     ));
 
     $this->aliases = array('doctrine-generate-crud');
@@ -48,6 +53,12 @@ The [doctrine:generate-crud|INFO] task generates a Doctrine CRUD module:
 The task creates a [%module%|COMMENT] module in the [%application%|COMMENT] application
 for the model class [%model%|COMMENT].
 
+You can also create an empty module that inherits its actions and templates from
+a runtime generated module in [%sf_app_cache_dir%/modules/auto%module%|COMMENT] by
+using the [--generate-in-cache|COMMENT] option:
+
+  [./symfony doctrine:generate-crud --generate-in-cache frontend article Article|INFO]
+
 The generator can use a customized theme by using the [--theme|COMMENT] option:
 
   [./symfony doctrine:generate-crud --theme="custom" frontend article Article|INFO]
@@ -62,40 +73,93 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $databaseManager = new sfDatabaseManager($this->configuration);
+    
+    $properties = parse_ini_file(sfConfig::get('sf_config_dir').'/properties.ini', true);
 
-    // generate module
-    $tmpDir = sfConfig::get('sf_cache_dir').'tmp'.DIRECTORY_SEPARATOR.md5(uniqid(rand(), true));
-    sfConfig::set('sf_module_cache_dir', $tmpDir);
-    $generatorManager = new sfGeneratorManager(sfProjectConfiguration::getActive());
-    $generatorManager->generate('sfDoctrineAdminGenerator', array('model_class' => $arguments['model'], 'moduleName' => $arguments['module'], 'theme' => $options['theme']));
-
-    $moduleDir = sfConfig::get('sf_apps_dir').'/'.$arguments['application'].'/modules/'.$arguments['module'];
-
-    // copy our generated module
-    $this->getFileSystem()->mirror($tmpDir.'/auto'.ucfirst($arguments['module']), $moduleDir, sfFinder::type('any'));
-
-    // change module name
-    $this->getFileSystem()->replaceTokens($moduleDir.'/actions/actions.class.php', '', '', array('auto'.ucfirst($arguments['module']) => $arguments['module']));
-
-    $constants = array(
-      'PROJECT_NAME' => 'symfony',
+    $this->constants = array(
+      'PROJECT_NAME' => isset($properties['symfony']['name']) ? $properties['symfony']['name'] : 'symfony',
       'APP_NAME'     => $arguments['application'],
       'MODULE_NAME'  => $arguments['module'],
       'MODEL_CLASS'  => $arguments['model'],
-      'AUTHOR_NAME'  => 'Your name here',
+      'AUTHOR_NAME'  => isset($properties['symfony']['author']) ? $properties['symfony']['author'] : 'Your name here',
     );
+
+    $method = $options['generate-in-cache'] ? 'executeInit' : 'executeGenerate';
+
+    $this->$method($arguments, $options);
+  }
+
+  protected function executeGenerate($arguments = array(), $options = array())
+  {
+    // generate module
+    $tmpDir = sfConfig::get('sf_cache_dir').DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.md5(uniqid(rand(), true));
+    sfConfig::set('sf_module_cache_dir', $tmpDir);
+    $generatorManager = new sfGeneratorManager($this->configuration);
+    $generatorManager->generate('sfDoctrineCrudGenerator', array(
+      'model_class'           => $arguments['model'],
+      'moduleName'            => $arguments['module'],
+      'theme'                 => $options['theme'],
+      'non_atomic_actions'    => $options['non-atomic-actions'],
+      'non_verbose_templates' => $options['non-verbose-templates'],
+      'with_show'             => $options['with-show'],
+    ));
+
+    $moduleDir = sfConfig::get('sf_app_module_dir').'/'.$arguments['module'];
+
+    // copy our generated module
+    $this->getFilesystem()->mirror($tmpDir.'/auto'.ucfirst($arguments['module']), $moduleDir, sfFinder::type('any'));
+
+    if (!$options['with-show'])
+    {
+      $this->getFilesystem()->remove($moduleDir.'/templates/showSuccess.php');
+    }
+
+    // change module name
+    $this->getFilesystem()->replaceTokens($moduleDir.'/actions/actions.class.php', '', '', array('auto'.ucfirst($arguments['module']) => $arguments['module']));
 
     // customize php and yml files
     $finder = sfFinder::type('file')->name('*.php', '*.yml');
-    $this->getFileSystem()->replaceTokens($finder->in($moduleDir), '##', '##', $constants);
+    $this->getFilesystem()->replaceTokens($finder->in($moduleDir), '##', '##', $this->constants);
 
     // create basic test
-    $this->getFileSystem()->copy(sfConfig::get('sf_symfony_data_dir').'/skeleton/module/test/actionsTest.php', sfConfig::get('sf_root_dir').'/test/functional/'.$arguments['application'].'/'.$arguments['module'].'ActionsTest.php');
+    $this->getFilesystem()->copy(sfConfig::get('sf_symfony_lib_dir').'/task/generator/skeleton/module/test/actionsTest.php', sfConfig::get('sf_test_dir').'/functional/'.$arguments['application'].'/'.$arguments['module'].'ActionsTest.php');
 
     // customize test file
-    $this->getFileSystem()->replaceTokens(sfConfig::get('sf_root_dir').'/test/functional/'.$arguments['application'].DIRECTORY_SEPARATOR.$arguments['module'].'ActionsTest.php', '##', '##', $constants);
+    $this->getFilesystem()->replaceTokens(sfConfig::get('sf_test_dir').'/functional/'.$arguments['application'].DIRECTORY_SEPARATOR.$arguments['module'].'ActionsTest.php', '##', '##', $this->constants);
 
     // delete temp files
-    $this->getFileSystem()->remove(sfFinder::type('any')->in($tmpDir));
+    $this->getFilesystem()->remove(sfFinder::type('any')->in($tmpDir));
+  }
+
+  protected function executeInit($arguments = array(), $options = array())
+  {
+    $moduleDir = sfConfig::get('sf_app_module_dir').'/'.$arguments['module'];
+
+    // create basic application structure
+    $finder = sfFinder::type('any')->discard('.sf');
+    $dirs = $this->configuration->getGeneratorSkeletonDirs('sfDoctrineCrud', $options['theme']);
+    foreach ($dirs as $dir)
+    {
+      if (is_dir($dir))
+      {
+        $this->getFilesystem()->mirror($dir, $moduleDir, $finder);
+        break;
+      }
+    }
+
+    // create basic test
+    $this->getFilesystem()->copy(sfConfig::get('sf_symfony_lib_dir').'/task/generator/skeleton/module/test/actionsTest.php', sfConfig::get('sf_test_dir').'/functional/'.$arguments['application'].'/'.$arguments['module'].'ActionsTest.php');
+
+    // customize test file
+    $this->getFilesystem()->replaceTokens(sfConfig::get('sf_test_dir').'/functional/'.$arguments['application'].DIRECTORY_SEPARATOR.$arguments['module'].'ActionsTest.php', '##', '##', $this->constants);
+
+    // customize php and yml files
+    $finder = sfFinder::type('file')->name('*.php', '*.yml');
+    $this->constants['CONFIG'] = sprintf("    non_atomic_actions:    %s\n    non_verbose_templates: %s\n    with_show:             %s",
+      $options['non-atomic-actions'] ? 'true' : 'false',
+      $options['non-verbose-templates'] ? 'true' : 'false',
+      $options['with-show'] ? 'true' : 'false'
+    );
+    $this->getFilesystem()->replaceTokens($finder->in($moduleDir), '##', '##', $this->constants);
   }
 }
