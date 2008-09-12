@@ -118,6 +118,8 @@ class sfDoctrineFormGenerator extends sfGenerator
    * Get all the models which are a part of a plugin and the name of the plugin.
    * The array format is modelName => pluginName
    *
+   * @todo This method is ugly and is a very weird way of finding the models which 
+   *       belong to plugins. If we could come up with a better way that'd be great
    * @return array $pluginModels
    */
   public function getPluginModels()
@@ -125,7 +127,7 @@ class sfDoctrineFormGenerator extends sfGenerator
     if (!$this->pluginModels)
     {
       $dirs = $this->generatorManager->getConfiguration()->getModelDirs();
-      unset($dirs[count($dirs) - 1]);
+      $dirs = array_filter($dirs, create_function('$dir', 'return false !== strpos($dir, "plugins");'));
       $dirs = array_values($dirs);
 
       $models = sfFinder::type('*.php')->in($dirs);
