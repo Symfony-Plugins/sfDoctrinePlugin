@@ -102,6 +102,13 @@ abstract class sfFormDoctrine extends sfForm
       throw new sfException(sprintf('The model "%s" is not internationalized.', $this->getModelName()));
     }
 
+    if ($this->isI18n() && !isset($this->Translation))
+    {
+      // lazy load translations
+      $this->getObject()->loadReference('Translation');
+    }
+
+    $this->cultures = $cultures;
     $class = $this->getI18nFormClass();
     $i18n = new $class();
     foreach ($cultures as $culture)
@@ -200,8 +207,17 @@ abstract class sfFormDoctrine extends sfForm
     $values = $this->getValues();
 
     // remove special columns that are updated automatically
-    unset($values['updated_at'], $values['updated_on'], $values['created_at'], $values['created_on']);
+    unset($values['id'], $values['updated_at'], $values['updated_on'], $values['created_at'], $values['created_on']);
 
+    // Move translations to the Translation key so that it will work with Doctrine_Record::fromArray()
+    foreach ($this->cultures as $culture)
+    {
+      $translation = $values[$culture];
+      $translation['lang'] = $culture;
+      unset($translation['id']);
+      $values['Translation'][$culture] = $translation;
+      unset($values[$culture]);
+    }
     $this->object->fromArray($values);
 
     return $this->object;
@@ -214,12 +230,7 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function isI18n()
   {
-    try {
-      $this->getObject()->getI18n();
-      return true;
-    } catch (Exception $e) {
-      return false;
-    }
+    return $this->getObject()->getTable()->hasTemplate('Doctrine_Template_I18n');
   }
 
   /**
@@ -281,6 +292,14 @@ abstract class sfFormDoctrine extends sfForm
     else
     {
       $this->setDefaults(array_merge($this->getDefaults(), $this->object->toArray(true)));
+    }
+
+    if ($this->isI18n())
+    {
+      $defaults = $this->getDefaults();
+      $translations = $defaults['Translation'];
+      unset($defaults['Translation']);
+      $this->setDefaults(array_merge($defaults, $translations));
     }
   }
 }
