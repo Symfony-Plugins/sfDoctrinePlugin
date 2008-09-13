@@ -17,6 +17,8 @@
  */
 abstract class sfDoctrineRecord extends Doctrine_Record
 {
+  protected $_culture = 'en';
+
   /**
    * __toString
    *
@@ -75,20 +77,11 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     {
       return $this->$getter($load);
     }
-
+    if ($this->_isI18nField($name))
+    {
+      return $this->_get('Translation')->get($this->getCulture())->_get($name);
+    }
     return parent::get($name, $load);
-  }
-
-  /**
-   * Use inside of overriden Doctrine accessors
-   *
-   * @param string $name 
-   * @param string $load 
-   * @return void
-   */
-  public function rawGet($name)
-  {
-    return parent::rawGet($name);
   }
 
   /**
@@ -107,20 +100,30 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     {
       return $this->$setter($value, $load);
     }
-
+    if ($this->_isI18nField($name))
+    {
+      return $this->_get('Translation')->get($this->getCulture())->_set($name, $value);
+    }
     return parent::set($name, $value, $load);
   }
 
   /**
-   * Use inside of overriden Doctrine accessors
+   * Check if a field is a part of the I18n behavior
    *
    * @param string $name 
-   * @param string $value 
-   * @return void
+   * @return boolean $isI18nField Whether or not the field is a I18n field
    */
-  public function rawSet($name, $value)
+  protected function _isI18nField($name)
   {
-    parent::set($name, $value);
+    if ($this->getTable()->hasTemplate('Doctrine_Template_I18n'))
+    {
+      $fields = $this->getTable()->getTemplate('Doctrine_Template_I18n')->getI18n()->getOption('fields');
+      if (in_array($name, $fields))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -159,5 +162,26 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     } catch(Exception $e) {
       return parent::__call($m, $a);
     }
+  }
+
+  /**
+   * Get the current culture
+   *
+   * @return mixed $culture
+   */
+  public function getCulture()
+  {
+    return $this->_culture;
+  }
+
+  /**
+   * Set the current culture
+   *
+   * @param string $culture 
+   * @return void
+   */
+  public function setCulture($culture)
+  {
+    $this->_culture = $culture;
   }
 }
