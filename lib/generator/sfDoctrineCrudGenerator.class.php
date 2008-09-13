@@ -108,7 +108,7 @@ class sfDoctrineCrudGenerator extends sfAdminGenerator
       foreach ($rels as $alias => $rel)
       {
         $relType = $rel->getType();
-        if ($rel->getLocal() == $name && $relType != Doctrine_Relation::MANY && $relType != Doctrine_Relation::MANY_COMPOSITE)
+        if ($rel->getLocal() == $name && $relType != Doctrine_Relation::MANY)
         {
           $found = $alias;
         }
