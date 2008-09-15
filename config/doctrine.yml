@@ -21,7 +21,7 @@ all:
 
 # Configuration for specific connection names 
 #  connections:
-#    connection_name1:
+#    doctrine:
 #      attributes:
 #        export: all
 #      listeners:        []
