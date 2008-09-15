@@ -17,7 +17,7 @@
  */
 abstract class sfDoctrineRecord extends Doctrine_Record
 {
-  protected $_culture = 'en';
+  protected $_currentCulture = 'en';
 
   /**
    * __toString
@@ -79,7 +79,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     }
     if ($this->_isI18nField($name))
     {
-      return $this->_get('Translation')->get($this->getCulture())->_get($name);
+      return $this->_get('Translation')->get($this->getCurrentCulture())->_get($name);
     }
     return parent::get($name, $load);
   }
@@ -102,7 +102,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     }
     if ($this->_isI18nField($name))
     {
-      return $this->_get('Translation')->get($this->getCulture())->_set($name, $value);
+      return $this->_get('Translation')->get($this->getCurrentCulture())->_set($name, $value);
     }
     return parent::set($name, $value, $load);
   }
@@ -169,9 +169,9 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    *
    * @return mixed $culture
    */
-  public function getCulture()
+  public function getCurrentCulture()
   {
-    return $this->_culture;
+    return $this->_currentCulture;
   }
 
   /**
@@ -180,8 +180,8 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    * @param string $culture 
    * @return void
    */
-  public function setCulture($culture)
+  public function setCurrentCulture($culture)
   {
-    $this->_culture = $culture;
+    $this->_currentCulture = $culture;
   }
 }
