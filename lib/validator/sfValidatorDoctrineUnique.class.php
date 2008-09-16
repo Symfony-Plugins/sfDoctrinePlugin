@@ -64,6 +64,7 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
    */
   protected function doClean($values)
   {
+    $originalValues = $values;
     $table = Doctrine::getTable($this->getOption('model'));
     if (!is_array($this->getOption('column')))
     {
@@ -93,7 +94,7 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
     // if no object or if we're updating the object, it's ok
     if (!$object || $this->isUpdate($object, $values))
     {
-      return $values;
+      return $originalValues;
     }
 
     throw new sfValidatorError($this, 'invalid', array('column' => implode(', ', $this->getOption('column'))));
