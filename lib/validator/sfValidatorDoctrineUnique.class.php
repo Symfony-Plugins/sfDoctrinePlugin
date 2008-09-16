@@ -97,7 +97,7 @@ class sfValidatorDoctrineUnique extends sfValidatorSchema
       return $originalValues;
     }
 
-    throw new sfValidatorError($this, 'invalid', array('column' => implode(', ', $this->getOption('column'))));
+    throw new sfValidatorError($this, 'invalid', array('column' => implode(', ', $this->getOption('column')), 'value' => implode (', ', $whereValues)));
   }
 
   /**
