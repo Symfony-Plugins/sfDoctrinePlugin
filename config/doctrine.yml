@@ -10,6 +10,10 @@ all:
     # recursive merge functions from different directories/plugins
     recursive_merge_fixtures: true
 
+    # turn on automatic accessor override functionality
+    # for accessor and mutator overriding
+    auto_accessor_override: true
+
     # enable quoting
     quote_identifier: false
     

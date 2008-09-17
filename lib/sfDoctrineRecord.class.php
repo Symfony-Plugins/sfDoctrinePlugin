@@ -17,7 +17,75 @@
  */
 abstract class sfDoctrineRecord extends Doctrine_Record
 {
-  protected $_currentCulture = 'en';
+  static protected
+    $_initialized    = false,
+    $_defaultCulture = 'en';
+
+  /**
+   * Custom Doctrine_Record constructor.
+   * Used to initialize I18n to make sure the culture is set from symfony
+   *
+   * @return void
+   */
+  public function construct()
+  {
+    self::initializeI18n();
+  }
+
+  /**
+   * Initialize I18n culture from symfony sfUser instance
+   * Add event listener to change default culture whenever the user changes culture
+   *
+   * @return void
+   */
+  public static function initializeI18n()
+  {
+    if (!self::$_initialized)
+    {
+      if (!self::$_initialized && class_exists('sfProjectConfiguration', false))
+      {
+        $dispatcher = sfProjectConfiguration::getActive()->getEventDispatcher();
+        $dispatcher->connect('user.change_culture', array('sfDoctrineRecord', 'listenToChangeCultureEvent'));
+      }
+
+      if (class_exists('sfContext', false) && sfContext::hasInstance() && $user = sfContext::getInstance()->getUser())
+      {
+        self::$_defaultCulture = $user->getCulture();
+      }
+    }
+  }
+
+  /**
+   * Listens to the user.change_culture event.
+   *
+   * @param sfEvent An sfEvent instance
+   */
+  public static function listenToChangeCultureEvent(sfEvent $event)
+  {
+    self::$_defaultCulture = $event['culture'];
+  }
+
+  /**
+   * Sets the default culture
+   *
+   * @param string $culture
+   */
+  static public function setDefaultCulture($culture)
+  {
+    self::$_defaultCulture = $culture;
+  }
+
+  /**
+   * Return the default culture
+   *
+   * @return string the default culture
+   */
+  static public function getDefaultCulture()
+  {
+    self::initializeI18n();
+
+    return self::$_defaultCulture;
+  }
 
   /**
    * __toString
@@ -71,15 +139,9 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function get($name, $load = true)
   {
-    $getter = 'get' . Doctrine_Inflector::classify($name);
-
-    if (method_exists($this, $getter))
-    {
-      return $this->$getter($load);
-    }
     if ($this->_isI18nField($name))
     {
-      return $this->_get('Translation')->get($this->getCurrentCulture())->_get($name);
+      return $this->_get('Translation')->get(self::getDefaultCulture())->_get($name);
     }
     return parent::get($name, $load);
   }
@@ -94,15 +156,9 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function set($name, $value, $load = true)
   {
-    $setter = 'set' . Doctrine_Inflector::classify($name);
-
-    if (method_exists($this, $setter))
-    {
-      return $this->$setter($value, $load);
-    }
     if ($this->_isI18nField($name))
     {
-      return $this->_get('Translation')->get($this->getCurrentCulture())->_set($name, $value);
+      return $this->_get('Translation')->get(self::getDefaultCulture())->_set($name, $value);
     }
     return parent::set($name, $value, $load);
   }
@@ -162,26 +218,5 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     } catch(Exception $e) {
       return parent::__call($m, $a);
     }
-  }
-
-  /**
-   * Get the current culture
-   *
-   * @return mixed $culture
-   */
-  public function getCurrentCulture()
-  {
-    return $this->_currentCulture;
-  }
-
-  /**
-   * Set the current culture
-   *
-   * @param string $culture 
-   * @return void
-   */
-  public function setCurrentCulture($culture)
-  {
-    $this->_currentCulture = $culture;
   }
 }
