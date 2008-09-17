@@ -21,7 +21,7 @@ class sfDoctrineDatabase extends sfDatabase
   /**
    * @var object Doctrine_Connection
    */
-  protected $doctrineConnection = null;
+  protected $_doctrineConnection = null;
 
   /**
    * initialize
@@ -38,26 +38,11 @@ class sfDoctrineDatabase extends sfDatabase
 
     parent::initialize($parameters);
 
-    // Load default database connection to load if specified
-    if ($defaultDatabase = sfConfig::get('sf_default_database'))
-    {
-      if ($parameters['name'] != $defaultDatabase)
-      {
-        return;
-      }
-    }
-
     // Load the doctrine configuration
     require(sfProjectConfiguration::getActive()->getConfigCache()->checkConfig('config/doctrine.yml'));
 
     // Load config in to parameter
     $this->setParameter('config', $config);
-
-    // Load schemas information for connection binding
-    if ($schemas = sfProjectConfiguration::getActive()->getConfigCache()->checkConfig('config/schemas.yml', true))
-    {
-      require_once($schemas);
-    }
 
     $this->loadConnections();
 
@@ -102,7 +87,7 @@ class sfDoctrineDatabase extends sfDatabase
     }
 
     // Make the Doctrine connection for $dsn and $name
-    $this->doctrineConnection = Doctrine_Manager::connection($dsn, $this->getParameter('name'));
+    $this->_doctrineConnection = Doctrine_Manager::connection($dsn, $this->getParameter('name'));
   }
 
   /**
@@ -142,7 +127,7 @@ class sfDoctrineDatabase extends sfDatabase
       {
         Doctrine_Manager::getInstance()->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
       } else {
-        $this->doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
+        $this->_doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
       }
     }
   }
@@ -157,14 +142,14 @@ class sfDoctrineDatabase extends sfDatabase
     // Get encoding
     $encoding = $this->getParameter('encoding', 'UTF8');
 
-    // Add the default sfDoctrineConnectionListener
-    $eventListener = new sfDoctrineConnectionListener($this->doctrineConnection, $encoding);
-    $this->doctrineConnection->addListener($eventListener);
+    // Add the default sf_doctrineConnectionListener
+    $eventListener = new sfDoctrineConnectionListener($this->_doctrineConnection, $encoding);
+    $this->_doctrineConnection->addListener($eventListener);
 
     // Load Query Logger Listener
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
-      $this->doctrineConnection->addListener(new sfDoctrineQueryLogger());
+      $this->_doctrineConnection->addListener(new sfDoctrineQueryLogger());
     }
 
     $config = $this->getParameter('config');
@@ -186,7 +171,7 @@ class sfDoctrineDatabase extends sfDatabase
   {
     foreach ($listeners as $listener)
     {
-      $this->doctrineConnection->$type(new $listener());
+      $this->_doctrineConnection->$type(new $listener());
     }
   }
 
@@ -197,7 +182,7 @@ class sfDoctrineDatabase extends sfDatabase
    */
   public function connect()
   {
-    $this->connection = $this->doctrineConnection->getDbh();
+    $this->connection = $this->_doctrineConnection->getDbh();
   }
 
   /**
