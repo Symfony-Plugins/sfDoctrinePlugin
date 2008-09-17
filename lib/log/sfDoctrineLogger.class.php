@@ -12,9 +12,9 @@
  *
  * @package    sfDoctrinePlugin
  * @author     Jonathan H. Wage <jonwage@gmail.com>
- * @version    SVN: $Id$
+ * @version    SVN: $Id: sfDoctrineLogger.class.php 8938 2008-05-14 01:52:35Z Jonathan.Wage $
  */
-class sfDoctrineQueryLogger extends Doctrine_EventListener
+class sfDoctrineLogger extends Doctrine_EventListener
 {
   protected $connection = null;
   protected $encoding = 'UTF8';
@@ -27,7 +27,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
    */
   public function preExecute(Doctrine_Event $event)
   {
-    $this->sfLogQuery('{sfDoctrine Execute} executeQuery : ', $event);
+    $this->sfLogQuery('executeQuery : ', $event);
   }
 
   /**
@@ -60,7 +60,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
    */
   public function preStmtExecute(Doctrine_Event $event)
   {
-    $this->sfLogQuery('{sfDoctrine Statement} executeQuery : ', $event);
+    $this->sfLogQuery('executeQuery : ', $event);
   }
 
   /**
@@ -82,7 +82,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
    */
   public function preQuery(Doctrine_Event $event)
   {
-    $this->sfLogQuery('{sfDoctrine Query} executeQuery : ', $event);
+    $this->sfLogQuery('executeQuery : ', $event);
   }
 
   /**
@@ -112,6 +112,7 @@ class sfDoctrineQueryLogger extends Doctrine_EventListener
       $message .= ' - ('.implode(', ', $params) . ' )';
     }
 
+    $message = '{sfDoctrineLogger} ' . $message;
     if (sfContext::hasInstance())
     {
       sfContext::getInstance()->getLogger()->log($message);

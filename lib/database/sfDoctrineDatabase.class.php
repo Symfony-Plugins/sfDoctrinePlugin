@@ -149,7 +149,7 @@ class sfDoctrineDatabase extends sfDatabase
     // Load Query Logger Listener
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
-      $this->_doctrineConnection->addListener(new sfDoctrineQueryLogger());
+      $this->_doctrineConnection->addListener(new sfDoctrineLogger());
     }
 
     $config = $this->getParameter('config');
