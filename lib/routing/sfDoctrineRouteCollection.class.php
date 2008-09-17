@@ -3,21 +3,23 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * sfObjectRouteCollection represents a collection of routes bound to Propel objects.
+ * sfObjectRouteCollection represents a collection of routes bound to Doctrine objects.
  *
  * @package    symfony
- * @subpackage routing
+ * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfPropelRouteCollection.class.php 11475 2008-09-12 11:07:23Z fabien $
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
+ * @version    SVN: $Id: sfDoctrineRouteCollection.class.php 11475 2008-09-12 11:07:23Z fabien $
  */
-class sfPropelRouteCollection extends sfObjectRouteCollection
+class sfDoctrineRouteCollection extends sfObjectRouteCollection
 {
   protected
-    $routeClass = 'sfPropelRoute';
+    $routeClass = 'sfDoctrineRoute';
 }

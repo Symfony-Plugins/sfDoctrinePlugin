@@ -3,7 +3,8 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- * 
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -16,8 +17,9 @@
  * inside a transaction.
  *
  * @package    symfony
- * @subpackage validator
+ * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfValidatorDoctrineUnique.class.php 8807 2008-05-06 14:12:28Z fabien $
  */
 class sfValidatorDoctrineUnique extends sfValidatorSchema

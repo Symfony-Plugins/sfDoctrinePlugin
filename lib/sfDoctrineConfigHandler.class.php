@@ -1,7 +1,9 @@
 <?php
+
 /*
- * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Jonathan H. Wage <jonwage@gmail.com>
+ * This file is part of the symfony package.
+ * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +14,9 @@
  *
  * Parses the doctrine.yml and produces a config php file
  *
- * @package    sfDoctrinePlugin
+ * @package    symfony
+ * @subpackage doctrine
+ * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id$
  */

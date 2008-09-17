@@ -3,6 +3,7 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,8 +16,8 @@
  *
  * @package    symfony
  * @subpackage generator
- * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfDoctrineFormGenerator.class.php 8512 2008-04-17 18:06:12Z fabien $
  */
 class sfDoctrineFormGenerator extends sfGenerator

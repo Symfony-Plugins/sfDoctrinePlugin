@@ -3,6 +3,7 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +13,7 @@
  * sfValidatorDoctrineChoice validates that the value is one of the rows of a table.
  *
  * @package    symfony
- * @subpackage validator
+ * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfValidatorDoctrineChoice.class.php 8804 2008-05-06 12:11:10Z fabien $

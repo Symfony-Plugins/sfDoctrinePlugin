@@ -3,6 +3,7 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,8 +15,9 @@
  * A Doctrine route can represent a single Doctrine object or a list of objects.
  *
  * @package    symfony
- * @subpackage routing
+ * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfDoctrineRoute.class.php 11475 2008-09-12 11:07:23Z fabien $
  */
 class sfDoctrineRoute extends sfObjectRoute

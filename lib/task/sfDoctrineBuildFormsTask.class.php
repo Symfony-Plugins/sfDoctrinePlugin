@@ -2,8 +2,9 @@
 
 /*
  * This file is part of the symfony package.
- * (c) 2007-2008 Jonathan H. Wage <jonwage@gmail.com>
- * 
+ * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -14,7 +15,8 @@ require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
  * Create form classes for the current model.
  *
  * @package    symfony
- * @subpackage command
+ * @subpackage doctrine
+ * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfDoctrineBuildFormsTask.class.php 8512 2008-04-17 18:06:12Z fabien $
  */

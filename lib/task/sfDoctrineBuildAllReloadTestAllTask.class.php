@@ -1,7 +1,9 @@
 <?php
+
 /*
- * This file is part of the sfDoctrinePlugin package.
- * (c) 2006-2007 Jonathan H. Wage <jonwage@gmail.com>
+ * This file is part of the symfony package.
+ * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,8 +15,9 @@ require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
  * Drops Databases, Creates Databases, Generates Doctrine model, SQL, initializes database, load data and run 
  * all test suites
  *
- * @package    sfDoctrinePlugin
- * @subpackage Task
+ * @package    symfony
+ * @subpackage doctrine
+ * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
  * @version    SVN: $Id: sfDoctrineBuildAllReloadTask.class.php 8743 2008-05-03 05:02:39Z Jonathan.Wage $
  */
