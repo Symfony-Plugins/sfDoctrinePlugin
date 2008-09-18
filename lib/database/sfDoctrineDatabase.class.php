@@ -62,25 +62,7 @@ class sfDoctrineDatabase extends sfDatabase
    */
   protected function loadConnections()
   {
-    // Get Connection method
-    $method = $this->getParameter('method', 'dsn');
-
-    // get parameters
-    switch ($method)
-    {
-      case 'dsn':
-        $dsn = $this->getParameter('dsn');
-
-        if ($dsn == null)
-        {
-          // missing required dsn parameter
-          $error = 'Database configuration specifies method "dsn", but is missing dsn parameter';
-
-          throw new sfDatabaseException($error);
-        }
-
-        break;
-    }
+    $dsn = $this->getParameter('dsn');
 
     // Make sure we pass non-PEAR style DSNs as an array
     if ( !strpos($dsn, '://'))
