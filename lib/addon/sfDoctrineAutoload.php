@@ -21,7 +21,11 @@
 
 require_once(dirname(__FILE__) . '/../doctrine/Doctrine.php');
 
+$configuration = sfProjectConfiguration::getActive();
+
+require_once($configuration->getConfigCache()->checkConfig('config/databases.yml'));
+
 if (method_exists(sfProjectConfiguration::getActive(), 'configureDoctrine'))
 {
-  sfProjectConfiguration::getActive()->configureDoctrine();
+  $configuration->configureDoctrine();
 }

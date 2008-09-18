@@ -21,6 +21,11 @@
 class sfDoctrineDatabase extends sfDatabase
 {
   /**
+   * @var array Names of the initialized connections
+   */
+  protected static $_initialized = array();
+
+  /**
    * @var object Doctrine_Connection
    */
   protected $_doctrineConnection = null;
@@ -33,7 +38,7 @@ class sfDoctrineDatabase extends sfDatabase
    */
   public function initialize($parameters = array())
   {
-    if (!$parameters)
+    if (isset(self::$_initialized[$parameters['name']]) && self::$_initialized[$parameters['name']])
     {
       return;
     }
@@ -41,6 +46,7 @@ class sfDoctrineDatabase extends sfDatabase
     parent::initialize($parameters);
 
     $dsn = $this->getParameter('dsn');
+    $name = $this->getParameter('name');
 
     // Make sure we pass non-PEAR style DSNs as an array
     if ( !strpos($dsn, '://'))
@@ -49,13 +55,14 @@ class sfDoctrineDatabase extends sfDatabase
     }
 
     // Make the Doctrine connection for $dsn and $name
-    $this->_doctrineConnection = Doctrine_Manager::connection($dsn, $this->getParameter('name'));
+    $this->_doctrineConnection = Doctrine_Manager::connection($dsn, $name);
     $attributes = $this->getParameter('attributes', array());
     foreach ($attributes as $name => $value)
     {
       $this->_doctrineConnection->setAttribute($name, $value);
     }
     $this->loadListeners();
+    self::$_initialized[$name] = true;
   }
 
   /**
