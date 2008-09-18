@@ -56,6 +56,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
       {
         self::$_defaultCulture = $user->getCulture();
       }
+      self::$_initialized = true;
     }
   }
 
