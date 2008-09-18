@@ -82,6 +82,16 @@ class sfDoctrineDatabase extends sfDatabase
   }
 
   /**
+   * Get the Doctrine connection instance
+   *
+   * @return Doctrine_Connection $conn
+   */
+  public function getDoctrineConnection()
+  {
+    return $this->_doctrineConnection;
+  }
+
+  /**
    * Initializes the connection and sets it to object
    *
    * @return void
