@@ -114,7 +114,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     // we try to guess a column which would give a good description of the object
     foreach ($guesses as $descriptionColumn)
     {
-      if ($this->getTable()->hasColumn($descriptionColumn))
+      if ($this->getTable()->hasColumn($descriptionColumn) || $this->_isI18nField($descriptionColumn))
       {
         return $this->get($descriptionColumn);
       }
