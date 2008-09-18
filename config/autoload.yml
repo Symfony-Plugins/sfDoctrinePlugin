@@ -4,7 +4,3 @@ autoload:
     ext:            .php
     path:           <?php echo realpath(dirname(__FILE__) . '/../lib') . "\n"; ?>
     recursive:      on
-  doctrine_class:
-    name:           doctrine autoload
-    files:
-      Doctrine:       <?php echo realpath(dirname(__FILE__).'/../lib/addon/sfDoctrineAutoload.php')."\n"; ?>

@@ -21,11 +21,6 @@
 class sfDoctrineDatabase extends sfDatabase
 {
   /**
-   * @var array Names of the initialized connections
-   */
-  protected static $_initialized = array();
-
-  /**
    * @var object Doctrine_Connection
    */
   protected $_doctrineConnection = null;
@@ -38,11 +33,6 @@ class sfDoctrineDatabase extends sfDatabase
    */
   public function initialize($parameters = array())
   {
-    if (isset(self::$_initialized[$parameters['name']]) && self::$_initialized[$parameters['name']])
-    {
-      return;
-    }
-
     parent::initialize($parameters);
 
     $dsn = $this->getParameter('dsn');
@@ -62,7 +52,13 @@ class sfDoctrineDatabase extends sfDatabase
       $this->_doctrineConnection->setAttribute($name, $value);
     }
     $this->loadListeners();
-    self::$_initialized[$name] = true;
+
+    $configuration = sfProjectConfiguration::getActive();
+
+    if (method_exists($configuration, 'configureDoctrine'))
+    {
+      $configuration->configureDoctrine();
+    }
   }
 
   /**
