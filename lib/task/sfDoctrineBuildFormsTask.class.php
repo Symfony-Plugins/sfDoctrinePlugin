@@ -72,8 +72,6 @@ EOF;
     $buildModel->setCommandApplication($this->commandApplication);
     $buildModel->run();
 
-    $this->logSection('doctrine', 'generating form classes');
-
     $databaseManager = new sfDatabaseManager($this->configuration);
 
     $generatorManager = new sfGeneratorManager($this->configuration);
@@ -83,5 +81,7 @@ EOF;
       'model_dir_name' => $options['model-dir-name'],
       'form_dir_name'  => $options['form-dir-name'],
     ));
+
+    $this->logSection('doctrine', 'Generated forms successfully');
   }
 }
