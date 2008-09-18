@@ -40,27 +40,6 @@ class sfDoctrineDatabase extends sfDatabase
 
     parent::initialize($parameters);
 
-    // Load the doctrine configuration
-    require(sfProjectConfiguration::getActive()->getConfigCache()->checkConfig('config/doctrine.yml'));
-
-    // Load config in to parameter
-    $this->setParameter('config', $config);
-
-    $this->loadConnections();
-
-    $this->loadAttributes($parameters['name']);
-    $this->loadListeners();
-  }
-
-  /**
-   * loadConnections
-   *
-   * Create and load the Doctrine connections
-   *
-   * @return void
-   */
-  protected function loadConnections()
-  {
     $dsn = $this->getParameter('dsn');
 
     // Make sure we pass non-PEAR style DSNs as an array
@@ -76,48 +55,7 @@ class sfDoctrineDatabase extends sfDatabase
     {
       $this->_doctrineConnection->setAttribute($name, $value);
     }
-  }
-
-  /**
-   * Loads and sets all the Doctrine attributes that we loaded from doctrine.yml
-   *
-   * @return void
-   */
-  protected function loadAttributes($name)
-  {
-    $config = $this->getParameter('config');
-
-    $attributes = $config['global_attributes'];
-
-    $this->setAttributes($attributes, true);
-
-    $connectionAttributesName = $name.'_attributes';
-    if (isset($config[$connectionAttributesName]))
-    {
-      $attributes = $config[$connectionAttributesName];
-
-      $this->setAttributes($attributes);
-    }
-  }
-
-  /**
-   * Set the passed attributes on the Doctrine_Manager or Doctrine_Connection
-   *
-   * @param  array   $attributes
-   * @param  boolean $global
-   * @return void
-   */
-  protected function setAttributes($attributes, $global = false)
-  {
-    foreach($attributes as $k => $v)
-    {
-      if ($global)
-      {
-        Doctrine_Manager::getInstance()->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
-      } else {
-        $this->_doctrineConnection->setAttribute(constant('Doctrine::ATTR_'.strtoupper($k)), $v);
-      }
-    }
+    $this->loadListeners();
   }
 
   /**
@@ -141,26 +79,6 @@ class sfDoctrineDatabase extends sfDatabase
     }
 
     $config = $this->getParameter('config');
-
-    // Add global listeners
-    $this->setListeners($config['global_listeners']);
-
-    // Add record listeners
-    $this->setListeners($config['global_record_listeners'], 'addRecordListener');
-  }
-
-  /**
-   * Set the listeners to the connection
-   *
-   * @param array $listeners
-   * @return void
-   */
-  protected function setListeners($listeners, $type = 'addListener')
-  {
-    foreach ($listeners as $listener)
-    {
-      $this->_doctrineConnection->$type(new $listener());
-    }
   }
 
   /**

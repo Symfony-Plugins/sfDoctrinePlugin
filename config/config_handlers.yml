@@ -1,3 +1,0 @@
-config/doctrine.yml:
-  class:    sfDoctrineConfigHandler
-  file:     <?php echo realpath(dirname(__FILE__) . '/../lib/sfDoctrineConfigHandler.class.php'); ?>
