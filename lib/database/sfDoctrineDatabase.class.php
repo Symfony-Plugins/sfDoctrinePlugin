@@ -58,7 +58,6 @@ class sfDoctrineDatabase extends sfDatabase
    * Create and load the Doctrine connections
    *
    * @return void
-   * @author Jonathan H. Wage
    */
   protected function loadConnections()
   {
@@ -72,6 +71,11 @@ class sfDoctrineDatabase extends sfDatabase
 
     // Make the Doctrine connection for $dsn and $name
     $this->_doctrineConnection = Doctrine_Manager::connection($dsn, $this->getParameter('name'));
+    $attributes = $this->getParameter('attributes', array());
+    foreach ($attributes as $name => $value)
+    {
+      $this->_doctrineConnection->setAttribute($name, $value);
+    }
   }
 
   /**
