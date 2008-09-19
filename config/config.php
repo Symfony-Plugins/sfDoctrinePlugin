@@ -1,5 +1,7 @@
 <?php
 
+sfConfig::get('sf_orm', 'doctrine');
+
 if (sfConfig::get('sf_web_debug'))
 {
   require_once dirname(__FILE__).'/../lib/debug/sfWebDebugPanelDoctrine.class.php';
