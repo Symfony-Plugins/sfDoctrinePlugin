@@ -65,6 +65,11 @@ class sfDoctrineCrudGenerator extends sfAdminGenerator
 
     // set the foreign key indicator
     $relations = $this->getTable()->getRelations();
+    $relationKeys = array();
+    foreach ($relations as $key => $relation)
+    {
+      $relationKeys[$relation->getLocalFieldName()] = $key;
+    }
 
     $cols = $this->getTable()->getColumns();
 
@@ -72,8 +77,20 @@ class sfDoctrineCrudGenerator extends sfAdminGenerator
     {
       if (isset($relations[$column->getName()]))
       {
-        $fkcolumn = $relations[$column->getName()];
-        $columnName = $relations[$column->getName()]->getLocal();
+        $relationKey = $column->getName();
+      }
+      elseif (array_key_exists($column->getName(), $relationKeys)) 
+      {
+        $relationKey = $relationKeys[$column->getName()];
+      }
+      else
+      {
+        $relationKey = false;
+      }
+      if ($relationKey)
+      {
+        $fkcolumn = $relations[$relationKey];
+        $columnName = $relations[$relationKey]->getLocal();
         if ($columnName != 'id') // i don't know why this is necessary
         {
           $column->setRelatedClassName($fkcolumn->getTable()->getComponentName());
