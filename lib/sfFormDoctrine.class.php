@@ -136,7 +136,7 @@ abstract class sfFormDoctrine extends sfForm
    *
    * @return Boolean    true if the form is valid, false otherwise
    */
-  public function bindAndSave($taintedValues, $taintedFiles, $con = null)
+  public function bindAndSave($taintedValues, $taintedFiles = null, $con = null)
   {
     $this->bind($taintedValues, $taintedFiles);
     if ($this->isValid())
