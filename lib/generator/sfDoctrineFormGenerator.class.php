@@ -365,7 +365,7 @@ class sfDoctrineFormGenerator extends sfGenerator
   public function isColumnNotNull($name)
   {
     $column = $this->table->getDefinitionOf($name);
-    return (isset($column['notnull']) && $column['notnull']);
+    return ((isset($column['notnull']) && $column['notnull']) || (isset($column['notblank']) && $column['notblank']));
   }
 
   /**
