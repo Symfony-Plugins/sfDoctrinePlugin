@@ -37,30 +37,34 @@ class sfDoctrineRoute extends sfObjectRoute
     parent::__construct($pattern, $defaults, $requirements, $options);
 
     $this->options['object_model'] = $this->options['model'];
-    $this->options['model'] = constant($this->options['model'].'::PEER');
+    $this->options['model'] = Doctrine::getTable($this->options['model']);
   }
 
   protected function getObjectForParameters($parameters)
   {
     if (!isset($this->options['method']))
     {
-      $this->options['method'] = 'doSelectOne';
-
       $className = $this->options['model'];
-      $criteria = new Criteria();
       $variables = $this->getRealVariables();
-      if (!count($variables))
+      
+      switch(count($variables))
       {
-        return false;
+        case 0:
+          return false;
+        case 1:
+          $this->options['method'] = 'findOneBy'.sfInflector::camelize($variables[0]);
+          $parameters = $parameters[$variables[0]];
+          break;
+        default:
+          $this->options['method'] = 'findByDQL';
+          $wheres = array();
+          foreach ($variables as $variable)
+          {
+            $variable = $this->options['model']->getFieldName($variable);
+            $wheres[] = $variable." = '".$parameters[$variable]."'";
+          }
+          $parameters = implode(' AND ', $wheres);
       }
-
-      foreach ($variables as $variable)
-      {
-        $constant = call_user_func(array($className, 'translateFieldName'), $variable, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_COLNAME);
-        $criteria->add($constant, $parameters[$variable]);
-      }
-
-      $parameters = $criteria;
     }
 
     return parent::getObjectForParameters($parameters);
@@ -70,30 +74,9 @@ class sfDoctrineRoute extends sfObjectRoute
   {
     if (!isset($this->options['method']))
     {
-      $this->options['method'] = 'doSelect';
-      $parameters = new Criteria();
+      $this->options['method'] = 'find';
     }
 
     return parent::getObjectForParameters($parameters);
-  }
-
-  protected function doConvertObjectToArray($object)
-  {
-    if (isset($this->options['convert_method']))
-    {
-      return parent::doConvertObjectToArray($object);
-    }
-
-    $className = $this->options['model'];
-
-    $parameters = array();
-    foreach ($this->getRealVariables() as $variable)
-    {
-      $method = 'get'.call_user_func(array($className, 'translateFieldName'), $variable, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_PHPNAME);
-
-      $parameters[$variable] = $object->$method();
-    }
-
-    return $parameters;
   }
 }

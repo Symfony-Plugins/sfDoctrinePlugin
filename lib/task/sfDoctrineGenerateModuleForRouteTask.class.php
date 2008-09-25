@@ -57,6 +57,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $databaseManager = new sfDatabaseManager($this->configuration);
     // get configuration for the given route
     $config = new sfRoutingConfigHandler();
     $routes = $config->evaluate($this->configuration->getConfigPaths('config/routing.yml'));
