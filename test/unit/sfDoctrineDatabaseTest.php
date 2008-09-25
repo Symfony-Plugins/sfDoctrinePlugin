@@ -16,5 +16,11 @@ $parameters = array(
     'name'       => 'doctrine',
     'dsn'        => 'sqlite::memory');
 
+class ProjectConfiguration extends sfProjectConfiguration
+{
+}
+
+$configuration = new ProjectConfiguration(dirname(__FILE__).'/../../lib', new sfEventDispatcher());
+
 $p = new sfDoctrineDatabase($parameters);
 $t->is($p->getDoctrineConnection()->getName(), 'doctrine', 'initialize() - creates a valid doctrine configuration from parameters');

@@ -95,7 +95,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     }
     
     // temporary fix to avoid using a distinct editSuccess.php template
-    sfLoader::loadHelpers(array('Helper', 'ObjectDoctrineAdmin'));
+    $this->getContext()->getConfiguration()->loadHelpers(array('Helper', 'ObjectDoctrineAdmin'));
   }
 
   public function executeDelete ()
@@ -142,7 +142,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->labels = $this->getLabels();
 
     // temporary fix to avoid using a distinct editSuccess.php template
-    sfLoader::loadHelpers(array('Helper', 'ObjectDoctrineAdmin'));
+    $this->getContext()->getConfiguration()->loadHelpers(array('Helper', 'ObjectDoctrineAdmin'));
 
     return sfView::SUCCESS;
   }

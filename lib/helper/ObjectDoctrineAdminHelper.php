@@ -20,7 +20,7 @@
  * @version    SVN: $Id$
  */
 
-use_helper('ObjectAdmin');
+require_once dirname(__FILE__).'/ObjectAdminHelper.php';
 
 /**
  * object_doctrine_admin_double_list
