@@ -44,7 +44,7 @@ abstract class sfFormDoctrine extends sfForm
   public function __construct($object = null, $options = array(), $CSRFSecret = null)
   {
     $class = $this->getModelName();
-    if (is_null($object))
+    if (!$object)
     {
       $this->object = new $class();
     }
