@@ -57,32 +57,32 @@ EOF;
   {
     $config = $this->getCliConfig();
 
-   	$pluginSchemaDirectories = glob(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . '*' .DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine'); 
+    $pluginSchemaDirectories = glob(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . '*' .DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine'); 
 
-   	$pluginSchemas = sfFinder::type('file')->name('*.yml')->in($pluginSchemaDirectories);
+    $pluginSchemas = sfFinder::type('file')->name('*.yml')->in($pluginSchemaDirectories);
 
-   	$tmpPath = sfConfig::get('sf_cache_dir') . DIRECTORY_SEPARATOR . 'tmp';
+    $tmpPath = sfConfig::get('sf_cache_dir') . DIRECTORY_SEPARATOR . 'tmp';
 
-   	if ( ! file_exists($tmpPath))
-   	{
-   	  Doctrine_Lib::makeDirectories($tmpPath);
-   	}
+    if ( ! file_exists($tmpPath))
+    {
+      Doctrine_Lib::makeDirectories($tmpPath);
+    }
 
-   	foreach ($pluginSchemas as $schema)
-   	{
-   	  $schema = str_replace('/', DIRECTORY_SEPARATOR, $schema);
-   	  $plugin = str_replace(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR, '', $schema);
-   	  $e = explode(DIRECTORY_SEPARATOR, $plugin);
-   	  $plugin = $e[0];
-   	  $name = basename($schema);
+    foreach ($pluginSchemas as $schema)
+    {
+      $schema = str_replace('/', DIRECTORY_SEPARATOR, $schema);
+      $plugin = str_replace(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR, '', $schema);
+      $e = explode(DIRECTORY_SEPARATOR, $plugin);
+      $plugin = $e[0];
+      $name = basename($schema);
 
-   	  $tmpSchemaPath = $tmpPath . DIRECTORY_SEPARATOR . $plugin . '-' . $name;
+      $tmpSchemaPath = $tmpPath . DIRECTORY_SEPARATOR . $plugin . '-' . $name;
 
-   	  $models = Doctrine_Parser::load($schema, 'yml');
-   	  $models['package'] = $plugin . '.lib.model.doctrine';
+      $models = Doctrine_Parser::load($schema, 'yml');
+      $models['package'] = $plugin . '.lib.model.doctrine';
 
-   	  Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
-   	}
+      Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
+    }
 
     $import = new Doctrine_Import_Schema();
     $import->setOption('generateBaseClasses', true);
