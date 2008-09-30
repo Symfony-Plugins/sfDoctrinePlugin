@@ -79,8 +79,10 @@ EOF;
       $tmpSchemaPath = $tmpPath . DIRECTORY_SEPARATOR . $plugin . '-' . $name;
 
       $models = Doctrine_Parser::load($schema, 'yml');
-      $models['package'] = $plugin . '.lib.model.doctrine';
-
+      if(!isset($models['package'])) 
+      {
+        $models['package'] = $plugin . '.lib.model.doctrine'; 
+      }
       Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
     }
 
