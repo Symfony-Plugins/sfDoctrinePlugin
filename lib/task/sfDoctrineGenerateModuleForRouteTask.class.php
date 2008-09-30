@@ -3,7 +3,6 @@
 /*
  * This file is part of the symfony package.
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- * (c) Jonathan H. Wage <jonwage@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,8 +16,7 @@ require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
  * @package    symfony
  * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @author     Jonathan H. Wage <jonwage@gmail.com>
- * @version    SVN: $Id: sfDoctrineGenerateModuleForRouteTask.class.php 11475 2008-09-12 11:07:23Z fabien $
+ * @version    SVN: $Id: sfDoctrineGenerateModuleForRouteTask.class.php 11795 2008-09-26 09:05:57Z fabien $
  */
 class sfDoctrineGenerateModuleForRouteTask extends sfDoctrineBaseTask
 {
@@ -35,6 +33,8 @@ class sfDoctrineGenerateModuleForRouteTask extends sfDoctrineBaseTask
     $this->addOptions(array(
       new sfCommandOption('theme', null, sfCommandOption::PARAMETER_REQUIRED, 'The theme name', 'default'),
       new sfCommandOption('non-verbose-templates', null, sfCommandOption::PARAMETER_NONE, 'Generate non verbose templates'),
+      new sfCommandOption('singular', null, sfCommandOption::PARAMETER_REQUIRED, 'The singular name', null),
+      new sfCommandOption('plural', null, sfCommandOption::PARAMETER_REQUIRED, 'The plural name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
     ));
 
@@ -84,8 +84,6 @@ EOF;
     $taskOptions = array(
       '--theme='.$options['theme'],
       '--env='.$options['env'],
-      '--singular='.$routeOptions['singular'],
-      '--plural='.$routeOptions['plural'],
       '--route-prefix='.$routeOptions['name'],
       '--with-doctrine-route',
     );
@@ -98,6 +96,16 @@ EOF;
     if ($options['non-verbose-templates'])
     {
       $taskOptions[] = '--non-verbose-templates';
+    }
+
+    if (!is_null($options['singular']))
+    {
+      $taskOptions[] = '--singular='.$options['singular'];
+    }
+
+    if (!is_null($options['plural']))
+    {
+      $taskOptions[] = '--plural='.$options['plural'];
     }
 
     $this->logSection('app', sprintf('Generating module "%s" for model "%s"', $module, $model));
