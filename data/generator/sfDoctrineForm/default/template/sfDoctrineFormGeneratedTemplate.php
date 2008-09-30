@@ -14,7 +14,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
   {
     $this->setWidgets(array(
 <?php foreach ($this->table->getColumns() as $name => $column): ?>
-      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($name) ?>(<?php echo $this->getWidgetOptionsForColumn($name) ?>),
+      '<?php echo $this->table->getFieldName($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($name) ?>(<?php echo $this->getWidgetOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
       '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>')),
@@ -23,7 +23,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
 
     $this->setValidators(array(
 <?php foreach ($this->table->getColumns() as $name => $column): ?>
-      '<?php echo strtolower($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($name) ?>(<?php echo $this->getValidatorOptionsForColumn($name) ?>),
+      '<?php echo $this->table->getFieldName($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($name) ?>(<?php echo $this->getValidatorOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
       '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>', 'required' => false)),
