@@ -130,6 +130,9 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
       case 'timestamp':
         $name = 'FilterDate';
         break;
+      case 'enum':
+        $name = 'Choice';
+        break;
       default:
         $name = 'FilterInput';
     }
@@ -165,6 +168,10 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
       case 'timestamp':
         $options[] = "'from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate()";
         $options[] = $withEmpty;
+        break;
+      case 'enum':
+        $values = array_combine($column['values'], $column['values']);
+        $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
         break;
     }
 
@@ -202,6 +209,9 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
       case 'datetime':
       case 'timestamp':
         $name = 'DateRange';
+        break;
+      case 'enum':
+        $name = 'Choice';
         break;
       default:
         $name = 'Pass';
@@ -256,6 +266,10 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
         case 'timestamp':
           $options[] = "'from_date' => new sfValidatorDate(array('required' => false)), 'to_date' => new sfValidatorDate(array('required' => false))";
           break;
+        case 'enum':
+          $values = array_combine($column['values'], $column['values']);
+          $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
+          break;
       }
     }
 
@@ -281,5 +295,21 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
       default:
         return 'Text';
     }
+  }
+
+  /**
+   * Array export. Export array to formatted php code
+   *
+   * @param array $values
+   * @return string $php
+   */
+  protected function arrayExport($values)
+  {
+    $php = var_export($values, true);
+    $php = str_replace("\n", '', $php);
+    $php = str_replace('array (  ', 'array(', $php);
+    $php = str_replace(',)', ')', $php);
+    $php = str_replace('  ', ' ', $php);
+    return $php;
   }
 }

@@ -285,10 +285,12 @@ class sfDoctrineFormGenerator extends sfGenerator
       case 'timestamp':
         $widgetSubclass = 'DateTime';
         break;
+      case 'enum':
+        $widgetSubclass = 'Choice';
+        break;
       default:
         $widgetSubclass = 'Input';
     }
-
 
     if ($this->isColumnPrimaryKey($columnName))
     {
@@ -384,6 +386,16 @@ class sfDoctrineFormGenerator extends sfGenerator
     {
       $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($name)->getOption('name'), isset($column['notnull']) ? 'false' : 'true');
     }
+    else
+    {
+      switch ($column['type'])
+      {
+        case 'enum':
+          $values = array_combine($column['values'], $column['values']);
+          $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
+          break;
+      }
+    }
 
     return count($options) ? sprintf('array(%s)', implode(', ', $options)) : '';
   }
@@ -423,6 +435,9 @@ class sfDoctrineFormGenerator extends sfGenerator
         break;
       case 'timestamp':
         $validatorSubclass = 'DateTime';
+        break;
+      case 'enum':
+        $validatorSubclass = 'Choice';
         break;
       default:
         $validatorSubclass = 'Pass';
@@ -465,6 +480,10 @@ class sfDoctrineFormGenerator extends sfGenerator
           {
             $options[] = sprintf('\'max_length\' => %s', $column['length']);
           }
+          break;
+        case 'enum':
+          $values = array_combine($column['values'], $column['values']);
+          $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
           break;
       }
     }
@@ -561,5 +580,21 @@ class sfDoctrineFormGenerator extends sfGenerator
     $models =  Doctrine::initializeModels($models);
     $this->models = Doctrine::filterInvalidModels($models);
     return $this->models;
+  }
+
+  /**
+   * Array export. Export array to formatted php code
+   *
+   * @param array $values
+   * @return string $php
+   */
+  protected function arrayExport($values)
+  {
+    $php = var_export($values, true);
+    $php = str_replace("\n", '', $php);
+    $php = str_replace('array (  ', 'array(', $php);
+    $php = str_replace(',)', ')', $php);
+    $php = str_replace('  ', ' ', $php);
+    return $php;
   }
 }
