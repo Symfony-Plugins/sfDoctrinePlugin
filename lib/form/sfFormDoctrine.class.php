@@ -324,4 +324,89 @@ abstract class sfFormDoctrine extends sfForm
       $this->setDefaults(array_merge($defaults, $translations));
     }
   }
+
+  /**
+   * Saves the uploaded file for the given field.
+   *
+   * @param  string $field The field name
+   * @param  string $filename The file name of the file to save
+   *
+   * @return string The filename used to save the file
+   */
+  protected function processUploadedFile($field, $filename = null)
+  {
+    if (!$this->validatorSchema[$field] instanceof sfValidatorFile)
+    {
+      throw new LogicException(sprintf('You cannot save the current file for field "%s" as the field is not a file.', $field));
+    }
+
+    if (!$this->getValue($field))
+    {
+      return $this->object->$column;
+    }
+
+    // we need the base directory
+    if (!$this->validatorSchema[$field]->getOption('path'))
+    {
+      return $this->getValue($field);
+    }
+
+    $this->removeFile($field);
+
+    return $this->saveFile($field, $filename);
+  }
+
+  /**
+   * Removes the current file for the field.
+   *
+   * @param string $field The field name
+   */
+  protected function removeFile($field)
+  {
+    if (!$this->validatorSchema[$field] instanceof sfValidatorFile)
+    {
+      throw new LogicException(sprintf('You cannot remove the current file for field "%s" as the field is not a file.', $field));
+    }
+
+    if (($directory = $this->validatorSchema[$field]->getOption('path')) && is_file($directory.$this->object->$field))
+    {
+      unlink($directory.$this->object->$field);
+    }
+  }
+
+  /**
+   * Saves the current file for the field.
+   *
+   * @param  string $field    The field name
+   * @param  string $filename The file name of the file to save
+   *
+   * @return string The filename used to save the file
+   */
+  protected function saveFile($field, $filename = null)
+  {
+    if (!$this->validatorSchema[$field] instanceof sfValidatorFile)
+    {
+      throw new LogicException(sprintf('You cannot save the current file for field "%s" as the field is not a file.', $field));
+    }
+
+    $method = sprintf('generate%sFilename', $field);
+
+    if (!is_null($filename))
+    {
+      return $this->getValue($field)->save();
+    }
+    else if (method_exists($this->object, $method))
+    {
+      return $this->getValue($field)->save($this->object->$method($this->getValue($field)));
+    }
+    else
+    {
+      return $this->getValue($field)->save();
+    }
+  }
+
+  protected function camelize($text)
+  {
+    return sfToolkit::pregtr($text, array('#/(.?)#e' => "'::'.strtoupper('\\1')", '/(^|_|-)+(.)/e' => "strtoupper('\\2')"));
+  }
 }
