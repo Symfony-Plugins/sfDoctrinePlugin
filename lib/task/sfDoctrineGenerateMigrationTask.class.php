@@ -28,11 +28,11 @@ class sfDoctrineGenerateMigrationTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('name', sfCommandArgument::REQUIRED, 'The name of the migration'),
     ));
 
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
     ));
 
@@ -53,6 +53,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->logSection('doctrine', sprintf('generating migration class named "%s"', $arguments['name']));
+
     $databaseManager = new sfDatabaseManager($this->configuration);
     $this->callDoctrineCli('generate-migration', array('name' => $arguments['name']));
   }

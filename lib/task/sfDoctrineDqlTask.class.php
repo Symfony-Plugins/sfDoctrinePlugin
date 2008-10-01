@@ -28,12 +28,13 @@ class sfDoctrineDqlTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
       new sfCommandArgument('dql_query', sfCommandArgument::REQUIRED, 'The DQL query to execute', null),
     ));
 
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('show-sql', null, sfCommandOption::PARAMETER_NONE, 'Show the sql that would be executed'),
     ));
 
     $this->aliases = array('doctrine-dql');
@@ -52,6 +53,35 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $databaseManager = new sfDatabaseManager($this->configuration);
-    $this->callDoctrineCli('dql', array('dql_query' => $arguments['dql_query']));
+
+    $dql = $arguments['dql_query'];
+
+    $q = Doctrine_Query::create()
+      ->parseQuery($dql);
+
+    $this->logSection('doctrine', 'executing dql query');
+
+    echo sprintf('DQL: %s', $dql) . "\n";
+
+    if ($options['show-sql']) {
+      echo sprintf('SQL: %s', $q->getSql()) . "\n";
+    }
+
+    $count = $q->count();
+
+    if ($count)
+    {
+      echo sprintf('found %s results', $count) . "\n";
+
+      $results = $q->fetchArray();
+      $yaml = sfYaml::dump($results);
+      $lines = explode("\n", $yaml);
+      foreach ($lines as $line)
+      {
+        echo $line . "\n";
+      }
+    } else {
+      $this->logSection('doctrine', 'no results found');
+    }
   }
 }

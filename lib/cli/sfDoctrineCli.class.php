@@ -54,7 +54,7 @@ class sfDoctrineCli extends Doctrine_Cli
    */
   public function notify($notification = null, $style = 'HEADER')
   {
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', $notification))));
+    return false;
   }
 
   /**

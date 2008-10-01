@@ -27,18 +27,17 @@ class sfDoctrineBuildAllTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
-    $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-    ));
-
     $this->aliases = array('doctrine-build-all');
     $this->namespace = 'doctrine';
     $this->name = 'build-all';
     $this->briefDescription = 'Generates Doctrine model, SQL and initializes the database';
+
+    $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
+      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
+      new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Do not ask for confirmation'),
+      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms')
+    ));
 
     $this->detailedDescription = <<<EOF
 The [doctrine:build-all|INFO] task is a shortcut for three other tasks:
@@ -47,11 +46,17 @@ The [doctrine:build-all|INFO] task is a shortcut for three other tasks:
 
 The task is equivalent to:
 
-  [./symfony doctrine-build-db|INFO]
   [./symfony doctrine:build-model|INFO]
+  [./symfony doctrine:build-sql|INFO]
+  [./symfony doctrine:build-forms|INFO]
   [./symfony doctrine:insert-sql|INFO]
 
 See those three tasks help page for more information.
+
+To bypass the confirmation, you can pass the [no-confirmation|COMMENT]
+option:
+
+  [./symfony doctrine:buil-all-load --no-confirmation|INFO]
 EOF;
   }
 
@@ -62,14 +67,52 @@ EOF;
   {
     $buildDb = new sfDoctrineBuildDbTask($this->dispatcher, $this->formatter);
     $buildDb->setCommandApplication($this->commandApplication);
-    $buildDb->run(array('application' => $arguments['application']), array('--env='.$options['env']));
+    $buildDbOptions = array();
+    if (isset($options['application']) && $options['application'])
+    {
+      $buildDbOptions[] = '--application=' . $options['application'];
+    }
+    $buildDbOptions[] = '--env=' . $options['env'];
+    $buildDb->run(array(), $buildDbOptions);
 
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
     $buildModel->setCommandApplication($this->commandApplication);
-    $buildModel->run();
+    $ret = $buildModel->run();
+
+    if ($ret)
+    {
+      return $ret;
+    }
+
+    $buildSql = new sfDoctrineBuildSqlTask($this->dispatcher, $this->formatter);
+    $buildSql->setCommandApplication($this->commandApplication);
+    $ret = $buildSql->run();
+
+    if ($ret)
+    {
+      return $ret;
+    }
+
+    if (!$options['skip-forms'])
+    {
+      $buildForms = new sfDoctrineBuildFormsTask($this->dispatcher, $this->formatter);
+      $buildForms->setCommandApplication($this->commandApplication);
+      $ret = $buildForms->run();
+
+      if ($ret)
+      {
+        return $ret;
+      }
+    }
+
+    $buildFilters = new sfDoctrineBuildFiltersTask($this->dispatcher, $this->formatter);
+    $buildFilters->setCommandApplication($this->commandApplication);
+    $ret = $buildFilters->run();
 
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
     $insertSql->setCommandApplication($this->commandApplication);
-    $insertSql->run(array('application' => $arguments['application']), array('--env='.$options['env']));
+    $ret = $insertSql->run(array(), $options['no-confirmation'] ? array('--no-confirmation') : array());
+
+    return $ret;
   }
 }

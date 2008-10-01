@@ -27,15 +27,12 @@ class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
-      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
-      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database'),
+      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
+      new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Do not ask for confirmation'),
+      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms')
     ));
 
     $this->aliases = array('doctrine-build-all-reload');
@@ -71,12 +68,15 @@ EOF;
 
     $dropDbOptions = array();
     $dropDbOptions[] = '--env='.$options['env'];
-    if (isset($options['force']) && $options['force'])
+    if (isset($options['no-confirmation']) && $options['no-confirmation'])
     {
-      $dropDbOptions[] = '--force';
+      $dropDbOptions[] = '--no-confirmation';
     }
-
-    $dropDb->run(array('application' => $arguments['application']), $dropDbOptions);
+    if (isset($options['application']) && $options['application'])
+    {
+      $dropDbOptions[] = '--application=' . $options['application'];
+    }
+    $dropDb->run(array(), $dropDbOptions);
     
     $buildAllLoad = new sfDoctrineBuildAllLoadTask($this->dispatcher, $this->formatter);
     $buildAllLoad->setCommandApplication($this->commandApplication);
@@ -91,7 +91,11 @@ EOF;
     {
       $loadDataOptions[] = '--append';
     }
+    if (isset($options['application']) && $options['application'])
+    {
+      $loadDataOptions[] = '--application=' . $options['application'];
+    }
 
-    $buildAllLoad->run(array('application' => $arguments['application']), $loadDataOptions);
+    $buildAllLoad->run(array(), $loadDataOptions);
   }
 }

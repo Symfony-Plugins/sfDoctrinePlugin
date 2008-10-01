@@ -55,6 +55,8 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $this->logSection('doctrine', 'generating model classes');
+
     $config = $this->getCliConfig();
 
     $pluginSchemaDirectories = glob(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . '*' .DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine'); 
@@ -93,10 +95,14 @@ EOF;
     $import->setOption('packagesPrefix', 'Plugin');
     $import->setOption('suffix', '.class.php');
     $import->setOption('baseClassesDirectory', 'generated');
-    $import->setOption('baseClassName', 'sfDoctrineRecord');
+
+    if (file_exists(sfConfig::get('sf_lib_dir') . '/myDoctrineRecord.class.php'))
+    {
+      $import->setOption('baseClassName', 'myDoctrineRecord'); 
+    } else {
+      $import->setOption('baseClassName', 'sfDoctrineRecord');
+    }
 
     $import->importSchema(array($tmpPath, $config['yaml_schema_path']), 'yml', $config['models_path']);
-
-    $this->dispatcher->notify(new sfEvent($this, 'command.log', array($this->formatter->formatSection('doctrine', 'Generated models successfully'))));
   }
 }

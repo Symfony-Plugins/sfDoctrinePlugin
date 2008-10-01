@@ -27,13 +27,10 @@ class sfDoctrineRebuildDbTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database')
+      new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Whether to no-confirmation dropping of the database')
     ));
 
     $this->aliases = array('doctrine-rebuild-db');
@@ -59,16 +56,27 @@ EOF;
     $dropDb->setCommandApplication($this->commandApplication);
 
     $dropDbOptions = array();
-    $dropDbOptions[] = '--env='.$options['env'];
-    if (isset($options['force']) && $options['force'])
+    if (!empty($options['application']))
     {
-      $dropDbOptions[] = '--force';
+      $dropDbOptions[] = '--application=' . $options['application'];
+    }
+    $dropDbOptions[] = '--env='.$options['env'];
+    if (isset($options['no-confirmation']) && $options['no-confirmation'])
+    {
+      $dropDbOptions[] = '--no-confirmation';
     }
 
-    $dropDb->run(array('application' => $arguments['application']), $dropDbOptions);
+    $dropDb->run(array(), $dropDbOptions);
+
+    $buildAllOptions = array();
+    if (!empty($options['application']))
+    {
+      $buildAllOptions[] = '--application=' . $options['application'];
+    }
+    $buildAllOptions[] = '--env='.$options['env'];
 
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
     $buildAll->setCommandApplication($this->commandApplication);
-    $buildAll->run(array('application' => $arguments['application']), array('--env='.$options['env']));
+    $buildAll->run(array(), array('--env='.$options['env']));
   }
 }

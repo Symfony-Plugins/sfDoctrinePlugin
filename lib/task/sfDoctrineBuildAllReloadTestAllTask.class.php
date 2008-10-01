@@ -28,11 +28,8 @@ class sfDoctrineBuildAllReloadTestAllTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
       new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
       new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
@@ -72,6 +69,10 @@ EOF;
     $buildAllReload->setCommandApplication($this->commandApplication);
 
     $buildAllReloadOptions = array();
+    if (!empty($options['application']))
+    {
+      $buildAllReloadOptions[] = '--application=' . $options['application'];
+    }
     $buildAllReloadOptions[] = '--env='.$options['env'];
     if (!empty($options['dir']))
     {
@@ -85,8 +86,10 @@ EOF;
     {
       $buildAllReloadOptions[] = '--force';
     }
-    $buildAllReload->run(array('application' => $arguments['application']), $buildAllReloadOptions);
+    $buildAllReload->run(array(), $buildAllReloadOptions);
 
+    $this->logSection('doctrine', 'running test suite');
+    
     $testAll = new sfTestAllTask($this->dispatcher, $this->formatter);
     $testAll->setCommandApplication($this->commandApplication);
     $testAll->run();

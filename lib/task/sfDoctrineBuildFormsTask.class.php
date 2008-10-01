@@ -27,13 +27,8 @@ class sfDoctrineBuildFormsTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
-      new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
+      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'),
       new sfCommandOption('model-dir-name', null, sfCommandOption::PARAMETER_REQUIRED, 'The model dir name', 'model'),
       new sfCommandOption('form-dir-name', null, sfCommandOption::PARAMETER_REQUIRED, 'The form dir name', 'form'),
     ));
@@ -68,9 +63,7 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
-    $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
-    $buildModel->setCommandApplication($this->commandApplication);
-    $buildModel->run();
+    $this->logSection('doctrine', 'generating form classes');
 
     $databaseManager = new sfDatabaseManager($this->configuration);
 
@@ -81,7 +74,5 @@ EOF;
       'model_dir_name' => $options['model-dir-name'],
       'form_dir_name'  => $options['form-dir-name'],
     ));
-
-    $this->logSection('doctrine', 'Generated forms successfully');
   }
 }

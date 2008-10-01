@@ -27,13 +27,10 @@ class sfDoctrineDropDbTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('force', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database')
+      new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Whether to force dropping of the database')
     ));
 
     $this->aliases = array('doctrine-drop-db');
@@ -55,7 +52,20 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    if (
+      !$options['no-confirmation']
+      &&
+      !$this->askConfirmation(array('This command will remove all data in your database.', 'Are you sure you want to proceed? (y/N)'), null, false)
+    )
+    {
+      $this->logSection('doctrine', 'task aborted');
+
+      return 1;
+    }
+
+    $this->logSection('doctrine', 'dropping databases');
+
     $databaseManager = new sfDatabaseManager($this->configuration);
-    $this->callDoctrineCli('drop-db', array('force' => $options['force']));
+    $this->callDoctrineCli('drop-db', array('force' => true));
   }
 }

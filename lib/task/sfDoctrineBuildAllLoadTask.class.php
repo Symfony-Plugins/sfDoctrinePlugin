@@ -27,14 +27,12 @@ class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
    */
   protected function configure()
   {
-    $this->addArguments(array(
-      new sfCommandArgument('application', sfCommandArgument::REQUIRED, 'The application name'),
-    ));
-
     $this->addOptions(array(
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
-      new sfCommandOption('append', null, sfCommandOption::PARAMETER_NONE, 'Don\'t delete current data in the database'),
-      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
+      new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
+      new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Do not ask for confirmation'),
+      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms')
     ));
 
     $this->aliases = array('doctrine-build-all-load');
@@ -45,18 +43,20 @@ class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
     $this->detailedDescription = <<<EOF
 The [doctrine:build-all-load|INFO] task is a shortcut for four other tasks:
 
-  [./symfony doctrine:build-all-load frontend|INFO]
+  [./symfony doctrine:build-all-load|INFO]
 
 The task is equivalent to:
 
-  [./symfony doctrine-build-db|INFO]
-  [./symfony doctrine:build-model|INFO]
-  [./symfony doctrine:insert-sql|INFO]
-  [./symfony doctrine:data-load frontend|INFO]
+  [./symfony doctrine:build-all|INFO]
+  [./symfony doctrine:data-load|INFO]
 
-The task takes an application argument because of the [doctrine:build-db|COMMENT], 
-[doctrine:insert-sql|COMMENT], and [doctrine:data-load|COMMENT] task. See 
-[doctrine:data-load|COMMENT] help page for more information.
+The task takes an application argument because of the [doctrine:data-load|COMMENT]
+task. See [doctrine:data-load|COMMENT] help page for more information.
+
+To bypass the confirmation, you can pass the [no-confirmation|COMMENT]
+option:
+
+  [./symfony doctrine:buil-all-load --no-confirmation|INFO]
 EOF;
   }
 
@@ -65,24 +65,36 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    $databaseManager = new sfDatabaseManager($this->configuration);
+
     $buildAll = new sfDoctrineBuildAllTask($this->dispatcher, $this->formatter);
     $buildAll->setCommandApplication($this->commandApplication);
-    $buildAll->run(array('application' => $arguments['application']), array('--env='.$options['env']));
 
-    $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
-    $loadData->setCommandApplication($this->commandApplication);
-
-    $loadDataOptions = array();
-    $loadDataOptions[] = '--env='.$options['env'];
-    if (!empty($options['dir']))
+    $buildAllOptions = array();
+    if ($options['skip-forms'])
     {
-      $loadDataOptions[] = '--dir=' . implode(' --dir=', $options['dir']);
+      $buildAllOptions[] = '--skip-forms';
     }
-    if (isset($options['append']) && $options['append'])
+    if ($options['no-confirmation'])
     {
-      $loadDataOptions[] = '--append';
+      $buildAllOptions[] = '--no-confirmation';
+    }
+    $ret = $buildAll->run(array(), $buildAllOptions);
+
+    if (0 == $ret)
+    {
+      $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
+      $loadData->setCommandApplication($this->commandApplication);
+
+      $options = array('--env='.$options['env'], '--connection='.$options['connection']);
+      if (isset($this->options['application']))
+      {
+        $options[] = '--application='.$options['application'];
+      }
+
+      $loadData->run(array(), $options);
     }
 
-    $loadData->run(array('application' => $arguments['application']), $loadDataOptions);
+    return $ret;
   }
 }
