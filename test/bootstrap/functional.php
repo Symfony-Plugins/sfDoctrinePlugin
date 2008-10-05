@@ -8,12 +8,6 @@
  * file that was distributed with this source code.
  */
 
-// we need sqlite for functional tests
-if (!extension_loaded('SQLite'))
-{
-  return false;
-}
-
 if (!isset($root_dir))
 {
   $root_dir = realpath(dirname(__FILE__).sprintf('/../%s/fixtures', isset($type) ? $type : 'functional'));
@@ -32,6 +26,12 @@ function sf_functional_test_shutdown()
 
 // remove all cache
 sf_functional_test_shutdown();
+
+$configuration->initializeDoctrine();
+if (isset($fixtures))
+{
+  $configuration->loadFixtures($fixtures);
+}
 
 register_shutdown_function('sf_functional_test_shutdown');
 
