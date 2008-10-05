@@ -88,21 +88,17 @@ EOF;
       Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
     }
 
+    $options = array('generateBaseClasses'  => true,
+                     'generateTableClasses' => true,
+                     'packagesPath'         => sfConfig::get('sf_plugins_dir'),
+                     'packagesPrefix'       => 'Plugin',
+                     'suffix'               => '.class.php',
+                     'baseClassesDirectory' => 'generated',
+                     'baseClassName'        => 'sfDoctrineRecord');
+    $options = array_merge($options, sfConfig::get('doctrine_model_builder_options', array()));
+
     $import = new Doctrine_Import_Schema();
-    $import->setOption('generateBaseClasses', true);
-    $import->setOption('generateTableClasses', true);
-    $import->setOption('packagesPath', sfConfig::get('sf_plugins_dir'));
-    $import->setOption('packagesPrefix', 'Plugin');
-    $import->setOption('suffix', '.class.php');
-    $import->setOption('baseClassesDirectory', 'generated');
-
-    if (file_exists(sfConfig::get('sf_lib_dir') . '/myDoctrineRecord.class.php'))
-    {
-      $import->setOption('baseClassName', 'myDoctrineRecord'); 
-    } else {
-      $import->setOption('baseClassName', 'sfDoctrineRecord');
-    }
-
+    $import->setOptions($options);
     $import->importSchema(array($tmpPath, $config['yaml_schema_path']), 'yml', $config['models_path']);
   }
 }

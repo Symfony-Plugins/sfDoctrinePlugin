@@ -55,9 +55,16 @@ class sfDoctrineDatabase extends sfDatabase
 
     $configuration = sfProjectConfiguration::getActive();
 
-    if (method_exists($configuration, 'configureDoctrine'))
+    $method = sprintf('configureDoctrineConnection%s', ucwords($this->_doctrineConnection->getName()));
+    
+    if (method_exists($configuration, 'configureDoctrineConnection') && ! method_exists($configuration, $method))
     {
-      $configuration->configureDoctrine();
+      $configuration->configureDoctrineConnection($this->_doctrineConnection);
+    }
+
+    if (method_exists($configuration, $method))
+    {
+      $configuration->$method($this->_doctrineConnection);
     }
   }
 
