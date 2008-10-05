@@ -140,7 +140,6 @@ class sfDoctrineFormGenerator extends sfGenerator
     if (!$this->pluginModels)
     {
       $dirs = $this->generatorManager->getConfiguration()->getModelDirs();
-      $dirs = array_filter($dirs, create_function('$dir', 'return false !== strpos($dir, "plugins");'));
       $dirs = array_values($dirs);
 
       $models = sfFinder::type('*.php')->in($dirs);
@@ -150,12 +149,15 @@ class sfDoctrineFormGenerator extends sfGenerator
         $e = explode('.', $info['filename']);
         $modelName = substr($e[0], 6, strlen($e[0]));
 
-        $parent = new ReflectionClass('Doctrine_Record');
-        $reflection = new ReflectionClass($modelName);
-        if ($reflection->isSubClassOf($parent))
+        if (class_exists($e[0]) && class_exists($modelName))
         {
-          $pluginName = basename(dirname(dirname(dirname($info['dirname']))));
-          $this->pluginModels[$modelName] = $pluginName;
+          $parent = new ReflectionClass('Doctrine_Record');
+          $reflection = new ReflectionClass($modelName);
+          if ($reflection->isSubClassOf($parent))
+          {
+            $pluginName = basename(dirname(dirname(dirname($info['dirname']))));
+            $this->pluginModels[$modelName] = $pluginName;
+          }
         }
       }
     }
