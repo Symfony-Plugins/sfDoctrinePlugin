@@ -11,8 +11,14 @@ if (sfConfig::get('sf_web_debug'))
 
 $manager = Doctrine_Manager::getInstance();
 $manager->setAttribute('export', 'all');
-$manager->setAttribute('validate', false);
+$manager->setAttribute('validate', true);
 $manager->setAttribute('recursive_merge_fixtures', true);
 $manager->setAttribute('auto_accessor_override', true);
-$manager->setAttribute('quote_identifier', true);
 $manager->setAttribute('autoload_table_classes', true);
+
+$configuration = sfProjectConfiguration::getActive();
+
+if (method_exists($configuration, 'configureDoctrineManager'))
+{
+  $configuration->configureDoctrineManager();
+}
