@@ -18,7 +18,7 @@ $manager->setAttribute('autoload_table_classes', true);
 
 $configuration = sfProjectConfiguration::getActive();
 
-if (method_exists($configuration, 'configureDoctrineManager'))
+if (method_exists($configuration, 'configureDoctrine'))
 {
-  $configuration->configureDoctrineManager();
+  $configuration->configureDoctrine($manager);
 }
