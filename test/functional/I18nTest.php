@@ -11,9 +11,9 @@
 $app = 'frontend';
 $fixtures = 'fixtures/fixtures.yml';
 require_once(dirname(__FILE__).'/../bootstrap/functional.php');
-require_once(dirname(__FILE__).'/../bootstrap/unit.php');
 
-$t = new lime_test(2, new lime_output_color());
+$b = new sfTestBrowser();
+$t = $b->test();
 
 $article = new Article();
 $article->title = 'test';
@@ -22,3 +22,5 @@ $t->is($article->Translation['en']->title, 'test');
 sfContext::getInstance()->getUser()->setCulture('fr');
 $article->title = 'fr test';
 $t->is($article->Translation['fr']->title, 'fr test');
+
+$b->get('articles/index');
