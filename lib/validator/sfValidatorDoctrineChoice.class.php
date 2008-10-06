@@ -26,6 +26,7 @@ class sfValidatorDoctrineChoice extends sfValidatorBase
    * Available options:
    *
    *  * model:      The model class (required)
+   *  * alias:      The alias of the root component used in the query
    *  * query:      A query to use when retrieving objects
    *  * column:     The column name (null by default which means we use the primary key)
    *                must be in field name format
@@ -36,6 +37,7 @@ class sfValidatorDoctrineChoice extends sfValidatorBase
   protected function configure($options = array(), $messages = array())
   {
     $this->addRequiredOption('model');
+    $this->addOption('alias', 'a');
     $this->addOption('query', null);
     $this->addOption('column', null);
     $this->addOption('connection', null);
@@ -47,8 +49,9 @@ class sfValidatorDoctrineChoice extends sfValidatorBase
   protected function doClean($value)
   {
     $q = is_null($this->getOption('query')) ? Doctrine_Query::create() : $this->getOption('query');
-    $q->from($this->getOption('model') . ' a')
-      ->addWhere('a.' . $this->getColumn() . ' = ?', $value);
+    $a = $this->getOption('alias');
+    $q->from($this->getOption('model') . ' ' . $a)
+      ->addWhere($a . '.' . $this->getColumn() . ' = ?', $value);
 
     $object = $q->fetchOne();
     

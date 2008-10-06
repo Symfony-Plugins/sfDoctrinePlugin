@@ -42,7 +42,8 @@ class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
    *  * order_by:   An array composed of two fields:
    *                  * The column to order by the results (must be in the PhpName format)
    *                  * asc or desc
-   *  * criteria:   A criteria to use when retrieving objects
+   *  * alias:      The alias for the main component involved in the query
+   *  * query:      A query to use when retrieving objects
    *  * connection: The Doctrine connection to use (null by default)
    *  * multiple:   true if the select tag must allow multiple selections
    *
@@ -54,7 +55,8 @@ class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
     $this->addOption('add_empty', false);
     $this->addOption('method', '__toString');
     $this->addOption('order_by', null);
-    $this->addOption('criteria', null);
+    $this->addOption('alias', 'a');
+    $this->addOption('query', null);
     $this->addOption('connection', null);
     $this->addOption('multiple', false);
 
@@ -73,13 +75,13 @@ class sfWidgetFormDoctrineSelect extends sfWidgetFormSelect
     {
       $choices[''] = true === $this->getOption('add_empty') ? '' : $this->getOption('add_empty');
     }
-
-    $q = Doctrine_Query::create()
-          ->from($this->getOption('model') . ' a');
+    
+    $a = $this->getOption('alias');
+    $q = is_null($this->getOption('query')) ? Doctrine_Query::create()->from($this->getOption('model')." $a") : $this->getOption('query');
 
     if ($order = $this->getOption('order_by'))
     {
-      $q->orderBy('a.' . $order[0] . ' ' . $order[1]);
+      $q->orderBy("$a." . $order[0] . ' ' . $order[1]);
     }
 
     $objects = $q->execute();
