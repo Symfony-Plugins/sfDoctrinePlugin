@@ -80,6 +80,10 @@ function _get_doctrine_object_list($object, $method, $options)
     unset($options['dql']); # Otherwise it will show up in the html
 
     $allObjects = $foreignTable->findByDQL($dql);
+  } else if (isset($options['table_method'])) {
+    $throughTable = $object->getTable()->getRelation($options['through_class'])->getTable();
+    $peerMethod = $options['table_method'];
+    $allObjects = $throughTable->$peerMethod();
   } else {
     $allObjects = $foreignTable->findAll();
   }
