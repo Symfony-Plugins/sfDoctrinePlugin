@@ -29,7 +29,12 @@ class sfValidatorDoctrineChoiceMany extends sfValidatorDoctrineChoice
     {
       $values = array($values);
     }
-    
+
+    if(isset($values[0]) && !$values[0])
+    {
+      unset($values[0]);
+    }
+
     $a = $this->getOption('alias');
     $q = is_null($this->getOption('query')) ? Doctrine_Query::create()->from($this->getOption('model') . " $a") : $this->getOption('query');
     $q = $q->whereIn("$a." . $this->getColumn(), $values);
