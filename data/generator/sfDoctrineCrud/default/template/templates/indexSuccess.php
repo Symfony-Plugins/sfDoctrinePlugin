@@ -14,9 +14,9 @@
     <tr>
 <?php foreach ($this->getAllColumns() as $column): ?>
 <?php if ($column->isPrimaryKey()): ?>
-      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</a></td>
+      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>['<?php echo $column->getName() ?>'] ?]</a></td>
 <?php else: ?>
-      <td>[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</td>
+      <td>[?php echo $<?php echo $this->getSingularName() ?>['<?php echo $column->getName() ?>'] ?]</td>
 <?php endif; ?>
 <?php endforeach; ?>
     </tr>

@@ -213,7 +213,7 @@ class sfDoctrineCrudGenerator extends sfAdminGenerator
   {
     if ($developed)
     {
-      return sprintf("$%s%s->get('%s')", $prefix, $this->getSingularName(), $column->getName());
+      return sprintf("$%s%s['%s']", $prefix, $this->getSingularName(), $column->getName());
     }
 
     // no parenthesis, we return a method+parameters array
