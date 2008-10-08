@@ -34,6 +34,10 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   public function construct()
   {
     self::initializeI18n();
+
+    if ($this->getTable()->hasRelation('Translation')) {
+      $this->unshiftFilter(new sfDoctrineRecordI18nFilter());
+    }
   }
 
   /**
@@ -93,6 +97,17 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   }
 
   /**
+   * Get the primary key of a Doctrine_Record.
+   * This a proxy method to Doctrine_Record::identifier() for Propel BC
+   *
+   * @return mixed $identifier Array for composite primary keys and string for single primary key
+   */
+  public function getPrimaryKey()
+  {
+    return $this->identifier();
+  }
+
+  /**
    * __toString
    *
    * @return string $string
@@ -122,69 +137,6 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     }
 
     return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
-  }
-
-  /**
-   * Get the primary key of a Doctrine_Record.
-   * This a proxy method to Doctrine_Record::identifier() for Propel BC
-   *
-   * @return mixed $identifier Array for composite primary keys and string for single primary key
-   */
-  public function getPrimaryKey()
-  {
-    return $this->identifier();
-  }
-
-  /**
-   * Get a record attribute. Allows overriding Doctrine record accessors with Propel style functions
-   *
-   * @param string $name 
-   * @param string $load 
-   * @return void
-   */
-  public function get($name, $load = true)
-  {
-    if ($this->_isI18nField($name))
-    {
-      return $this->_get('Translation')->get(self::getDefaultCulture())->_get($name);
-    }
-    return parent::get($name, $load);
-  }
-
-  /**
-   * Set a record attribute. Allows overriding Doctrine record accessors with Propel style functions
-   *
-   * @param string $name 
-   * @param string $value 
-   * @param string $load 
-   * @return void
-   */
-  public function set($name, $value, $load = true)
-  {
-    if ($this->_isI18nField($name))
-    {
-      return $this->_get('Translation')->get(self::getDefaultCulture())->_set($name, $value);
-    }
-    return parent::set($name, $value, $load);
-  }
-
-  /**
-   * Check if a field is a part of the I18n behavior
-   *
-   * @param string $name 
-   * @return boolean $isI18nField Whether or not the field is a I18n field
-   */
-  protected function _isI18nField($name)
-  {
-    if ($this->getTable()->hasTemplate('Doctrine_Template_I18n'))
-    {
-      $fields = $this->getTable()->getTemplate('Doctrine_Template_I18n')->getI18n()->getOption('fields');
-      if (in_array($name, $fields))
-      {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
