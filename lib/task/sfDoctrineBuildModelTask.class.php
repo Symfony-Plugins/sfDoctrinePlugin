@@ -70,6 +70,8 @@ EOF;
       Doctrine_Lib::makeDirectories($tmpPath);
     }
 
+    $plugins = $this->configuration->getPlugins();
+
     foreach ($pluginSchemas as $schema)
     {
       $schema = str_replace('/', DIRECTORY_SEPARATOR, $schema);
@@ -78,14 +80,17 @@ EOF;
       $plugin = $e[0];
       $name = basename($schema);
 
-      $tmpSchemaPath = $tmpPath . DIRECTORY_SEPARATOR . $plugin . '-' . $name;
-
-      $models = Doctrine_Parser::load($schema, 'yml');
-      if(!isset($models['package'])) 
+      if (in_array($plugin, $plugins))
       {
-        $models['package'] = $plugin . '.lib.model.doctrine'; 
+        $tmpSchemaPath = $tmpPath . DIRECTORY_SEPARATOR . $plugin . '-' . $name;
+
+        $models = Doctrine_Parser::load($schema, 'yml');
+        if(!isset($models['package'])) 
+        {
+          $models['package'] = $plugin . '.lib.model.doctrine'; 
+        }
+        Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
       }
-      Doctrine_Parser::dump($models, 'yml', $tmpSchemaPath);
     }
 
     $options = array('generateBaseClasses'  => true,
