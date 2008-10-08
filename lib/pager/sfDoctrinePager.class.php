@@ -61,7 +61,7 @@ class sfDoctrinePager extends sfPager implements Serializable
   }
 
   /**
-   * init pager
+   * Initialize the pager instance and prepare it to be used for rendering
    *
    * @return void
    */

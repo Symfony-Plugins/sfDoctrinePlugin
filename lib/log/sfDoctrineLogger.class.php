@@ -20,8 +20,8 @@
  */
 class sfDoctrineLogger extends Doctrine_EventListener
 {
-  protected $connection = null;
-  protected $encoding = 'UTF8';
+  protected $connection = null,
+            $encoding = 'UTF8';
 
   /**
    * Log a query before it is executed

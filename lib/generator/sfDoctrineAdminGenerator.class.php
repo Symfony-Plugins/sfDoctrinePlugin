@@ -30,7 +30,6 @@ class sfDoctrineAdminGenerator extends sfDoctrineCrudGenerator
   {
     parent::initialize($generatorManager);
 
-//    $this->setGeneratorClass('sfDoctrineCrud');
     $this->setGeneratorClass('sfDoctrineAdmin');
   }
 
@@ -120,5 +119,4 @@ class sfDoctrineAdminGenerator extends sfDoctrineCrudGenerator
 
     return parent::getColumnFilterTag($column, $params);
   }
-  
 }

@@ -23,11 +23,29 @@ class sfDoctrineRecordI18nFilter extends Doctrine_Record_Filter
   {
   }
 
+  /**
+   * Implementation of filterSet() to call set on Translation relationship to allow
+   * access to I18n properties from the main object.
+   *
+   * @param Doctrine_Record $record
+   * @param string $name Name of the property
+   * @param string $value Value of the property
+   * @return void
+   */
   public function filterSet(Doctrine_Record $record, $name, $value)
   {
     return $record['Translation'][sfDoctrineRecord::getDefaultCulture()][$name] = $value;
   }
 
+  /**
+   * Implementation of filterGet() to call get on Translation relationship to allow
+   * access to I18n properties from the main object.
+   *
+   * @param Doctrine_Record $record
+   * @param string $name Name of the property
+   * @param string $value Value of the property
+   * @return void
+   */
   public function filterGet(Doctrine_Record $record, $name)
   {
     return $record['Translation'][sfDoctrineRecord::getDefaultCulture()][$name];

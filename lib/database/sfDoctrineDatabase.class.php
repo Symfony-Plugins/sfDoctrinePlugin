@@ -21,14 +21,25 @@
 class sfDoctrineDatabase extends sfDatabase
 {
   /**
-   * @var object Doctrine_Connection
+   * Instance of the Doctrine_Connection for this instance of sfDoctrineDatabase.
+   * Connection can be accessed by the getDoctrineConnection() accessor method.
+   *
+   * @var Doctrine_Connection $_doctrineConnection
    */
   protected $_doctrineConnection = null;
 
   /**
-   * initialize
+   * Initialize a sfDoctrineDatabase connection with the given parameters.
    *
-   * @param array $parameters
+   * <code>
+   * $parameters = array(
+   *    'name'       => 'doctrine',
+   *    'dsn'        => 'sqlite:////path/to/sqlite/db');
+   *
+   * $p = new sfDoctrineDatabase($parameters);
+   * </code>
+   *
+   * @param array $parameters  Array of parameters used to initialize the database connection
    * @return void
    */
   public function initialize($parameters = array())
@@ -51,8 +62,14 @@ class sfDoctrineDatabase extends sfDatabase
     {
       $this->_doctrineConnection->setAttribute($name, $value);
     }
-    $this->loadListeners();
 
+    // Load Query Logger Listener
+    if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
+    {
+      $this->_doctrineConnection->addListener(new sfDoctrineLogger());
+    }
+
+    // Invoke the configuration methods for the connection if they exist
     $configuration = sfProjectConfiguration::getActive();
 
     $method = sprintf('configureDoctrineConnection%s', ucwords($this->_doctrineConnection->getName()));
@@ -69,30 +86,7 @@ class sfDoctrineDatabase extends sfDatabase
   }
 
   /**
-   * Load all the listeners
-   *
-   * @return void
-   */
-  protected function loadListeners()
-  {
-    // Get encoding
-    $encoding = $this->getParameter('encoding', 'UTF8');
-
-    // Add the default sf_doctrineConnectionListener
-    $eventListener = new sfDoctrineConnectionListener($this->_doctrineConnection, $encoding);
-    $this->_doctrineConnection->addListener($eventListener);
-
-    // Load Query Logger Listener
-    if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
-    {
-      $this->_doctrineConnection->addListener(new sfDoctrineLogger());
-    }
-
-    $config = $this->getParameter('config');
-  }
-
-  /**
-   * Get the Doctrine connection instance
+   * Get the Doctrine_Connection instance.
    *
    * @return Doctrine_Connection $conn
    */
@@ -102,7 +96,7 @@ class sfDoctrineDatabase extends sfDatabase
   }
 
   /**
-   * Initializes the connection and sets it to object
+   * Initializes the connection and sets it to object.
    *
    * @return void
    */

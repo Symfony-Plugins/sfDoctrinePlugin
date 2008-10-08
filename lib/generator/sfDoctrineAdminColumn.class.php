@@ -21,7 +21,7 @@
 class sfDoctrineAdminColumn extends sfAdminColumn
 {
   /**
-   * docToCreole
+   * Array mapping Doctrine column types to the native symfony type
    */
   static $docToCreole = array(
     'boolean'   => 1,
@@ -41,30 +41,29 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   );
 
   /**
-   * relatedClassName
+   * Store the name of the related class for this column if it is
+   * a foreign key
    *
    * @var string
    */
   protected $relatedClassName = null;
 
   /**
-   * name
+   * Field name of the column
    *
    * @var string
    */
   protected $name = null;
 
   /**
-   * columnName
-   *
-   * stores the real foreign id column
+   * Real name of the column in the database
    *
    * @var string
    */
   protected $columnName;
 
   /**
-   * getDoctrineType
+   * Get the Doctrine type of the column
    *
    * @return void
    */
@@ -74,25 +73,25 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * getCreoleTypes
+   * Get symfony type of the column
    *
    * @return void
    */
-  public function getCreoleType()
+  public function getType()
   {
-    $dType = $this->getDoctrineType();
+    $doctrineType = $this->getDoctrineType();
 
     // we simulate the CHAR/VARCHAR types to generate input_tags
-    if(($dType == 'string') and ($this->getSize() < 256))
+    if(($doctrineType == 'string') and ($this->getSize() < 256))
     {
-      return 17;
+      return 7;
     }
 
-    return $dType ? self::$docToCreole[$dType] : -1;
+    return $doctrineType ? self::$docToCreole[$doctrineType] : -1;
   }
 
   /**
-   * getSize
+   * Get size/length of the column
    *
    * @return void
    */
@@ -102,9 +101,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * isNotNull
+   * Returns true of the column is not null and false if it is null
    *
-   * @return void
+   * @return boolean
    */
   public function isNotNull()
   {
@@ -116,7 +115,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * isPrimaryKey
+   * Returns true if the column is a primary key and false if it is not
    *
    * @return void
    */
@@ -130,9 +129,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * setRelatedClassName
+   * Set the name of the related class name for this column foreign key
    *
-   * @param string $newName
+   * @param string $newName  Name of the related class
    * @return void
    */
   public function setRelatedClassName($newName)
@@ -141,9 +140,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * getRelatedClassName
+   * Get the name of the related class for this column foreign key.
    *
-   * @return void
+   * @return string $relatedClassName
    */
   public function getRelatedClassName()
   {
@@ -151,7 +150,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * setColumnName
+   * Set the column name
    *
    * @param string $newName
    * @return void
@@ -162,9 +161,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * getColumnName
+   * Get the column name
    *
-   * @return void
+   * @return string $columnName
    */
   public function getColumnName()
   {
@@ -172,9 +171,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * setColumnInfo
+   * Set array of column information
    *
-   * @param string $col
+   * @param array $col
    * @return void
    */
   public function setColumnInfo($col)
@@ -183,9 +182,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * setName
-   *
-   * // FIXME: Should this be removed? it is not used anywhere
+   * Set the name of the column
    *
    * @param string $newName
    * @return void
@@ -196,7 +193,7 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * getName
+   * Get the name of the column
    *
    * @return void
    */
@@ -211,9 +208,9 @@ class sfDoctrineAdminColumn extends sfAdminColumn
   }
 
   /**
-   * isForeignKey
+   * Returns true if this column is a foreign key and false if it is not
    *
-   * @return void
+   * @return boolean $isForeignKey
    */
   public function isForeignKey()
   {

@@ -81,9 +81,9 @@ class sfDoctrineFormGenerator extends sfGenerator
     $file = sfConfig::get('sf_lib_dir').'/form/doctrine/base/BaseFormDoctrine.class.php';
     if (!file_exists($file))
     {
-      if (!is_dir(sfConfig::get('sf_lib_dir').'/form/doctrine'))
+      if (!is_dir(sfConfig::get('sf_lib_dir').'/form/doctrine/base'))
       {
-        mkdir(sfConfig::get('sf_lib_dir').'/form/doctrine', 0777, true);
+        mkdir(sfConfig::get('sf_lib_dir').'/form/doctrine/base', 0777, true);
       }
 
       file_put_contents($file, $this->evalTemplate('sfDoctrineFormBaseTemplate.php'));

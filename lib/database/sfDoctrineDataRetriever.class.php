@@ -10,6 +10,9 @@
  */
 
 /**
+ * Doctrine data retriever. Used to assist helpers with retrieving data for
+ * selector options.
+ *
  * @package    symfony
  * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
@@ -18,15 +21,21 @@
  */
 class sfDoctrineDataRetriever
 {
-  static public function retrieveObjects($class, $peer_method = 'findAll')
+  /**
+   * Used internally by symfony for retrieving objects for selector helper options.
+   *
+   * @param string $model       Name of the model to retrieve the objects from.
+   * @param string $peerMethod  Name of the peer method to invoke on the Doctrine_Table instance for the model.
+   */
+  static public function retrieveObjects($class, $peerMethod = 'findAll')
   {
-    if (!$peer_method)
+    if (!$peerMethod)
     {
-      $peer_method = 'findAll';
+      $peerMethod = 'findAll';
     }
 
     $table = Doctrine::getTable($class);
 
-    return call_user_func(array($table, $peer_method));
+    return call_user_func(array($table, $peerMethod));
   }
 }

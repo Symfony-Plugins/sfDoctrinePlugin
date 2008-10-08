@@ -20,13 +20,13 @@
  */
 class sfDoctrineCli extends Doctrine_Cli
 {
-  protected $dispatcher;
-  protected $formatter;
+  protected $dispatcher,
+            $formatter;
 
   /**
-   * setDispatcher
+   * Set the dispatcher of the cli instance
    *
-   * @param string $dispatcher
+   * @param object $dispatcher
    * @return void
    */
   public function setDispatcher($dispatcher)
@@ -35,9 +35,9 @@ class sfDoctrineCli extends Doctrine_Cli
   }
 
   /**
-   * setFormatter
+   * Set the formatter to use for the cli
    *
-   * @param string $formatter
+   * @param object $formatter
    * @return void
    */
   public function setFormatter($formatter)
@@ -46,11 +46,11 @@ class sfDoctrineCli extends Doctrine_Cli
   }
 
   /**
-   * notify
+   * Notify the dispatcher of a message. We silent the messages from the Doctrine cli.
    *
    * @param string $notification
    * @param string $style
-   * @return void
+   * @return false
    */
   public function notify($notification = null, $style = 'HEADER')
   {
@@ -58,9 +58,9 @@ class sfDoctrineCli extends Doctrine_Cli
   }
 
   /**
-   * notifyException
+   * Notify symfony of an exception thrown by the Doctrine cli
    *
-   * @param string $exception
+   * @param Doctrine_Exception $exception
    * @return void
    * @throws sfException
    */
