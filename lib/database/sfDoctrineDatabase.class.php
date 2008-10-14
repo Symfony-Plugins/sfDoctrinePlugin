@@ -63,6 +63,10 @@ class sfDoctrineDatabase extends sfDatabase
       $this->_doctrineConnection->setAttribute($name, $value);
     }
 
+    $encoding = $this->getParameter('encoding', 'UTF8'); 
+    $eventListener = new sfDoctrineConnectionListener($this->_doctrineConnection, $encoding); 
+    $this->_doctrineConnection->addListener($eventListener);
+
     // Load Query Logger Listener
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
