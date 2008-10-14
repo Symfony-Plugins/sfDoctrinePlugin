@@ -37,11 +37,11 @@ class sfDoctrineRoute extends sfObjectRoute
     parent::__construct($pattern, $defaults, $requirements, $options);
 
     $this->options['object_model'] = $this->options['model'];
-    $this->options['model'] = Doctrine::getTable($this->options['model']);
   }
 
   protected function getObjectForParameters($parameters)
   {
+    $this->options['model'] = Doctrine::getTable($this->options['model']);
     if (!isset($this->options['method']))
     {
       $className = $this->options['model'];
