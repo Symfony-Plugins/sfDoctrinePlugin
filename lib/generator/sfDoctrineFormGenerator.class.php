@@ -321,7 +321,7 @@ class sfDoctrineFormGenerator extends sfGenerator
 
     foreach ($this->table->getRelations() as $relation)
     {
-      if ($relation['local'] == $name)
+      if (strtolower($relation['local']) == strtolower($name))
       {
         return true;
       }
@@ -340,7 +340,7 @@ class sfDoctrineFormGenerator extends sfGenerator
   {
     foreach ($this->table->getRelations() as $relation)
     {
-      if ($relation['local'] == $name)
+      if (strtolower($relation['local']) == strtolower($name))
       {
         return $relation['table'];
       }
