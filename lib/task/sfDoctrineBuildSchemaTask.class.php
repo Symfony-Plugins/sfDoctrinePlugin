@@ -35,7 +35,7 @@ class sfDoctrineBuildSchemaTask extends sfDoctrineBaseTask
     $this->aliases = array('doctrine-build-schema');
     $this->namespace = 'doctrine';
     $this->name = 'build-schema';
-    $this->briefDescription = 'Creates a schema.xml from an existing database';
+    $this->briefDescription = 'Creates a schema from an existing database';
 
     $this->detailedDescription = <<<EOF
 The [doctrine:build-schema|INFO] task introspects a database to create a schema:
