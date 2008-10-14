@@ -25,19 +25,23 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
   public function initialize(sfEventDispatcher $dispatcher, sfFormatter $formatter)
   {
     parent::initialize($dispatcher, $formatter);
-
-    if (!self::$done)
-    {
-      $libDir = dirname(__FILE__).'/..';
-
-      $autoloader = sfSimpleAutoload::getInstance();
-      $autoloader->addDirectory($libDir);
-      $autoloader->register();
-
-      self::$done = true;
-    }
+    self::$done = true;
   }
+  protected function createConfiguration($application, $env, $isDebug)
+  {
+    $configuration = parent::createConfiguration($application, $env, $isDebug);
 
+    $autoloader = sfSimpleAutoload::getInstance();
+    $config = new sfAutoloadConfigHandler();
+    $mapping = $config->evaluate($configuration->getConfigPaths('config/autoload.yml'));
+    foreach ($mapping as $class => $file)
+    {
+      $autoloader->setClassPath($class, $file);
+    }
+    $autoloader->register();
+
+    return $configuration;
+  }
   /**
    * Get array of configuration variables for the Doctrine cli
    *
