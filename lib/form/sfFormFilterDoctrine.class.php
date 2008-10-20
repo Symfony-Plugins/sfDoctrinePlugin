@@ -199,7 +199,7 @@ abstract class sfFormFilterDoctrine extends sfFormFilter
       }
       else if (!is_null($values['from']))
       {
-        $query->andWhere('r.' . $fieldName . ' >= ?', $values['from'])
+        $query->andWhere('r.' . $fieldName . ' >= ?', $values['from']);
       }
       else if (!is_null($values['to']))
       {
