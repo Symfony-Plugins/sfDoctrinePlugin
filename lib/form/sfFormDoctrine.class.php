@@ -250,7 +250,7 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function getI18nModelName()
   {
-    return $this->getObject()->getI18n()->getOption('className');
+    return $this->getObject()->getTable()->getTemplate('Doctrine_Template_I18n')->getI18n()->getOption('className')
   }
 
   /**
