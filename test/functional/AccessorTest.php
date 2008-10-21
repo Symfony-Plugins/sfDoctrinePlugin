@@ -13,7 +13,7 @@ $fixtures = 'fixtures/fixtures.yml';
 require_once(dirname(__FILE__).'/../bootstrap/functional.php');
 require_once(dirname(__FILE__).'/../bootstrap/unit.php');
 
-$t = new lime_test(4, new lime_output_color());
+$t = new lime_test(12, new lime_output_color());
 
 $authors = Doctrine::getTable('Author')->findAll();
 $t->is(count($authors), 2);
@@ -32,3 +32,16 @@ $t->is($author->getId(), 1);
 // Make sure we still have only 2 authors
 $authors = Doctrine::getTable('Author')->findAll();
 $t->is(count($authors), 2);
+
+$article = new Article();
+$article->title = 'test';
+$t->is((string) $article, 'test');
+$t->is($article->getAuthor_id(), $article->author_id);
+$t->is($article->getAuthorId(), $article->author_id);
+$t->is($article->getauthorId(), $article->author_id);
+$t->is($article->getAuthorID(), $article->author_id);
+$t->is($article->getauthor_id(), $article->author_id);
+
+$article->setAuthor($author);
+$t->is($article->Author, $author);
+$t->is($article->getAuthor(), $author);

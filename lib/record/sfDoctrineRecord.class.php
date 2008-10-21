@@ -35,7 +35,8 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   {
     self::initializeI18n();
 
-    if ($this->getTable()->hasRelation('Translation')) {
+    if ($this->getTable()->hasRelation('Translation'))
+    {
       $this->unshiftFilter(new sfDoctrineRecordI18nFilter());
     }
   }
@@ -108,18 +109,12 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   }
 
   /**
-   * __toString
+   * Returns a string representation of the record.
    *
-   * @return string $string
+   * @return string A string representation of the record.
    */
   public function __toString()
   {
-    // if the current object doesn't exist we return nothing
-    if (!$this->exists())
-    {
-      return '-';
-    }
-
     $guesses = array('name',
                      'title',
                      'description',
@@ -139,41 +134,49 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
   }
 
-  /**
-   * This magic __call is used to provide propel style accessors to Doctrine models
+  /*
+   * Provide accessors with setters and getters to Doctrine models.
    *
-   * @param string $m 
-   * @param string $a 
-   * @return void
+   * @param  string $method     The method name.
+   * @param  array  $arguments  The method arguments.
+   * @return mixed The returned value of the called method.
    */
-  public function __call($m, $a)
+  public function __call($method, $arguments)
   {
     try {
-      $verb = substr($m, 0, 3);
-
-      if ($verb == 'set' || $verb == 'get')
+      if (in_array($verb = substr($method, 0, 3), array('set', 'get')))
       {
-        $camelColumn = substr($m, 3);
+        $name = substr($method, 3);
 
-        // If is a relation
-        if (in_array($camelColumn, array_keys($this->getTable()->getRelations())))
+        $table = $this->getTable();
+        if ($table->hasRelation($name))
         {
-          $column = $camelColumn;
-        } else {
-          $column = sfInflector::underscore($camelColumn);
+          $entityName = $name;
+        }
+        else if ($table->hasField($fieldName = $table->getFieldName($name)))
+        {
+          $entityName = strtolower($fieldName);
+        }
+        else
+        {
+          $underScored = $table->getFieldName(sfInflector::underscore($name));
+          if ($table->hasField($underScored))
+          {
+            $entityName = $underScored;
+          } else {
+            $entityName = strtolower($name);
+          }
         }
 
-        if ($verb == 'get')
-        {
-          return $this->get($column);
-        } else {
-          return $this->set($column, $a[0]);
-        }
+        return call_user_func_array(
+          array($this, 'parent::' . $verb),
+          array_merge(array($entityName), $arguments)
+        );
       } else {
-        return parent::__call($m, $a);
+        return parent::__call($method, $arguments);
       }
     } catch(Exception $e) {
-      return parent::__call($m, $a);
+      return parent::__call($method, $arguments);
     }
   }
 }

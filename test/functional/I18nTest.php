@@ -23,4 +23,8 @@ sfContext::getInstance()->getUser()->setCulture('fr');
 $article->title = 'fr test';
 $t->is($article->Translation['fr']->title, 'fr test');
 
+$t->is($article->getTitle(), $article->title);
+$article->setTitle('test');
+$t->is($article->getTitle(), 'test');
+
 $b->get('articles/index');
