@@ -62,6 +62,10 @@ EOF;
   {
     $databaseManager = new sfDatabaseManager($this->configuration);
 
+    $config = $this->getCliConfig();
+    $dir = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'fixtures';
+    Doctrine_Lib::makeDirectories($dir);
+
     $args = array();
     if (isset($arguments['target']))
     {
@@ -69,14 +73,14 @@ EOF;
 
       if (!sfToolkit::isPathAbsolute($filename))
       {
-        $dir = sfConfig::get('sf_data_dir') . DIRECTORY_SEPARATOR . 'fixtures';
         $filename = $dir . DIRECTORY_SEPARATOR . $filename;
       }
-    
-      $args = array('data_fixtures_path' => $filename);
-      $this->logSection('doctrine', sprintf('dumping data to fixtures to "%s"', $fileName));
+
+      Doctrine_Lib::makeDirectories(dirname($filename));
+
+      $args = array('data_fixtures_path' => array($filename));
+      $this->logSection('doctrine', sprintf('dumping data to fixtures to "%s"', $filename));
     } else {
-      $config = $this->getCliConfig();
       $this->logSection('doctrine', sprintf('dumping data to fixtures to "%s"', $config['data_fixtures_path'][0]));
     }
 
