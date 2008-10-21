@@ -418,6 +418,19 @@ class sfDoctrineFormGenerator extends sfGenerator
         $validatorSubclass = 'Boolean';
         break;
       case 'string':
+    		if(isset($column['email']) && $column['email'])
+    		{
+    		  $validatorSubclass = 'Email';
+    		}
+    		else if(isset($column['regexp']))
+    		{
+    		  $validatorSubclass = 'Regex';
+    		}
+    		else
+    		{
+    		  $validatorSubclass = 'String';
+    		}
+        break;
       case 'clob':
       case 'glob':
         $validatorSubclass = 'String';
@@ -481,6 +494,15 @@ class sfDoctrineFormGenerator extends sfGenerator
           if ($column['length'])
           {
             $options[] = sprintf('\'max_length\' => %s', $column['length']);
+          }
+          if (isset($column['minlength']))
+          {
+            $options[] = sprintf('\'min_length\' => %s', $column['minlength']);
+          }
+          if (isset($column['regexp']))
+          {
+            $options = array();
+            $options[] = sprintf('\'pattern\' => \'%s\'', $column['regexp']);
           }
           break;
         case 'enum':
