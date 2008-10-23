@@ -241,7 +241,9 @@ $outputPattern = ($type == 'date' ? 'i' : 'I');
       $foreignKey = empty($foreignKey) ? null : $foreignKey;
       $this-><?php echo $this->getSingularName()?>->set('<?php echo $column->getColumnName()?>', $foreignKey);
 <?php else: ?>
-      $this-><?php echo $this->getSingularName() ?>->set('<?php echo $column->getName() ?>', $<?php echo $this->getSingularName() ?>['<?php echo $name ?>']);
+      $value = $<?php echo $this->getSingularName() ?>['<?php echo $name ?>'];
+      $value = $value == '' ? null:$value;
+      $this-><?php echo $this->getSingularName() ?>->set('<?php echo $column->getName() ?>', $value);
 <?php endif; ?>
 <?php if ($type != 'boolean'): ?>
     }

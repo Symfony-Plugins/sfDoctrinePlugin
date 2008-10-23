@@ -91,6 +91,7 @@ $outputPattern = ($type == 'date' ? 'i' : 'I'); ?>
 <?php elseif ($column->isForeignKey()): ?>
        $<?php echo $this->getSingularName()?>->set('<?php echo $column->getColumnName()?>', (empty($newValue) ? null : $newValue));
 <?php else: ?>
+       $newValue = $newValue == '' ? null:$newValue;
 	     <?php echo $this->getColumnSetter($column, '$newValue', false, '');?>;
 <?php endif; ?>
     }
