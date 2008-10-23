@@ -24,20 +24,20 @@ class sfDoctrineAdminColumn extends sfAdminColumn
    * Array mapping Doctrine column types to the native symfony type
    */
   static $docToCreole = array(
-    'boolean'   => 1,
-    'string'    => 17,
-    'integer'   => 5,
-    'date'      => 10,
-    'timestamp' => 12,
-    'time'      => 11,
-    'enum'      => 4,
-    'float'     => 8,
-    'double'    => 8,
-    'clob'      => 16,
-    'blob'      => 15,
-    'object'    => 7,
-    'array'     => 7,
-    'decimal'   => 18,
+    'boolean'   => 'BOOLEAN',
+    'string'    => 'LONGVARCHAR',
+    'integer'   => 'INTEGER',
+    'date'      => 'DATE',
+    'timestamp' => 'TIMESTAMP',
+    'time'      => 'TIME',
+    'enum'      => 'LONGVARCHAR',
+    'float'     => 'FLOAT',
+    'double'    => 'DOUBLE',
+    'clob'      => 'CLOB',
+    'blob'      => 'BLOB',
+    'object'    => 'LONGVARCHAR',
+    'array'     => 'LONGVARCHAR',
+    'decimal'   => 'DECIMAL',
   );
 
   /**
@@ -84,10 +84,15 @@ class sfDoctrineAdminColumn extends sfAdminColumn
     // we simulate the CHAR/VARCHAR types to generate input_tags
     if(($doctrineType == 'string') and ($this->getSize() < 256))
     {
-      return 7;
+      return 'VARCHAR';
     }
 
     return $doctrineType ? self::$docToCreole[$doctrineType] : -1;
+  }
+
+  public function getCreoleType()
+  {
+    return $this->getType();
   }
 
   /**
