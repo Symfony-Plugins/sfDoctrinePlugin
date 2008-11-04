@@ -1,6 +1,7 @@
 <?php
 
-sfConfig::get('sf_orm', 'doctrine');
+sfConfig::set('sf_orm', 'doctrine');
+sfConfig::set('sf_admin_module_web_dir', '/sfDoctrinePlugin');
 
 if (sfConfig::get('sf_web_debug'))
 {

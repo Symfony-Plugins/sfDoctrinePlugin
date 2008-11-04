@@ -103,11 +103,16 @@ EOF;
       {
         return $ret;
       }
-    }
 
-    $buildFilters = new sfDoctrineBuildFiltersTask($this->dispatcher, $this->formatter);
-    $buildFilters->setCommandApplication($this->commandApplication);
-    $ret = $buildFilters->run();
+      $buildFilters = new sfDoctrineBuildFiltersTask($this->dispatcher, $this->formatter);
+      $buildFilters->setCommandApplication($this->commandApplication);
+      $ret = $buildFilters->run();
+
+      if ($ret)
+      {
+        return $ret;
+      }
+    }
 
     $insertSql = new sfDoctrineInsertSqlTask($this->dispatcher, $this->formatter);
     $insertSql->setCommandApplication($this->commandApplication);

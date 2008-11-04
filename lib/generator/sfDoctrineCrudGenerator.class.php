@@ -18,7 +18,7 @@
  * @subpackage generator
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @author     Jonathan H. Wage <jonwage@gmail.com>
- * @version    SVN: $Id: sfPropelCrudGenerator.class.php 9132 2008-05-21 04:28:03Z Carl.Vondrick $
+ * @version    SVN: $Id: sfDoctrineCrudGenerator.class.php 9132 2008-05-21 04:28:03Z Carl.Vondrick $
  */
 
 class sfDoctrineCrudGenerator extends sfAdminGenerator

@@ -11,14 +11,14 @@
 require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
 
 /**
- * Generates a Doctrine module for a route definition.
+ * Generates a Doctrine admin module.
  *
  * @package    symfony
  * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineGenerateModuleForRouteTask.class.php 12161 2008-10-13 07:42:25Z fabien $
+ * @version    SVN: $Id: sfDoctrineGenerateAdminTask.class.php 12474 2008-10-31 10:41:27Z fabien $
  */
-class sfDoctrineGenerateModuleForRouteTask extends sfDoctrineBaseTask
+class sfDoctrineGenerateAdminTask extends sfDoctrineBaseTask
 {
   /**
    * @see sfTask
@@ -31,24 +31,33 @@ class sfDoctrineGenerateModuleForRouteTask extends sfDoctrineBaseTask
     ));
 
     $this->addOptions(array(
-      new sfCommandOption('theme', null, sfCommandOption::PARAMETER_REQUIRED, 'The theme name', 'default'),
-      new sfCommandOption('non-verbose-templates', null, sfCommandOption::PARAMETER_NONE, 'Generate non verbose templates'),
+      new sfCommandOption('theme', null, sfCommandOption::PARAMETER_REQUIRED, 'The theme name', 'admin'),
       new sfCommandOption('singular', null, sfCommandOption::PARAMETER_REQUIRED, 'The singular name', null),
       new sfCommandOption('plural', null, sfCommandOption::PARAMETER_REQUIRED, 'The plural name', null),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
     ));
 
     $this->namespace = 'doctrine';
-    $this->name = 'generate-module-for-route';
-    $this->briefDescription = 'Generates a Doctrine module for a route definition';
+    $this->name = 'generate-admin';
+    $this->briefDescription = 'Generates a Doctrine admin module';
 
     $this->detailedDescription = <<<EOF
-The [doctrine:generate-module-for-route|INFO] task generates a Doctrine module for a route definition:
+The [doctrine:generate-admin|INFO] task generates a Doctrine admin module:
 
-  [./symfony doctrine:generate-module-for-route frontend article|INFO]
+  [./symfony doctrine:generate-admin frontend article|INFO]
 
 The task creates a module in the [%frontend%|COMMENT] application for the
 [%article%|COMMENT] route definition found in [routing.yml|COMMENT].
+
+For the filters to work properly, you need to add a collection route for it:
+
+  articles:
+    class: sfDoctrineRouteCollection
+    options:
+      model:              Article
+      module:             article
+      collection_actions: { filter: post }
+
 EOF;
   }
 
@@ -85,17 +94,9 @@ EOF;
       '--env='.$options['env'],
       '--route-prefix='.$routeOptions['name'],
       '--with-doctrine-route',
+      '--generate-in-cache',
+      '--non-verbose-templates',
     );
-
-    if ($routeOptions['with_show'])
-    {
-      $taskOptions[] = '--with-show';
-    }
-
-    if ($options['non-verbose-templates'])
-    {
-      $taskOptions[] = '--non-verbose-templates';
-    }
 
     if (!is_null($options['singular']))
     {
@@ -107,7 +108,7 @@ EOF;
       $taskOptions[] = '--plural='.$options['plural'];
     }
 
-    $this->logSection('app', sprintf('Generating module "%s" for model "%s"', $module, $model));
+    $this->logSection('app', sprintf('Generating admin module "%s" for model "%s"', $module, $model));
 
     return $task->run(array($arguments['application'], $module, $model), $taskOptions);
   }

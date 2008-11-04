@@ -237,7 +237,7 @@ class sfDoctrineFormGenerator extends sfGenerator
 
     foreach ($this->getManyToManyRelations() as $relation)
     {
-      $names[] = array($relation['table']->getOption('name'), $relation['refTable']->getOption('name'), false, true);
+      $names[] = array($relation['table']->getOption('name'), $relation['alias'], false, true);
     }
 
     return $names;
@@ -538,7 +538,7 @@ class sfDoctrineFormGenerator extends sfGenerator
 
     foreach ($this->getManyToManyRelations() as $relation)
     {
-      if (($m = strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) > $max)
+      if (($m = strlen($this->underscore($relation['alias']).'_list')) > $max)
       {
         $max = $m;
       }

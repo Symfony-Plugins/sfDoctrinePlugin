@@ -19,7 +19,7 @@ class Base<?php echo $this->table->getOption('name') ?>FormFilter extends BaseFo
       '<?php echo $this->table->getFieldName($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getWidgetClassForColumn($name) ?>(<?php echo $this->getWidgetOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
-      '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>')),
+      '<?php echo $this->underscore($relation['alias']) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['alias']).'_list')) ?> => new sfWidgetFormDoctrineSelectMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>')),
 <?php endforeach; ?>
     ));
 
@@ -28,11 +28,11 @@ class Base<?php echo $this->table->getOption('name') ?>FormFilter extends BaseFo
       '<?php echo $this->table->getFieldName($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => new <?php echo $this->getValidatorClassForColumn($name) ?>(<?php echo $this->getValidatorOptionsForColumn($name) ?>),
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
-      '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>', 'required' => false)),
+      '<?php echo $this->underscore($relation['alias']) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['alias']).'_list')) ?> => new sfValidatorDoctrineChoiceMany(array('model' => '<?php echo $relation['table']->getOption('name') ?>', 'required' => false)),
 <?php endforeach; ?>
     ));
 
-    $this->widgetSchema->setNameFormat('<?php echo $this->underscore($this->modelName) ?>[%s]');
+    $this->widgetSchema->setNameFormat('<?php echo $this->underscore($this->modelName) ?>_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 
@@ -40,7 +40,7 @@ class Base<?php echo $this->table->getOption('name') ?>FormFilter extends BaseFo
   }
 
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
-  public function add<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>ListColumnQuery(Doctrine_Query $query, $field, $values)
+  public function add<?php echo $this->underscore($relation['alias']) ?>ListColumnQuery(Doctrine_Query $query, $field, $values)
   {
     if (!is_array($values))
     {
@@ -69,7 +69,7 @@ class Base<?php echo $this->table->getOption('name') ?>FormFilter extends BaseFo
       '<?php echo $this->table->getFieldName($name) ?>'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($name)) ?> => '<?php echo $this->table->getTypeOf($name) ?>',
 <?php endforeach; ?>
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
-      '<?php echo $this->underscore($relation['refTable']->getOption('name')) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['refTable']->getOption('name')).'_list')) ?> => 'ManyKey',
+      '<?php echo $this->underscore($relation['alias']) ?>_list'<?php echo str_repeat(' ', $this->getColumnNameMaxLength() - strlen($this->underscore($relation['alias']).'_list')) ?> => 'ManyKey',
 <?php endforeach; ?>
     );
   }

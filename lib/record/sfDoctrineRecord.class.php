@@ -105,7 +105,28 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function getPrimaryKey()
   {
-    return $this->identifier();
+    $identifier = (array) $this->identifier();
+    return end($identifier);
+  }
+
+  /**
+   * Function required by symfony >= 1.2 admin generators
+   *
+   * @return array
+   */
+  public function toParams()
+  {
+    return $this->toArray();
+  }
+
+  /**
+   * Function require by symfony >= 1.2 admin generators
+   *
+   * @return boolean
+   */
+  public function isNew()
+  {
+    return ! $this->exists();
   }
 
   /**

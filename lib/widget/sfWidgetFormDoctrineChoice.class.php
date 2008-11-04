@@ -74,7 +74,7 @@ class sfWidgetFormDoctrineChoice extends sfWidgetFormChoice
       $choices[''] = true === $this->getOption('add_empty') ? '' : $this->getOption('add_empty');
     }
 
-    $query = is_null($this->getOption('query')) ? new Doctrine_Query() : $this->getOption('query');
+    $query = is_null($this->getOption('query')) ? Doctrine_Query::create()->from($this->getOption('model')) : $this->getOption('query');
     if ($order = $this->getOption('order_by'))
     {
       $query->addOrderBy($order[0] . ' ' . $order[1]);
