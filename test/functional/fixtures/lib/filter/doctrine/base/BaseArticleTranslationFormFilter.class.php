@@ -29,7 +29,7 @@ class BaseArticleTranslationFormFilter extends BaseFormFilterDoctrine
       'slug'  => new sfValidatorPass(array('required' => false)),
     ));
 
-    $this->widgetSchema->setNameFormat('article_translation[%s]');
+    $this->widgetSchema->setNameFormat('article_translation_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 

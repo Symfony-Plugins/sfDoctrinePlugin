@@ -113,14 +113,12 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
   /**
    * Returns a sfWidgetForm class name for a given column.
    *
-   * @param  string    $columnName A column name
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The name of a subclass of sfWidgetForm
    */
-  public function getWidgetClassForColumn($columnName)
+  public function getWidgetClassForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
-    switch ($column['type'])
+    switch ($column->getDoctrineType())
     {
       case 'boolean':
         $name = 'Choice';
@@ -137,7 +135,7 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
         $name = 'FilterInput';
     }
 
-    if ($this->isColumnForeignKey($columnName))
+    if ($column->isForeignKey())
     {
       $name = 'DoctrineChoice';
     }
@@ -148,17 +146,15 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
   /**
    * Returns a PHP string representing options to pass to a widget for a given column.
    *
-   * @param  string    $columnName  A column name
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The options to pass to the widget as a PHP string
    */
-  public function getWidgetOptionsForColumn($columnName)
+  public function getWidgetOptionsForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
     $options = array();
 
-    $withEmpty = sprintf('\'with_empty\' => %s', $this->isColumnNotNull($columnName) ? 'false' : 'true');
-    switch ($column['type'])
+    $withEmpty = sprintf('\'with_empty\' => %s', $column->isNotNull() ? 'false' : 'true');
+    switch ($column->getDoctrineType())
     {
       case 'boolean':
         $options[] = "'choices' => array('' => 'yes or no', 1 => 'yes', 0 => 'no')";
@@ -170,14 +166,16 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
         $options[] = $withEmpty;
         break;
       case 'enum':
-        $values = array_combine($column['values'], $column['values']);
+        $values = array('' => '');
+        $values = array_merge($values, $column['values']);
+        $values = array_combine($values, $values);
         $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
         break;
     }
 
-    if ($this->isColumnForeignKey($columnName))
+    if ($column->isForeignKey())
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => true', $this->getForeignTable($columnName)->getOption('name'));
+      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => true', $column->getForeignTable()->getOption('name'));
     }
 
     return count($options) ? sprintf('array(%s)', implode(', ', $options)) : '';
@@ -186,14 +184,12 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
   /**
    * Returns a sfValidator class name for a given column.
    *
-   * @param  string    $columnName  A ColumnMap object
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The name of a subclass of sfValidator
    */
-  public function getValidatorClassForColumn($columnName)
+  public function getValidatorClassForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
-    switch ($column['type'])
+    switch ($column->getDoctrineType())
     {
       case 'boolean':
         $name = 'Choice';
@@ -217,7 +213,7 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
         $name = 'Pass';
     }
 
-    if ($this->isColumnPrimaryKey($columnName) || $this->isColumnForeignKey($columnName))
+    if ($column->isPrimarykey() || $column->isForeignKey())
     {
       $name = 'DoctrineChoice';
     }
@@ -228,18 +224,16 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
   /**
    * Returns a PHP string representing options to pass to a validator for a given column.
    *
-   * @param  string    $columnName  A column name
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The options to pass to the validator as a PHP string
    */
-  public function getValidatorOptionsForColumn($columnName)
+  public function getValidatorOptionsForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
     $options = array('\'required\' => false');
 
-    if ($this->isColumnForeignkey($columnName))
+    if ($column->isForeignKey())
     {
-      $columns = $this->getForeignTable($columnName)->getColumns();
+      $columns = $column->getForeignTable()->getColumns();
       foreach ($columns as $name => $col)
       {
         if (isset($col['primary']) && $col['primary'])
@@ -248,15 +242,15 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
         }
       }
 
-      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->getForeignTable($columnName)->getOption('name'), $this->getForeignTable($columnName)->getFieldName($name));
+      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $column->getForeignTable()->getOption('name'), $column->getForeignTable()->getFieldName($name));
     }
-    else if ($this->isColumnPrimaryKey($columnName))
+    else if ($column->isPrimaryKey())
     {
       $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->table->getOption('name'), $this->table->getFieldName($columnName));
     }
     else
     {
-      switch ($column['type'])
+      switch ($column->getDoctrineType())
       {
         case 'boolean':
           $options[] = "'choices' => array('', 1, 0)";
@@ -276,16 +270,17 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
     return count($options) ? sprintf('array(%s)', implode(', ', $options)) : '';
   }
 
-  public function getType($columnName)
+  public function getType($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
-    if ($this->isColumnForeignKey($columnName))
+    if ($column->isForeignKey())
     {
       return 'ForeignKey';
     }
 
-    switch ($column['type'])
+    switch ($column->getDoctrineType())
     {
+      case 'enum':
+        return 'Enum';
       case 'boolean':
         return 'Boolean';
       case 'date':

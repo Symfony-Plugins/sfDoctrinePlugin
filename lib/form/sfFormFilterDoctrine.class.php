@@ -116,17 +116,15 @@ abstract class sfFormFilterDoctrine extends sfFormFilter
         continue;
       }
 
-      try
+      if ($this->getTable()->hasField($field))
       {
         $method = sprintf('add%sColumnQuery', $this->getFieldName($field));
-      }
-      catch (Exception $e)
-      {
+      } else {
         // not a "real" column
         if (!method_exists($this, $method = sprintf('add%sColumnQuery', self::camelize($field))))
         {
           throw new LogicException(sprintf('You must define a "%s" method to be able to filter with the "%s" field.', $method, $field));
-        }
+        }  
       }
 
       if (method_exists($this, $method))
@@ -159,6 +157,13 @@ abstract class sfFormFilterDoctrine extends sfFormFilter
     {
       $query->addWhere('r.' . $fieldName . ' = ?', $value);
     }
+  }
+
+  protected function addEnumQuery(Doctrine_Query $query, $field, $value)
+  {
+    $fieldName = $this->getFieldName($field);
+
+    $query->addWhere('r.' . $fieldName . ' = ?', $value);
   }
 
   protected function addTextQuery(Doctrine_Query $query, $field, $values)

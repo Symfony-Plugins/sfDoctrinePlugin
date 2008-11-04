@@ -25,7 +25,7 @@ class BaseSubscriptionFormFilter extends BaseFormFilterDoctrine
       'status' => new sfValidatorChoice(array('required' => false, 'choices' => array('New' => 'New', 'Active' => 'Active', 'Pending' => 'Pending', 'Expired' => 'Expired'))),
     ));
 
-    $this->widgetSchema->setNameFormat('subscription[%s]');
+    $this->widgetSchema->setNameFormat('subscription_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 

@@ -250,11 +250,11 @@ class sfDoctrineFormGenerator extends sfGenerator
    */
   public function getPrimaryKey()
   {
-    foreach (array_keys($this->table->getColumns()) as $name)
+    foreach ($this->getColumns() as $column)
     {
-      if ($this->isColumnPrimaryKey($name))
+      if ($column->isPrimaryKey())
       {
-        return $this->table->getDefinitionOf($name);
+        return $column;
       }
     }
   }
@@ -262,14 +262,12 @@ class sfDoctrineFormGenerator extends sfGenerator
   /**
    * Returns a sfWidgetForm class name for a given column.
    *
-   * @param  ColumnMap A ColumnMap object
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The name of a subclass of sfWidgetForm
    */
-  public function getWidgetClassForColumn($columnName)
+  public function getWidgetClassForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
-    switch ($column['type'])
+    switch ($column->getDoctrineType())
     {
       case 'boolean':
         $widgetSubclass = 'InputCheckbox';
@@ -294,11 +292,11 @@ class sfDoctrineFormGenerator extends sfGenerator
         $widgetSubclass = 'Input';
     }
 
-    if ($this->isColumnPrimaryKey($columnName))
+    if ($column->isPrimaryKey())
     {
       $widgetSubclass = 'InputHidden';
     }
-    else if ($this->isColumnForeignKey($columnName))
+    else if ($column->isForeignKey())
     {
       $widgetSubclass = 'DoctrineSelect';
     }
@@ -307,93 +305,26 @@ class sfDoctrineFormGenerator extends sfGenerator
   }
 
   /**
-   * Check if a column is a foreign key
-   *
-   * @param array $column 
-   * @return boolean $bool
-   */
-  public function isColumnForeignKey($name)
-  {
-    if ($this->isColumnPrimaryKey($name))
-    {
-      return false;
-    }
-
-    foreach ($this->table->getRelations() as $relation)
-    {
-      if (strtolower($relation['local']) == strtolower($name))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Get the foreign table object for a column
-   *
-   * @param string $name 
-   * @param string $column 
-   * @return Doctrine_Table $table
-   */
-  public function getForeignTable($name)
-  {
-    foreach ($this->table->getRelations() as $relation)
-    {
-      if (strtolower($relation['local']) == strtolower($name))
-      {
-        return $relation['table'];
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Check if a column is a primary key
-   *
-   * @param string $name
-   * @return boolean $bool
-   */
-  public function isColumnPrimaryKey($name)
-  {
-    $column = $this->table->getDefinitionOf($name);
-    return (isset($column['primary']) && $column['primary']);
-  }
-
-  /**
-   * Check if a column is not null
-   *
-   * @param array $column 
-   * @return boolean $bool
-   */
-  public function isColumnNotNull($name)
-  {
-    $column = $this->table->getDefinitionOf($name);
-    return ((isset($column['notnull']) && $column['notnull']) || (isset($column['notblank']) && $column['notblank']));
-  }
-
-  /**
    * Returns a PHP string representing options to pass to a widget for a given column.
    *
-   * @param  ColumnMap A ColumnMap object
-   *
+   * @param  sfDoctrineColumn $column
    * @return string    The options to pass to the widget as a PHP string
    */
-  public function getWidgetOptionsForColumn($name)
+  public function getWidgetOptionsForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($name);
     $options = array();
 
-    if (!$this->isColumnPrimaryKey($name) && $this->isColumnForeignKey($name))
+    if ($column->isForeignKey())
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $this->getForeignTable($name)->getOption('name'), isset($column['notnull']) ? 'false' : 'true');
+      $options[] = sprintf('\'model\' => \'%s\', \'add_empty\' => %s', $column->getForeignTable()->getOption('name'), $column->isNotNull() ? 'false' : 'true');
     }
     else
     {
-      switch ($column['type'])
+      switch ($column->getDoctrineType())
       {
         case 'enum':
-          $values = array_combine($column['values'], $column['values']);
+          $values = $column->getDefinitionKey('values');
+          $values = array_combine($values, $values);
           $options[] = "'choices' => " . str_replace("\n", '', $this->arrayExport($values));
           break;
       }
@@ -405,24 +336,22 @@ class sfDoctrineFormGenerator extends sfGenerator
   /**
    * Returns a sfValidator class name for a given column.
    *
-   * @param  ColumnMap A ColumnMap object
-   *
+   * @param sfDoctrineColumn $column
    * @return string    The name of a subclass of sfValidator
    */
-  public function getValidatorClassForColumn($columnName)
+  public function getValidatorClassForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($columnName);
-    switch ($column['type'])
+    switch ($column->getDoctrineType())
     {
       case 'boolean':
         $validatorSubclass = 'Boolean';
         break;
       case 'string':
-    		if(isset($column['email']) && $column['email'])
+    		if ($column->getDefinitionKey('email'))
     		{
     		  $validatorSubclass = 'Email';
     		}
-    		else if(isset($column['regexp']))
+    		else if ($column->getDefinitionKey('regexp'))
     		{
     		  $validatorSubclass = 'Regex';
     		}
@@ -458,7 +387,7 @@ class sfDoctrineFormGenerator extends sfGenerator
         $validatorSubclass = 'Pass';
     }
 
-    if ($this->isColumnPrimaryKey($columnName) || $this->isColumnForeignKey($columnName))
+    if ($column->isPrimaryKey() || $column->isForeignKey())
     {
       $validatorSubclass = 'DoctrineChoice';
     }
@@ -469,26 +398,24 @@ class sfDoctrineFormGenerator extends sfGenerator
   /**
    * Returns a PHP string representing options to pass to a validator for a given column.
    *
-   * @param  ColumnMap A ColumnMap object
-   *
+   * @param sfDoctrineColumn $column
    * @return string    The options to pass to the validator as a PHP string
    */
-  public function getValidatorOptionsForColumn($name)
+  public function getValidatorOptionsForColumn($column)
   {
-    $column = $this->table->getDefinitionOf($name);
     $options = array();
 
-    if ($this->isColumnForeignKey($name))
+    if ($column->isForeignKey())
     {
-      $options[] = sprintf('\'model\' => \'%s\'', $this->getForeignTable($name)->getOption('name'));
+      $options[] = sprintf('\'model\' => \'%s\'', $column->getForeignTable()->getOption('name'));
     }
-    else if ($this->isColumnPrimaryKey($name))
+    else if ($column->isPrimaryKey())
     {
       $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->modelName, $name);
     }
     else
     {
-      switch ($column['type'])
+      switch ($column->getDoctrineType())
       {
         case 'string':
           if ($column['length'])
@@ -512,7 +439,7 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
     }
 
-    if (!$this->isColumnNotNull($name) || $this->isColumnPrimaryKey($name))
+    if (!$column->isNotNull() || $column->isPrimaryKey())
     {
       $options[] = '\'required\' => false';
     }
@@ -592,6 +519,21 @@ class sfDoctrineFormGenerator extends sfGenerator
   public function underscore($name)
   {
     return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), '\\1_\\2', $name));
+  }
+
+  /**
+   * Get array of sfDoctrineColumn objects
+   *
+   * @return array $columns
+   */
+  public function getColumns()
+  {
+    foreach (array_keys($this->table->getColumns()) as $name)
+    {
+      $columns[] = new sfDoctrineColumn($name, $this->table);
+    }
+
+    return $columns;
   }
 
   /**

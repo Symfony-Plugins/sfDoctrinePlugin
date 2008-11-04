@@ -27,7 +27,7 @@ class BaseArticleFormFilter extends BaseFormFilterDoctrine
       'updated_at' => new sfValidatorDateRange(array('required' => false, 'from_date' => new sfValidatorDate(array('required' => false)), 'to_date' => new sfValidatorDate(array('required' => false)))),
     ));
 
-    $this->widgetSchema->setNameFormat('article[%s]');
+    $this->widgetSchema->setNameFormat('article_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 

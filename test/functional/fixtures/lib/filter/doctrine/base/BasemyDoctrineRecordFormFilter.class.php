@@ -21,7 +21,7 @@ class BasemyDoctrineRecordFormFilter extends BaseFormFilterDoctrine
       'id' => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'myDoctrineRecord', 'column' => 'id')),
     ));
 
-    $this->widgetSchema->setNameFormat('my_doctrine_record[%s]');
+    $this->widgetSchema->setNameFormat('my_doctrine_record_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 

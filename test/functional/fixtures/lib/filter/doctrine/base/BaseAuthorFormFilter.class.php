@@ -23,7 +23,7 @@ class BaseAuthorFormFilter extends BaseFormFilterDoctrine
       'name' => new sfValidatorPass(array('required' => false)),
     ));
 
-    $this->widgetSchema->setNameFormat('author[%s]');
+    $this->widgetSchema->setNameFormat('author_filters[%s]');
 
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 

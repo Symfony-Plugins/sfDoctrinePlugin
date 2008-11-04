@@ -120,8 +120,10 @@ class sfDoctrineGenerator extends sfModelGenerator
       return 'ForeignKey';
     }
 
-    switch ($column->getType())
+    switch ($column->getDoctrineType())
     {
+      case 'enum':
+        return 'Enum';
       case 'boolean':
         return 'Boolean';
       case 'date':
@@ -204,11 +206,16 @@ class sfDoctrineGenerator extends sfModelGenerator
     return $names;
   }
 
+  /**
+   * Get array of sfDoctrineAdminColumn objects
+   *
+   * @return array $columns
+   */
   public function getColumns()
   {
-    foreach ($this->table->getColumns() as $name => $col)
+    foreach (array_keys($this->table->getColumns()) as $name)
     {
-      $columns[] = new sfDoctrineAdminColumn($name, $col);
+      $columns[] = new sfDoctrineColumn($name, $this->table);
     }
 
     return $columns;
