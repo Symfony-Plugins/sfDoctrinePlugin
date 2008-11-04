@@ -14,18 +14,14 @@ class BaseArticleTranslationFormFilter extends BaseFormFilterDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'id'    => new sfWidgetFormFilterInput(),
       'title' => new sfWidgetFormFilterInput(),
       'body'  => new sfWidgetFormFilterInput(),
-      'lang'  => new sfWidgetFormFilterInput(),
       'slug'  => new sfWidgetFormFilterInput(),
     ));
 
     $this->setValidators(array(
-      'id'    => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'ArticleTranslation', 'column' => 'id')),
       'title' => new sfValidatorPass(array('required' => false)),
       'body'  => new sfValidatorPass(array('required' => false)),
-      'lang'  => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'ArticleTranslation', 'column' => 'lang')),
       'slug'  => new sfValidatorPass(array('required' => false)),
     ));
 
@@ -44,11 +40,11 @@ class BaseArticleTranslationFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'    => 'integer',
-      'title' => 'string',
-      'body'  => 'string',
-      'lang'  => 'string',
-      'slug'  => 'string',
+      'id'    => 'Text',
+      'title' => 'Text',
+      'body'  => 'Text',
+      'lang'  => 'Text',
+      'slug'  => 'Text',
     );
   }
 }

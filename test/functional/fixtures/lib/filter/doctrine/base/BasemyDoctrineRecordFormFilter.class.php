@@ -14,11 +14,9 @@ class BasemyDoctrineRecordFormFilter extends BaseFormFilterDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'id' => new sfWidgetFormFilterInput(),
     ));
 
     $this->setValidators(array(
-      'id' => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'myDoctrineRecord', 'column' => 'id')),
     ));
 
     $this->widgetSchema->setNameFormat('my_doctrine_record_filters[%s]');
@@ -36,7 +34,7 @@ class BasemyDoctrineRecordFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id' => 'integer',
+      'id' => 'Text',
     );
   }
 }

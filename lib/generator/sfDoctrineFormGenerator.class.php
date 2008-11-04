@@ -411,7 +411,7 @@ class sfDoctrineFormGenerator extends sfGenerator
     }
     else if ($column->isPrimaryKey())
     {
-      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->modelName, $name);
+      $options[] = sprintf('\'model\' => \'%s\', \'column\' => \'%s\'', $this->modelName, $column->getName());
     }
     else
     {
@@ -455,9 +455,9 @@ class sfDoctrineFormGenerator extends sfGenerator
   public function getColumnNameMaxLength()
   {
     $max = 0;
-    foreach ($this->table->getColumns() as $name => $column)
+    foreach ($this->getColumns() as $column)
     {
-      if (($m = strlen($name)) > $max)
+      if (($m = strlen($column->getName())) > $max)
       {
         $max = $m;
       }

@@ -14,12 +14,10 @@ class BaseAuthorFormFilter extends BaseFormFilterDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'id'   => new sfWidgetFormFilterInput(),
       'name' => new sfWidgetFormFilterInput(),
     ));
 
     $this->setValidators(array(
-      'id'   => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'Author', 'column' => 'id')),
       'name' => new sfValidatorPass(array('required' => false)),
     ));
 
@@ -38,8 +36,8 @@ class BaseAuthorFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'   => 'integer',
-      'name' => 'string',
+      'id'   => 'Text',
+      'name' => 'Text',
     );
   }
 }

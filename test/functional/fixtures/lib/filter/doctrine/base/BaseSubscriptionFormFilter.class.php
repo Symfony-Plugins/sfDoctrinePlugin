@@ -14,13 +14,11 @@ class BaseSubscriptionFormFilter extends BaseFormFilterDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'id'     => new sfWidgetFormFilterInput(),
       'name'   => new sfWidgetFormFilterInput(),
-      'status' => new sfWidgetFormChoice(array('choices' => array('New' => 'New', 'Active' => 'Active', 'Pending' => 'Pending', 'Expired' => 'Expired'))),
+      'status' => new sfWidgetFormChoice(array('choices' => array('' => '', 'New' => 'New', 'Active' => 'Active', 'Pending' => 'Pending', 'Expired' => 'Expired'))),
     ));
 
     $this->setValidators(array(
-      'id'     => new sfValidatorDoctrineChoice(array('required' => false, 'model' => 'Subscription', 'column' => 'id')),
       'name'   => new sfValidatorPass(array('required' => false)),
       'status' => new sfValidatorChoice(array('required' => false, 'choices' => array('New' => 'New', 'Active' => 'Active', 'Pending' => 'Pending', 'Expired' => 'Expired'))),
     ));
@@ -40,9 +38,9 @@ class BaseSubscriptionFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'     => 'integer',
-      'name'   => 'string',
-      'status' => 'enum',
+      'id'     => 'Text',
+      'name'   => 'Text',
+      'status' => 'Enum',
     );
   }
 }
