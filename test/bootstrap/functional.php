@@ -22,6 +22,11 @@ function sf_functional_test_shutdown()
 {
   sfToolkit::clearDirectory(sfConfig::get('sf_cache_dir'));
   sfToolkit::clearDirectory(sfConfig::get('sf_log_dir'));
+  $databases = glob(sfConfig::get('sf_data_dir') . '/*.sqlite');
+  foreach ($databases as $database)
+  {
+    unlink($database);
+  }
 }
 
 // remove all cache
