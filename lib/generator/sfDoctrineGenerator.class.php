@@ -102,8 +102,7 @@ class sfDoctrineGenerator extends sfModelGenerator
       return sprintf("$%s%s['%s']", $prefix, $this->getSingularName(), $column);
     }
 
-    // no parenthesis, we return a method+parameters array
-    return array('get', array($column));
+    return 'get' . $column;
   }
 
   /**

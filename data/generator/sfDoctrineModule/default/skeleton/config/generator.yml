@@ -1,7 +1,4 @@
 generator:
-  class:              sfDoctrineCrudGenerator
+  class: sfPropelGenerator
   param:
-    model_class:      ##MODEL_CLASS##
-    theme:            default
-
 ##CONFIG##

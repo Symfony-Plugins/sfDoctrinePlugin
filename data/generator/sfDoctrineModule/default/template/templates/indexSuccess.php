@@ -4,19 +4,23 @@
 <table>
   <thead>
     <tr>
-<?php foreach ($this->getAllColumns() as $column): ?>
-      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getPhpName())) ?></th>
+<?php foreach ($this->getColumns() as $column): ?>
+      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getFieldName())) ?></th>
 <?php endforeach; ?>
     </tr>
   </thead>
   <tbody>
-    [?php foreach ($<?php echo $this->getSingularName() ?>List as $<?php echo $this->getSingularName() ?>): ?]
+    [?php foreach ($<?php echo $this->getPluralName() ?> as $<?php echo $this->getSingularName() ?>): ?]
     <tr>
-<?php foreach ($this->getAllColumns() as $column): ?>
+<?php foreach ($this->getColumns() as $column): ?>
 <?php if ($column->isPrimaryKey()): ?>
-      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>['<?php echo $column->getName() ?>'] ?]</a></td>
+<?php if (isset($this->params['route_prefix']) && $this->params['route_prefix']): ?>
+      <td><a href="[?php echo url_for('<?php echo $this->getUrlForAction(isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit') ?>', $<?php echo $this->getSingularName() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</a></td>
 <?php else: ?>
-      <td>[?php echo $<?php echo $this->getSingularName() ?>['<?php echo $column->getName() ?>'] ?]</td>
+      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</a></td>
+<?php endif; ?>
+<?php else: ?>
+      <td>[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</td>
 <?php endif; ?>
 <?php endforeach; ?>
     </tr>
@@ -24,4 +28,8 @@
   </tbody>
 </table>
 
-<a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['non_atomic_actions']) && $this->params['non_atomic_actions'] ? 'edit' : 'create' ?>') ?]">Create</a>
+<?php if (isset($this->params['route_prefix']) && $this->params['route_prefix']): ?>
+  <a href="[?php echo url_for('<?php echo $this->getUrlForAction('new') ?>') ?]">New</a>
+<?php else: ?>
+  <a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/new') ?]">New</a>
+<?php endif; ?>
