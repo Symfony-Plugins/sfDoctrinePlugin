@@ -41,16 +41,21 @@ class sfDoctrineRoute extends sfObjectRoute
 
   protected function getObjectForParameters($parameters)
   {
+    return $this->getObjectsForParameters($parameters);
+  }
+
+  protected function getObjectsForParameters($parameters)
+  {
     $this->options['model'] = Doctrine::getTable($this->options['model']);
     if (!isset($this->options['method']))
     {
-      $className = $this->options['model'];
       $variables = $this->getRealVariables();
       
       switch(count($variables))
       {
         case 0:
-          return false;
+          $this->options['method'] = 'findAll';
+          break;
         case 1:
           $this->options['method'] = 'findOneBy'.sfInflector::camelize($variables[0]);
           $parameters = $parameters[$variables[0]];
@@ -67,16 +72,6 @@ class sfDoctrineRoute extends sfObjectRoute
       }
     }
 
-    return parent::getObjectForParameters($parameters);
-  }
-
-  protected function getObjectsForParameters($parameters)
-  {
-    if (!isset($this->options['method']))
-    {
-      $this->options['method'] = 'find';
-    }
-
-    return parent::getObjectForParameters($parameters);
+    return parent::getObjectsForParameters($parameters);
   }
 }
