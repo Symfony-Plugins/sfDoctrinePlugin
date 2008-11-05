@@ -1,6 +1,6 @@
   public function executeCreate(sfWebRequest $request)
   {
-<?php if (isset($this->params['with_propel_route']) && $this->params['with_propel_route']): ?>
+<?php if (isset($this->params['with_doctrine_route']) && $this->params['with_doctrine_route']): ?>
 <?php else: ?>
     $this->forward404Unless($request->isMethod('post'));
 

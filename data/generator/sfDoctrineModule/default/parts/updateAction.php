@@ -1,6 +1,6 @@
   public function executeUpdate(sfWebRequest $request)
   {
-<?php if (isset($this->params['with_propel_route']) && $this->params['with_propel_route']): ?>
+<?php if (isset($this->params['with_doctrine_route']) && $this->params['with_doctrine_route']): ?>
     $this->form = new <?php echo $this->getModelClass().'Form' ?>($this->getRoute()->getObject());
 <?php else: ?>
     $this->forward404Unless($request->isMethod('post') || $request->isMethod('put'));

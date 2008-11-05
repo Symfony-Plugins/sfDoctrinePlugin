@@ -28,8 +28,8 @@
 
     $query = $this->filters->buildQuery($this->getFilters());
 <?php else: ?>
-    $query = Doctrine_Query::create()
-      ->from('<?php echo $this->getClassName() ?>')
+    $query = Doctrine::getTable('<?php echo $this->getModelClass() ?>')
+      ->createQuery('a');
 <?php endif; ?>
 
     $this->addSortQuery($query);

@@ -97,6 +97,16 @@ class sfDoctrineColumn implements ArrayAccess
   }
 
   /**
+   * Get php name. Exists for backwards compatibility with propel orm
+   *
+   * @return string $fieldName
+   */
+  public function getPhpName()
+  {
+    return $this->getFieldName();
+  }
+
+  /**
    * Get the Doctrine type of the column
    *
    * @return void

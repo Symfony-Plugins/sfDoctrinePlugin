@@ -2,8 +2,8 @@
   <tbody>
 <?php foreach ($this->getColumns() as $column): ?>
     <tr>
-      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getFieldName())) ?>:</th>
-      <td>[?= $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</td>
+      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getPhpName())) ?>:</th>
+      <td>[?= $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</td>
     </tr>
 <?php endforeach; ?>
   </tbody>

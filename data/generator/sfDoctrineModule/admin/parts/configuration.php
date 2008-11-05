@@ -59,18 +59,6 @@ class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfiguration ex
 
 <?php include dirname(__FILE__).'/sortingConfiguration.php' ?>
 
-  public function getPeerMethod()
-  {
-    return '<?php echo isset($this->config['list']['peer_method']) ? $this->config['list']['peer_method'] : 'doSelect' ?>';
-<?php unset($this->config['list']['peer_method']) ?>
-  }
-
-  public function getPeerCountMethod()
-  {
-    return '<?php echo isset($this->config['list']['peer_count_method']) ? $this->config['list']['peer_count_method'] : 'doCount' ?>';
-<?php unset($this->config['list']['peer_count_method']) ?>
-  }
-
   public function getConnection()
   {
     return null;

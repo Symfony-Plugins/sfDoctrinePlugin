@@ -5,7 +5,7 @@
   <thead>
     <tr>
 <?php foreach ($this->getColumns() as $column): ?>
-      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getFieldName())) ?></th>
+      <th><?php echo sfInflector::humanize(sfInflector::underscore($column->getPhpName())) ?></th>
 <?php endforeach; ?>
     </tr>
   </thead>
@@ -15,12 +15,12 @@
 <?php foreach ($this->getColumns() as $column): ?>
 <?php if ($column->isPrimaryKey()): ?>
 <?php if (isset($this->params['route_prefix']) && $this->params['route_prefix']): ?>
-      <td><a href="[?php echo url_for('<?php echo $this->getUrlForAction(isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit') ?>', $<?php echo $this->getSingularName() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</a></td>
+      <td><a href="[?php echo url_for('<?php echo $this->getUrlForAction(isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit') ?>', $<?php echo $this->getSingularName() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</a></td>
 <?php else: ?>
-      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</a></td>
+      <td><a href="[?php echo url_for('<?php echo $this->getModuleName() ?>/<?php echo isset($this->params['with_show']) && $this->params['with_show'] ? 'show' : 'edit' ?>?<?php echo $this->getPrimaryKeyUrlParams() ?>) ?]">[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</a></td>
 <?php endif; ?>
 <?php else: ?>
-      <td>[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getFieldName() ?>() ?]</td>
+      <td>[?php echo $<?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>() ?]</td>
 <?php endif; ?>
 <?php endforeach; ?>
     </tr>
