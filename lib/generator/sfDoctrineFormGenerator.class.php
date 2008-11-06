@@ -166,6 +166,11 @@ class sfDoctrineFormGenerator extends sfGenerator
             {
               $pluginName = basename(dirname(dirname(dirname($info['dirname']))));
               $this->pluginModels[$modelName] = $pluginName;
+              $generators = Doctrine::getTable($modelName)->getGenerators();
+              foreach ($generators as $generator)
+              {
+                $this->pluginModels[$generator->getOption('className')] = $pluginName;
+              }
             }
           }
         }
