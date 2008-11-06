@@ -148,7 +148,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
     {
       try
       {
-        return $this->get($descriptionColumn);
+        return (string) $this->get($descriptionColumn);
       } catch (Exception $e) {}
     }
 
