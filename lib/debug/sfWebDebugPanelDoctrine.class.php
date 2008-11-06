@@ -108,19 +108,19 @@ class sfWebDebugPanelDoctrine extends sfWebDebugPanel
    */
   protected function _getSqlLogs()
   {
-    $newSqlogs = array();
-    foreach ($this->webDebug->getLogger()->getLogs() as $newSqlog)
+    $newSqlLogs = array();
+    foreach ($this->webDebug->getLogger()->getLogs() as $newSqlLog)
     {
-      if (preg_match('/\b(SELECT|INSERT|UPDATE|DELETE)\b/', $newSqlog['message'], $match))
+      if (preg_match('/\b(SELECT|INSERT|UPDATE|DELETE)\b/', $newSqlLog['message'], $match))
       {
-        $e = explode(':', $newSqlog['message']);
+        $e = explode(':', $newSqlLog['message']);
         $sql = trim($e[1]);
         $sql = self::_formatSql($sql);
-        $newSqlogs[] = $sql;
+        $newSqlLogs[] = $sql;
       }
     }
 
-    return $newSqlogs;
+    return $newSqlLogs;
   }
 
   /**

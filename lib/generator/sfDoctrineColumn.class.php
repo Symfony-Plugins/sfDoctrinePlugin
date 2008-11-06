@@ -144,6 +144,11 @@ class sfDoctrineColumn implements ArrayAccess
     return $this->definition['length'];
   }
 
+  public function getLength()
+  {
+    return $this->getSize();
+  }
+
   /**
    * Check if the column definition has a certain key
    *
