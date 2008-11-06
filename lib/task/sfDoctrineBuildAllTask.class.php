@@ -77,7 +77,13 @@ EOF;
 
     $buildModel = new sfDoctrineBuildModelTask($this->dispatcher, $this->formatter);
     $buildModel->setCommandApplication($this->commandApplication);
-    $ret = $buildModel->run();
+    $buildModelOptions = array();
+    if (isset($options['application']) && $options['application'])
+    {
+      $buildModelOptions[] = '--application=' . $options['application'];
+    }
+    $buildModelOptions[] = '--env=' . $options['env'];
+    $ret = $buildModel->run(array(), $buildModelOptions);
 
     if ($ret)
     {
