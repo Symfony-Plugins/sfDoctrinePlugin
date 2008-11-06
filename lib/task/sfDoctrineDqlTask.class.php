@@ -74,7 +74,7 @@ EOF;
       echo sprintf('found %s results', $count) . "\n";
 
       $results = $q->fetchArray();
-      $yaml = sfYaml::dump($results);
+      $yaml = sfYaml::dump($results, 4);
       $lines = explode("\n", $yaml);
       foreach ($lines as $line)
       {
