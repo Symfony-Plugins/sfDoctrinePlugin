@@ -197,14 +197,25 @@ abstract class sfFormDoctrine extends sfForm
    *
    * @return BaseObject The current updated object
    */
-  public function updateObject()
+  public function updateObject($values = null)
   {
-    if (!$this->isValid())
+    if (is_null($values))
     {
-      throw $this->getErrorSchema();
+      $values = $this->values;
     }
-    
-    $this->object->fromArray($this->processValues());
+
+    $values = $this->processValues($values);
+
+    $this->object->fromArray($values);
+
+    // embedded forms
+    foreach ($this->embeddedForms as $name => $form)
+    {
+      if ($form instanceof sfFormPropel && is_array($values[$name]))
+      {
+        $form->updateObject($values[$name]);
+      }
+    }
 
     return $this->object;
   }
@@ -246,11 +257,11 @@ abstract class sfFormDoctrine extends sfForm
       {
         if (false === $ret = $this->$method($value))
         {
-            unset($values[$field]);
+          unset($values[$field]);
         }
         else
         {
-            $values[$field] = $ret;
+          $values[$field] = $ret;
         }
       }
       else
@@ -335,7 +346,27 @@ abstract class sfFormDoctrine extends sfForm
 
     $this->updateObject();
 
+    // embedded forms
+    $this->saveEmbeddedForms($con);
+
     $this->object->save($con);
+  }
+
+  public function saveEmbeddedForms($con = null)
+  {
+    if (is_null($con))
+    {
+      $con = $this->getConnection();
+    }
+
+    foreach ($this->embeddedForms as $form)
+    {
+      $form->saveEmbeddedForms($con);
+      if ($form instanceof sfFormPropel)
+      {
+        $form->getObject()->save($con);
+      }
+    }
   }
 
   /**
