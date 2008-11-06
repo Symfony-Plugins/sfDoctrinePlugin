@@ -238,7 +238,7 @@ abstract class sfFormDoctrine extends sfForm
       unset($values[$culture]);
     }
 
-    foreach ($this->values as $field => $value)
+    foreach ($values as $field => $value)
     {
       $method = sprintf('update%sColumn', Doctrine_Inflector::classify($field));
       
