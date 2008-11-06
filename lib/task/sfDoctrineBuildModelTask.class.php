@@ -105,7 +105,7 @@ EOF;
                      'packagesPath'         => sfConfig::get('sf_plugins_dir'),
                      'packagesPrefix'       => 'Plugin',
                      'suffix'               => '.class.php',
-                     'baseClassesDirectory' => 'generated',
+                     'baseClassesDirectory' => 'base',
                      'baseClassName'        => 'sfDoctrineRecord');
     $options = array_merge($options, sfConfig::get('doctrine_model_builder_options', array()));
 

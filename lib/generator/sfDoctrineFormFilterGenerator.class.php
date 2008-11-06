@@ -80,15 +80,22 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
 
       $baseDir = sfConfig::get('sf_lib_dir') . '/filter/doctrine';
 
+      $isPluginModel = $this->isPluginModel($model);
+      if ($isPluginModel)
+      {
+        $pluginName = $this->getPluginNameForModel($model);
+        $baseDir .= '/' . $pluginName;
+      }
+
       if (!is_dir($baseDir.'/base'))
       {
         mkdir($baseDir.'/base', 0777, true);
       }
 
       file_put_contents($baseDir.'/base/Base'.$model.'FormFilter.class.php', $this->evalTemplate('sfDoctrineFormFilterGeneratedTemplate.php'));
-      if ($this->isPluginModel($model))
+      if ($isPluginModel)
       {
-        $pluginBaseDir = sfConfig::get('sf_plugins_dir') . '/' . $this->getPluginNameForModel($model) . '/lib/filter/doctrine';
+        $pluginBaseDir = sfConfig::get('sf_plugins_dir') . '/' . $pluginName . '/lib/filter/doctrine';
         if (!file_exists($classFile = $pluginBaseDir.'/Plugin'.$model.'FormFilter.class.php'))
         {
             if (!is_dir($pluginBaseDir))
@@ -100,7 +107,7 @@ class sfDoctrineFormFilterGenerator extends sfDoctrineFormGenerator
       }
       if (!file_exists($classFile = $baseDir.'/'.$model.'FormFilter.class.php'))
       {
-        if ($this->isPluginModel($model))
+        if ($isPluginModel)
         {
            file_put_contents($classFile, $this->evalTemplate('sfDoctrinePluginFormFilterTemplate.php'));
         } else {

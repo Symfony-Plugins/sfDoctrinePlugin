@@ -94,8 +94,15 @@ class sfDoctrineFormGenerator extends sfGenerator
     {
       $this->table = Doctrine::getTable($model);
       $this->modelName = $model;
-      
+
       $baseDir = sfConfig::get('sf_lib_dir') . '/form/doctrine';
+
+      $isPluginModel = $this->isPluginModel($model);
+      if ($isPluginModel)
+      {
+        $pluginName = $this->getPluginNameForModel($model);
+        $baseDir .= '/' . $pluginName;
+      }
 
       if (!is_dir($baseDir.'/base'))
       {
@@ -103,9 +110,9 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
 
       file_put_contents($baseDir.'/base/Base'.$model.'Form.class.php', $this->evalTemplate('sfDoctrineFormGeneratedTemplate.php'));
-      if ($this->isPluginModel($model))
+      if ($isPluginModel)
       {
-        $pluginBaseDir = sfConfig::get('sf_plugins_dir') . '/' . $this->getPluginNameForModel($model) . '/lib/form/doctrine';
+        $pluginBaseDir = sfConfig::get('sf_plugins_dir') . '/' . $pluginName . '/lib/form/doctrine';
         if (!file_exists($classFile = $pluginBaseDir.'/Plugin'.$model.'Form.class.php'))
         {
             if (!is_dir($pluginBaseDir))
@@ -117,7 +124,7 @@ class sfDoctrineFormGenerator extends sfGenerator
       }
       if (!file_exists($classFile = $baseDir.'/'.$model.'Form.class.php'))
       {
-        if ($this->isPluginModel($model))
+        if ($isPluginModel)
         {
            file_put_contents($classFile, $this->evalTemplate('sfDoctrinePluginFormTemplate.php'));
         } else {
@@ -139,24 +146,27 @@ class sfDoctrineFormGenerator extends sfGenerator
   {
     if (!$this->pluginModels)
     {
-      $dirs = $this->generatorManager->getConfiguration()->getModelDirs();
-      $dirs = array_values($dirs);
-
-      $models = sfFinder::type('*.php')->in($dirs);
-      foreach ($models as $path)
+      $plugins = $this->generatorManager->getConfiguration()->getPlugins();
+      foreach ($plugins as $plugin)
       {
-        $info = pathinfo($path);
-        $e = explode('.', $info['filename']);
-        $modelName = substr($e[0], 6, strlen($e[0]));
+        $path = sfConfig::get('sf_plugins_dir') . '/' . $plugin . '/lib/model/doctrine';
+        $models = sfFinder::type('file')->name('*.php')->in($path);
 
-        if (class_exists($e[0]) && class_exists($modelName))
+        foreach ($models as $path)
         {
-          $parent = new ReflectionClass('Doctrine_Record');
-          $reflection = new ReflectionClass($modelName);
-          if ($reflection->isSubClassOf($parent))
+          $info = pathinfo($path);
+          $e = explode('.', $info['filename']);
+          $modelName = substr($e[0], 6, strlen($e[0]));
+
+          if (class_exists($e[0]) && class_exists($modelName))
           {
-            $pluginName = basename(dirname(dirname(dirname($info['dirname']))));
-            $this->pluginModels[$modelName] = $pluginName;
+            $parent = new ReflectionClass('Doctrine_Record');
+            $reflection = new ReflectionClass($modelName);
+            if ($reflection->isSubClassOf($parent))
+            {
+              $pluginName = basename(dirname(dirname(dirname($info['dirname']))));
+              $this->pluginModels[$modelName] = $pluginName;
+            }
           }
         }
       }
