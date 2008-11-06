@@ -203,7 +203,26 @@ abstract class sfFormDoctrine extends sfForm
     {
       throw $this->getErrorSchema();
     }
+    
+    $this->object->fromArray($this->processValues());
 
+    return $this->object;
+  }
+  
+  /**
+   * Processes cleaned up values with user defined methods.
+   *
+   * To process a value before it is used by the updateObject() method,
+   * you need to define an updateXXXColumn() method where XXX is the PHP name
+   * of the column.
+   *
+   * The method must return the processed value or false to remove the value
+   * from the array of cleaned up values.
+   *
+   * @return array An array of cleaned up values processed by the user defined methods
+   */
+  public function processValues()
+  {
     $values = $this->getValues();
 
     // remove special columns that are updated automatically
@@ -218,9 +237,33 @@ abstract class sfFormDoctrine extends sfForm
       $values['Translation'][$culture] = $translation;
       unset($values[$culture]);
     }
-    $this->object->fromArray($values);
 
-    return $this->object;
+    foreach ($this->values as $field => $value)
+    {
+      $method = sprintf('update%sColumn', Doctrine_Inflector::classify($field));
+      
+      if (method_exists($this, $method))
+      {
+        if (false === $ret = $this->$method($value))
+        {
+            unset($values[$field]);
+        }
+        else
+        {
+            $values[$field] = $ret;
+        }
+      }
+      else
+      {
+        // save files
+        if ($this->validatorSchema[$field] instanceof sfValidatorFile)
+        {
+          $values[$field] = $this->processUploadedFile($field);
+        }          
+      }
+    }
+
+    return $values;
   }
 
   /**
@@ -342,7 +385,7 @@ abstract class sfFormDoctrine extends sfForm
 
     if (!$this->getValue($field))
     {
-      return $this->object->$column;
+      return $this->object->$field;
     }
 
     // we need the base directory
