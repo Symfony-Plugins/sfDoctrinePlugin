@@ -64,6 +64,8 @@ EOF;
 
     $config = $this->getCliConfig();
 
+    $this->_checkForPackageParameter($config['yaml_schema_path']);
+
     $pluginSchemaDirectories = glob(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . '*' .DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine'); 
 
     $pluginSchemas = sfFinder::type('file')->name('*.yml')->in($pluginSchemaDirectories);
@@ -110,5 +112,27 @@ EOF;
     $import = new Doctrine_Import_Schema();
     $import->setOptions($options);
     $import->importSchema(array($tmpPath, $config['yaml_schema_path']), 'yml', $config['models_path']);
+  }
+
+  /**
+   * Check for package parameter in main schema files.
+   * sfDoctrinePlugin uses the package feature of Doctrine
+   * for plugins and cannot be used by the user
+   *
+   * @param string $path
+   * @return void
+   */
+  protected function _checkForPackageParameter($path)
+  {
+    $files = sfFinder::type('file')->name('*.yml')->in($path);
+    foreach ($files as $file)
+    {
+      if (strpos(file_get_contents($file), 'package:') !== false)
+      {
+        throw new sfDoctrineException(
+          sprintf('Cannot use package parameter in symfony Doctrine schema files. Found in "%s"', $file)
+        );
+      }
+    }
   }
 }
