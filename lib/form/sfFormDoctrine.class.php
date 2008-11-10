@@ -211,7 +211,7 @@ abstract class sfFormDoctrine extends sfForm
     // embedded forms
     foreach ($this->embeddedForms as $name => $form)
     {
-      if ($form instanceof sfFormPropel && is_array($values[$name]))
+      if ($form instanceof sfFormDoctrine && is_array($values[$name]))
       {
         $form->updateObject($values[$name]);
       }
@@ -232,9 +232,12 @@ abstract class sfFormDoctrine extends sfForm
    *
    * @return array An array of cleaned up values processed by the user defined methods
    */
-  public function processValues()
+  public function processValues($values = null)
   {
-    $values = $this->getValues();
+    if (is_null($values)) 
+    { 
+      $values = $this->getValues();
+    }
 
     // remove special columns that are updated automatically
     unset($values['id'], $values['updated_at'], $values['updated_on'], $values['created_at'], $values['created_on']);
@@ -362,7 +365,7 @@ abstract class sfFormDoctrine extends sfForm
     foreach ($this->embeddedForms as $form)
     {
       $form->saveEmbeddedForms($con);
-      if ($form instanceof sfFormPropel)
+      if ($form instanceof sfFormDoctrine)
       {
         $form->getObject()->save($con);
       }
