@@ -470,7 +470,7 @@ abstract class sfFormDoctrine extends sfForm
 
     if (!is_null($filename))
     {
-      return $this->getValue($field)->save();
+      return $this->getValue($field)->save($filename);
     }
     else if (method_exists($this->object, $method))
     {
