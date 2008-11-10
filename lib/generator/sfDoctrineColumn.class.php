@@ -187,6 +187,10 @@ class sfDoctrineColumn implements ArrayAccess
     {
       return $this->definition['notnull'];
     }
+    if (isset($this->definition['notblank']))
+    {
+      return $this->definition['notblank'];
+    }
     return false;
   }
 
