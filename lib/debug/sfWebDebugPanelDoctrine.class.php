@@ -39,7 +39,7 @@ class sfWebDebugPanelDoctrine extends sfWebDebugPanel
    */
   public function getTitle()
   {
-    if ($sqlLogs = $this->_getSqlLogs())
+    if ($sqlLogs = $this->getSqlLogs())
     {
       return '<img src="'.$this->webDebug->getOption('image_root_path').'/database.png" /> '.count($sqlLogs);
     }
@@ -64,7 +64,7 @@ class sfWebDebugPanelDoctrine extends sfWebDebugPanel
   {
     return '
       <div id="sfWebDebugDatabaseLogs">
-      <ol><li>'.implode("</li>\n<li>", $this->_getSqlLogs()).'</li></ol>
+      <ol><li>'.implode("</li>\n<li>", $this->getSqlLogs()).'</li></ol>
       </div>
     ';
   }
@@ -106,21 +106,38 @@ class sfWebDebugPanelDoctrine extends sfWebDebugPanel
    *
    * @return array $newSqlogs
    */
-  protected function _getSqlLogs()
+  protected function getSqlLogs()
   {
-    $newSqlLogs = array();
-    foreach ($this->webDebug->getLogger()->getLogs() as $newSqlLog)
+    $logs = array();
+    $bindings = array();
+    $i = 0;
+    foreach ($this->webDebug->getLogger()->getLogs() as $log)
     {
-      if (preg_match('/\b(SELECT|INSERT|UPDATE|DELETE)\b/', $newSqlLog['message'], $match))
+      if ('sfDoctrineLogger' != $log['type'])
       {
-        $e = explode(':', $newSqlLog['message']);
-        $sql = trim($e[1]);
-        $sql = self::_formatSql($sql);
-        $newSqlLogs[] = $sql;
+        continue;
+      }
+
+      if (preg_match('/^.*?(\b(?:SELECT|INSERT|UPDATE|DELETE)\b.*)$/', $log['message'], $match))
+      {
+        $logs[$i++] = self::formatSql($match[1]);
+        $bindings[$i - 1] = array();
+      }
+      else if (preg_match('/Binding (.*) at position (.+?) w\//', $log['message'], $match))
+      {
+        $bindings[$i - 1][] = $match[2].' = '.$match[1];
       }
     }
 
-    return $newSqlLogs;
+    foreach ($logs as $i => $log)
+    {
+      if (count($bindings[$i]))
+      {
+        $logs[$i] .= sprintf(' (%s)', implode(', ', $bindings[$i]));
+      }
+    }
+
+    return $logs;
   }
 
   /**
@@ -129,7 +146,7 @@ class sfWebDebugPanelDoctrine extends sfWebDebugPanel
    * @param  string $sql    SQL string to format
    * @return string $newSql The new formatted SQL string
    */
-  static protected function _formatSql($sql)
+  static protected function formatSql($sql)
   {
     $color = "#990099";
     $newSql = $sql;
