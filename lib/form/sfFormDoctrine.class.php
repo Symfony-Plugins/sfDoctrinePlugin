@@ -206,7 +206,7 @@ abstract class sfFormDoctrine extends sfForm
 
     $values = $this->processValues($values);
 
-    $this->object->fromArray($values);
+    $this->object->fromArray($values, false);
 
     // embedded forms
     foreach ($this->embeddedForms as $name => $form)
