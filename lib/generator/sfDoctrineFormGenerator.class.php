@@ -295,7 +295,7 @@ class sfDoctrineFormGenerator extends sfGenerator
       case 'boolean':
         $widgetSubclass = 'InputCheckbox';
         break;
-      case 'glob':
+      case 'blob':
       case 'clob':
         $widgetSubclass = 'Textarea';
         break;
