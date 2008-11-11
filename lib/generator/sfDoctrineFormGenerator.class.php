@@ -384,7 +384,7 @@ class sfDoctrineFormGenerator extends sfGenerator
     		}
         break;
       case 'clob':
-      case 'glob':
+      case 'blob':
         $validatorSubclass = 'String';
         break;
       case 'float':
