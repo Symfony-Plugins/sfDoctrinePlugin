@@ -12,17 +12,19 @@ class BaseArticleForm extends BaseFormDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'id'         => new sfWidgetFormInputHidden(),
-      'author_id'  => new sfWidgetFormDoctrineSelect(array('model' => 'Author', 'add_empty' => true)),
-      'created_at' => new sfWidgetFormDateTime(),
-      'updated_at' => new sfWidgetFormDateTime(),
+      'id'             => new sfWidgetFormInputHidden(),
+      'author_id'      => new sfWidgetFormDoctrineSelect(array('model' => 'Author', 'add_empty' => true)),
+      'is_on_homepage' => new sfWidgetFormInputCheckbox(),
+      'created_at'     => new sfWidgetFormDateTime(),
+      'updated_at'     => new sfWidgetFormDateTime(),
     ));
 
     $this->setValidators(array(
-      'id'         => new sfValidatorDoctrineChoice(array('model' => 'Article', 'column' => 'id', 'required' => false)),
-      'author_id'  => new sfValidatorDoctrineChoice(array('model' => 'Author', 'required' => false)),
-      'created_at' => new sfValidatorDateTime(array('required' => false)),
-      'updated_at' => new sfValidatorDateTime(array('required' => false)),
+      'id'             => new sfValidatorDoctrineChoice(array('model' => 'Article', 'column' => 'id', 'required' => false)),
+      'author_id'      => new sfValidatorDoctrineChoice(array('model' => 'Author', 'required' => false)),
+      'is_on_homepage' => new sfValidatorBoolean(array('required' => false)),
+      'created_at'     => new sfValidatorDateTime(array('required' => false)),
+      'updated_at'     => new sfValidatorDateTime(array('required' => false)),
     ));
 
     $this->widgetSchema->setNameFormat('article[%s]');

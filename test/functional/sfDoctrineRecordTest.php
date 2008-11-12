@@ -11,7 +11,6 @@
 $app = 'frontend';
 $fixtures = 'fixtures/fixtures.yml';
 require_once(dirname(__FILE__).'/../bootstrap/functional.php');
-require_once(dirname(__FILE__).'/../bootstrap/unit.php');
 
 $t = new lime_test(12, new lime_output_color());
 
@@ -24,9 +23,11 @@ $author = new Author();
 $author->setName('Jonathan H. Wage');
 $author->save();
 
+// Propel style accessors with column name
 $t->is($author->getName(), $author->name);
 
-// Propel style accessors
+// Propel style accessors for id
+// Also check new author was not created since Jonathan H. Wage exists in fixtures/fixtures.yml
 $t->is($author->getId(), 1);
 
 // Make sure we still have only 2 authors
@@ -35,13 +36,18 @@ $t->is(count($authors), 2);
 
 $article = new Article();
 $article->title = 'test';
+
+// __toString() automatic column finder
 $t->is((string) $article, 'test');
+
+// Different style accessors
 $t->is($article->getAuthor_id(), $article->author_id);
 $t->is($article->getAuthorId(), $article->author_id);
 $t->is($article->getauthorId(), $article->author_id);
 $t->is($article->getAuthorID(), $article->author_id);
 $t->is($article->getauthor_id(), $article->author_id);
 
+// Propel style accessors work with relationships
 $article->setAuthor($author);
 $t->is($article->Author, $author);
 $t->is($article->getAuthor(), $author);

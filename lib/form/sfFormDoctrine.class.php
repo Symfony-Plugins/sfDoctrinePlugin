@@ -29,8 +29,8 @@
 abstract class sfFormDoctrine extends sfForm
 {
   protected
-    $cultures = array(),
-    $object   = null;
+    $isNew  = true,
+    $object = null;
 
   /**
    * Constructor.
@@ -56,6 +56,7 @@ abstract class sfFormDoctrine extends sfForm
       }
 
       $this->object = $object;
+      $this->isNew = !$this->object->exists();
     }
 
     parent::__construct(array(), $options, $CSRFSecret);
@@ -85,35 +86,32 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function isNew()
   {
-    return !$this->object->exists();
+    $this->isNew = !$this->object->exists();
+
+    return $this->isNew;
   }
 
   /**
    * Embeds i18n objects into the current form.
    *
-   * @param array An array of cultures
-   * @param string The format to use for widget name
-   * @param string A HTML decorator for the embedded form
+   * @param array   $cultures   An array of cultures
+   * @param string  $decorator  A HTML decorator for the embedded form
    */
-  public function embedI18n($cultures, $nameFormat = null, $decorator = null)
+  public function embedI18n($cultures, $decorator = null)
   {
     if (!$this->isI18n())
     {
       throw new sfException(sprintf('The model "%s" is not internationalized.', $this->getModelName()));
     }
 
-    if ($this->isI18n() && !isset($this->Translation))
-    {
-      // lazy load translations
-      $this->getObject()->loadReference('Translation');
-    }
-
-    $this->cultures = $cultures;
     $class = $this->getI18nFormClass();
-    $i18n = new $class();
     foreach ($cultures as $culture)
     {
-      $this->embedForm($culture, $i18n, $nameFormat, $decorator);
+      $i18nObject = $this->object->Translation[$culture];
+      $i18n = new $class($i18nObject);
+      unset($i18n['id'], $i18n['lang']);
+
+      $this->embedForm($culture, $i18n, $decorator);
     }
   }
 
@@ -206,7 +204,7 @@ abstract class sfFormDoctrine extends sfForm
 
     $values = $this->processValues($values);
 
-    $this->object->fromArray($values, false);
+    $this->object->fromArray($values);
 
     // embedded forms
     foreach ($this->embeddedForms as $name => $form)
@@ -234,27 +232,11 @@ abstract class sfFormDoctrine extends sfForm
    */
   public function processValues($values = null)
   {
-    if (is_null($values)) 
-    { 
-      $values = $this->getValues();
-    }
-
-    // remove special columns that are updated automatically
-    unset($values['id'], $values['updated_at'], $values['updated_on'], $values['created_at'], $values['created_on']);
-
-    // Move translations to the Translation key so that it will work with Doctrine_Record::fromArray()
-    foreach ($this->cultures as $culture)
+    // see if the user has overridden some column setter
+    $valuesToProcess = $values;
+    foreach ($valuesToProcess as $field => $value)
     {
-      $translation = $values[$culture];
-      $translation['lang'] = $culture;
-      unset($translation['id']);
-      $values['Translation'][$culture] = $translation;
-      unset($values[$culture]);
-    }
-
-    foreach ($values as $field => $value)
-    {
-      $method = sprintf('update%sColumn', Doctrine_Inflector::classify($field));
+      $method = sprintf('update%sColumn', self::camelize($field));
       
       if (method_exists($this, $method))
       {
@@ -291,16 +273,6 @@ abstract class sfFormDoctrine extends sfForm
   }
 
   /**
-   * Returns the name of the i18n form class.
-   *
-   * @return string The name of the i18n form class
-   */
-  public function getI18nFormClass()
-  {
-    return $this->getI18nModelName() . 'Form';
-  }
-
-  /**
    * Returns the name of the i18n model.
    *
    * @return string The name of the i18n model
@@ -308,6 +280,16 @@ abstract class sfFormDoctrine extends sfForm
   public function getI18nModelName()
   {
     return $this->getObject()->getTable()->getTemplate('Doctrine_Template_I18n')->getI18n()->getOption('className');
+  }
+
+  /**
+   * Returns the name of the i18n form class.
+   *
+   * @return string The name of the i18n form class
+   */
+  public function getI18nFormClass()
+  {
+    return $this->getI18nModelName() . 'Form';
   }
 
   /**
@@ -349,10 +331,10 @@ abstract class sfFormDoctrine extends sfForm
 
     $this->updateObject();
 
+    $this->object->save($con);
+
     // embedded forms
     $this->saveEmbeddedForms($con);
-
-    $this->object->save($con);
   }
 
   public function saveEmbeddedForms($con = null)
@@ -377,29 +359,26 @@ abstract class sfFormDoctrine extends sfForm
    */
   protected function updateDefaultsFromObject()
   {
-    if ($this->isI18n() && !isset($this->Translation))
-    {
-      // lazy load translations
-      $this->getObject()->loadReference('Translation');
-    }
-
     // update defaults for the main object
     if ($this->isNew())
     {
-      $this->setDefaults(array_merge($this->object->toArray(true), $this->getDefaults()));
+      $this->setDefaults(array_merge($this->object->toArray(false), $this->getDefaults()));
     }
     else
     {
-      $this->setDefaults(array_merge($this->getDefaults(), $this->object->toArray(true)));
+      $this->setDefaults(array_merge($this->getDefaults(), $this->object->toArray(false)));
     }
 
-    if ($this->isI18n())
+    $defaults = $this->getDefaults();
+    foreach ($this->embeddedForms as $name => $form)
     {
-      $defaults = $this->getDefaults();
-      $translations = $defaults['Translation'];
-      unset($defaults['Translation']);
-      $this->setDefaults(array_merge($defaults, $translations));
+      if ($form instanceof sfFormDoctrine)
+      {
+        $form->updateDefaultsFromObject();
+        $defaults[$name] = $form->getDefaults();
+      }
     }
+    $this->setDefaults($defaults);
   }
 
   /**
@@ -415,6 +394,13 @@ abstract class sfFormDoctrine extends sfForm
     if (!$this->validatorSchema[$field] instanceof sfValidatorFile)
     {
       throw new LogicException(sprintf('You cannot save the current file for field "%s" as the field is not a file.', $field));
+    }
+
+    if ($this->getValue($field.'_delete'))
+    {
+      $this->removeFile($field);
+
+      return '';
     }
 
     if (!$this->getValue($field))

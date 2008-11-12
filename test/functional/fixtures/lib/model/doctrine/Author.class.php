@@ -13,7 +13,6 @@ class Author extends BaseAuthor
       if ($author)
       {
         $this->assignIdentifier($author->identifier());
-        $this->refresh();
       } else {
         return $this->_set('name', $name);
       }

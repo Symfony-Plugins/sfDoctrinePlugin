@@ -2,6 +2,7 @@
 Article:
   Article_1:
     Author: jwage
+    is_on_homepage: false
     Translation:
       en:
         title: English Title

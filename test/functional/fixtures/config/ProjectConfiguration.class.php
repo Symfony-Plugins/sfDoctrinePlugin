@@ -16,8 +16,6 @@ class ProjectConfiguration extends sfProjectConfiguration
   public function initializeDoctrine()
   {
     chdir(sfConfig::get('sf_root_dir'));
-    $task = new sfDoctrineDropDbTask($this->dispatcher, new sfFormatter());
-    $task->run(array(), array('--no-confirmation', '--env=test'));
 
     $task = new sfDoctrineBuildAllTask($this->dispatcher, new sfFormatter());
     $task->run(array(), array('--env=test'));
