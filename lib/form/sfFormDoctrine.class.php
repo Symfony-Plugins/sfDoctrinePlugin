@@ -193,6 +193,8 @@ abstract class sfFormDoctrine extends sfForm
   /**
    * Updates the values of the object with the cleaned up values.
    *
+   * @param  array $values An array of values
+   *
    * @return BaseObject The current updated object
    */
   public function updateObject($values = null)
@@ -207,17 +209,42 @@ abstract class sfFormDoctrine extends sfForm
     $this->object->fromArray($values);
 
     // embedded forms
-    foreach ($this->embeddedForms as $name => $form)
-    {
-      if ($form instanceof sfFormDoctrine && is_array($values[$name]))
-      {
-        $form->updateObject($values[$name]);
-      }
-    }
+    $this->updateObjectEmbeddedForms($values);
 
     return $this->object;
   }
-  
+
+  /**
+   * Updates the values of the objects in embedded forms.
+   *
+   * @param array $values An array of values
+   * @param array $forms  An array of forms
+   */
+  public function updateObjectEmbeddedForms($values, $forms = null)
+  {
+    if (is_null($forms))
+    {
+      $forms = $this->embeddedForms;
+    }
+
+    foreach ($forms as $name => $form)
+    {
+      if (!is_array($values[$name]))
+      {
+        continue;
+      }
+
+      if ($form instanceof sfFormDoctrine)
+      {
+        $form->updateObject($values[$name]);
+      }
+      else
+      {
+        $this->updateObjectEmbeddedForms($values[$name], $form->getEmbeddedForms());
+      }
+    }
+  }
+
   /**
    * Processes cleaned up values with user defined methods.
    *
@@ -337,19 +364,34 @@ abstract class sfFormDoctrine extends sfForm
     $this->saveEmbeddedForms($con);
   }
 
-  public function saveEmbeddedForms($con = null)
+  /**
+   * Saves embedded form objects.
+   *
+   * @param Connection $con   An optional Connection object
+   * @param array      $forms An array of forms
+   */
+  public function saveEmbeddedForms($con = null, $forms = null)
   {
     if (is_null($con))
     {
       $con = $this->getConnection();
     }
 
-    foreach ($this->embeddedForms as $form)
+    if (is_null($forms))
+    {
+      $forms = $this->embeddedForms;
+    }
+
+    foreach ($forms as $form)
     {
       if ($form instanceof sfFormDoctrine)
       {
         $form->saveEmbeddedForms($con);
         $form->getObject()->save($con);
+      }
+      else
+      {
+        $this->saveEmbeddedForms($con, $form->getEmbeddedForms());
       }
     }
   }
