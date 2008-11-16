@@ -346,9 +346,9 @@ abstract class sfFormDoctrine extends sfForm
 
     foreach ($this->embeddedForms as $form)
     {
-      $form->saveEmbeddedForms($con);
       if ($form instanceof sfFormDoctrine)
       {
+        $form->saveEmbeddedForms($con);
         $form->getObject()->save($con);
       }
     }
