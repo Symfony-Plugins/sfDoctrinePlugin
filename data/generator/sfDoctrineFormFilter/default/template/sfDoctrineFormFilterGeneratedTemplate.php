@@ -55,7 +55,7 @@ class Base<?php echo $this->table->getOption('name') ?>FormFilter extends BaseFo
     }
 
     $query->leftJoin('r.<?php echo $relation['refTable']->getOption('name') ?> <?php echo $relation['refTable']->getOption('name') ?>')
-          ->orWhereIn('<?php echo $relation['refTable']->getOption('name') ?>.<?php echo $relation->getLocalFieldName() ?>', $values);
+          ->orWhereIn('<?php echo $relation['refTable']->getOption('name') ?>.<?php echo $relation->getForeignFieldName() ?>', $values);
   }
 
 <?php endforeach; ?>
