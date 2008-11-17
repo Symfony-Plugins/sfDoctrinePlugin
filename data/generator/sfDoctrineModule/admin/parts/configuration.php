@@ -39,7 +39,7 @@ class Base<?php echo ucfirst($this->getModuleName()) ?>GeneratorConfiguration ex
 
   public function hasFilterForm()
   {
-    return <?php echo !isset($this->config['filter']) || false !== $this->config['filter']['class'] ? 'true' : 'false' ?>;
+    return <?php echo !isset($this->config['filter']['class']) || false !== $this->config['filter']['class'] ? 'true' : 'false' ?>;
   }
 
   /**
