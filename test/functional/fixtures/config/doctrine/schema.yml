@@ -27,3 +27,17 @@ Subscription:
     status:
       type: enum
       values: [New, Active, Pending, Expired]
+
+User:
+  columns:
+    username: string(255)
+    password: string(255)
+
+Profile:
+  columns:
+    user_id: integer
+    first_name: string(255)
+    last_name: string(255)
+  relations:
+    User:
+      foreignType: one
