@@ -81,21 +81,24 @@ EOF;
     $buildAllLoad = new sfDoctrineBuildAllLoadTask($this->dispatcher, $this->formatter);
     $buildAllLoad->setCommandApplication($this->commandApplication);
 
-    $loadDataOptions = array();
-    $loadDataOptions[] = '--env='.$options['env'];
+    $buildAllLoadOptions = array();
+    $buildAllLoadOptions[] = '--env='.$options['env'];
     if (!empty($options['dir']))
     {
-      $loadDataOptions[] = '--dir=' . implode(' --dir=', $options['dir']);
+      $buildAllLoadOptions[] = '--dir=' . implode(' --dir=', $options['dir']);
     }
     if (isset($options['append']) && $options['append'])
     {
-      $loadDataOptions[] = '--append';
+      $buildAllLoadOptions[] = '--append';
     }
     if (isset($options['application']) && $options['application'])
     {
-      $loadDataOptions[] = '--application=' . $options['application'];
+      $buildAllLoadOptions[] = '--application=' . $options['application'];
     }
-
-    $buildAllLoad->run(array(), $loadDataOptions);
+    if (isset($options['skip-forms']) && $options['skip-forms'])
+    {
+      $buildAllLoadOptions[] = '--skip-forms';
+    }
+    $buildAllLoad->run(array(), $buildAllLoadOptions);
   }
 }
