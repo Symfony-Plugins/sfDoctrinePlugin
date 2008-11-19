@@ -50,13 +50,7 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
 <?php foreach ($this->getManyToManyRelations() as $relation): ?>
     if (isset($this->widgetSchema['<?php echo $this->underscore($relation['alias']) ?>_list']))
     {
-      $values = array();
-      foreach ($this->object-><?php echo $relation['alias']; ?> as $obj)
-      {
-        $values[] = current($obj->identifier());
-      }
-      $this->object->clearRelated('<?php echo $relation['alias']; ?>');
-      $this->setDefault('<?php echo $this->underscore($relation['alias']) ?>_list', $values);
+      $this->setDefault('<?php echo $this->underscore($relation['alias']) ?>_list', $this->object-><?php echo $relation['alias']; ?>->getPrimaryKeys());
     }
 
 <?php endforeach; ?>
@@ -90,22 +84,12 @@ class Base<?php echo $this->modelName ?>Form extends BaseFormDoctrine
       $con = $this->getConnection();
     }
 
-    $q = Doctrine_Query::create()
-          ->delete()
-          ->from('<?php echo $relation['refTable']->getOption('name') ?> r')
-          ->where('r.<?php echo $relation->getLocalFieldName() ?> = ?', current($this->object->identifier()))
-          ->execute();
+    $this->object->unlink('<?php echo $relation['alias'] ?>', array());
 
     $values = $this->getValue('<?php echo $this->underscore($relation['alias']) ?>_list');
     if (is_array($values))
     {
-      foreach ($values as $value)
-      {
-        $obj = new <?php echo $relation['refTable']->getOption('name') ?>();
-        $obj-><?php echo $relation->getLocalFieldName() ?> = current($this->object->identifier());
-        $obj-><?php echo $relation->getForeignFieldName() ?> = $value;
-        $obj->save();
-      }
+      $this->object->link('<?php echo $relation['alias'] ?>', $values);
     }
   }
 
