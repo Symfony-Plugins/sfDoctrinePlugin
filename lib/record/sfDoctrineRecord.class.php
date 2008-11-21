@@ -116,7 +116,7 @@ abstract class sfDoctrineRecord extends Doctrine_Record
    */
   public function toParams()
   {
-    return $this->toArray();
+    return $this->identifier();
   }
 
   /**
