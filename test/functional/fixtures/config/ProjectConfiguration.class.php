@@ -1,7 +1,5 @@
 <?php
 
-# FROZEN_SF_LIB_DIR: /usr/local/php526/lib/php/symfony
-
 require_once dirname(__FILE__).'/../../../../../../autoload/sfCoreAutoload.class.php';
 sfCoreAutoload::register();
 
