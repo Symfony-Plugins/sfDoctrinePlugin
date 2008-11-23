@@ -42,16 +42,6 @@ class sfDoctrineRoute extends sfObjectRoute
     $this->options['object_model'] = $this->options['model'];
   }
 
-  public function setListCriteria(Doctrine_Query $query)
-  {
-    if (!$this->isBound())
-    {
-      throw new LogicException('The route is not bound.');
-    }
-
-    $this->query = $query;
-  }
-
   protected function getObjectForParameters($parameters)
   {
     return $this->getObjectsForParameters($parameters);
