@@ -22,6 +22,9 @@
  */
 class sfDoctrineRoute extends sfObjectRoute
 {
+  protected
+    $query = null;
+
   /**
    * Constructor.
    *
@@ -37,6 +40,16 @@ class sfDoctrineRoute extends sfObjectRoute
     parent::__construct($pattern, $defaults, $requirements, $options);
 
     $this->options['object_model'] = $this->options['model'];
+  }
+
+  public function setListCriteria(Doctrine_Query $query)
+  {
+    if (!$this->isBound())
+    {
+      throw new LogicException('The route is not bound.');
+    }
+
+    $this->query = $query;
   }
 
   protected function getObjectForParameters($parameters)
@@ -73,5 +86,24 @@ class sfDoctrineRoute extends sfObjectRoute
     }
 
     return parent::getObjectsForParameters($parameters);
+  }
+
+  protected function doConvertObjectToArray($object)
+  {
+    if (isset($this->options['convert']) || method_exists($object, 'toParams'))
+    {
+      return parent::doConvertObjectToArray($object);
+    }
+
+    $className = $this->options['model'];
+
+    $parameters = array();
+
+    foreach ($this->getRealVariables() as $variable)
+    {
+      $parameters[$variable] = $object->get($variable);
+    }
+
+    return $parameters;
   }
 }

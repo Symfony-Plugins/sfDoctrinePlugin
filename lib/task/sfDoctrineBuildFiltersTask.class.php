@@ -16,7 +16,7 @@ require_once(dirname(__FILE__).'/sfDoctrineBaseTask.class.php');
  * @package    symfony
  * @subpackage doctrine
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfDoctrineBuildFiltersTask.class.php 11675 2008-09-19 15:21:38Z fabien $
+ * @version    SVN: $Id: sfDoctrineBuildFiltersTask.class.php 12537 2008-11-01 14:43:27Z fabien $
  */
 class sfDoctrineBuildFiltersTask extends sfDoctrineBaseTask
 {
@@ -62,13 +62,23 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $this->logSection('doctrine', 'generating filter form classes');
-
-    $databaseManager = new sfDatabaseManager($this->configuration);
+    
     $generatorManager = new sfGeneratorManager($this->configuration);
     $generatorManager->generate('sfDoctrineFormFilterGenerator', array(
       'connection'     => $options['connection'],
       'model_dir_name' => $options['model-dir-name'],
       'filter_dir_name'  => $options['filter-dir-name'],
     ));
+
+    $properties = parse_ini_file(sfConfig::get('sf_config_dir').DIRECTORY_SEPARATOR.'properties.ini', true);
+
+    $constants = array(
+      'PROJECT_NAME' => isset($properties['symfony']['name']) ? $properties['symfony']['name'] : 'symfony',
+      'AUTHOR_NAME'  => isset($properties['symfony']['author']) ? $properties['symfony']['author'] : 'Your name here'
+    );
+
+    // customize php and yml files
+    $finder = sfFinder::type('file')->name('*.php');
+    $this->getFilesystem()->replaceTokens($finder->in(sfConfig::get('sf_lib_dir').'/filter/'), '##', '##', $constants);
   }
 }

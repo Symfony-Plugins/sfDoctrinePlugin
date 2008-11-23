@@ -110,16 +110,6 @@ abstract class sfDoctrineRecord extends Doctrine_Record
   }
 
   /**
-   * Function required by symfony >= 1.2 admin generators
-   *
-   * @return array
-   */
-  public function toParams()
-  {
-    return $this->identifier();
-  }
-
-  /**
    * Function require by symfony >= 1.2 admin generators
    *
    * @return boolean
