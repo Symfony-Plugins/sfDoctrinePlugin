@@ -62,7 +62,7 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $this->logSection('doctrine', 'generating form classes');
-
+    $databaseManager = new sfDatabaseManager($this->configuration);
     $generatorManager = new sfGeneratorManager($this->configuration);
     $generatorManager->generate('sfDoctrineFormGenerator', array(
       'connection'     => $options['connection'],
