@@ -43,7 +43,13 @@ class sfDoctrineDqlTask extends sfDoctrineBaseTask
     $this->briefDescription = 'Execute a DQL query and view the results';
 
     $this->detailedDescription = <<<EOF
-Execute a DQL query and display the formatted results
+The [doctrine:data-dql|INFO] task executes a DQL query and display the formatted results:
+
+  [./symfony doctrine:dql "FROM User u"|INFO]
+
+You can show the SQL that would be executed by using the [--dir|COMMENT] option:
+
+  [./symfony doctrine:dql --show-sql "FROM User u"|INFO]
 EOF;
   }
 

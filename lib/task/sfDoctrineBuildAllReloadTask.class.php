@@ -32,7 +32,8 @@ class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
       new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Do not ask for confirmation'),
-      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms')
+      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms'),
+      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
     ));
 
     $this->aliases = array('doctrine-build-all-reload');
@@ -41,20 +42,17 @@ class sfDoctrineBuildAllReloadTask extends sfDoctrineBaseTask
     $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, and load data';
 
     $this->detailedDescription = <<<EOF
-The [doctrine:build-all-reload|INFO] task is a shortcut for four other tasks:
+The [doctrine:build-all-reload|INFO] task is a shortcut for five other tasks:
 
-  [./symfony doctrine:build-all-reload frontend|INFO]
+  [./symfony doctrine:build-all-reload|INFO]
 
 The task is equivalent to:
-  
+
   [./symfony doctrine:drop-db|INFO]
   [./symfony doctrine:build-db|INFO]
   [./symfony doctrine:build-model|INFO]
   [./symfony doctrine:insert-sql|INFO]
-  [./symfony doctrine:data-load frontend|INFO]
-
-The task takes an application argument because of the [doctrine:data-load|COMMENT]
-task. See [doctrine:data-load|COMMENT] help page for more information.
+  [./symfony doctrine:data-load|INFO]
 EOF;
   }
 

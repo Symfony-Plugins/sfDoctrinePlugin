@@ -42,7 +42,7 @@ The [doctrine:build-schema|INFO] task introspects a database to create a schema:
 
   [./symfony doctrine:build-schema|INFO]
 
-The task creates a yml file.
+The task creates a yml file in [config/doctrine|COMMENT]
 EOF;
   }
 

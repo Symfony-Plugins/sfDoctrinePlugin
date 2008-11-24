@@ -32,16 +32,17 @@ class sfDoctrineBuildAllLoadTask extends sfDoctrineBaseTask
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
       new sfCommandOption('no-confirmation', null, sfCommandOption::PARAMETER_NONE, 'Do not ask for confirmation'),
-      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms')
+      new sfCommandOption('skip-forms', 'F', sfCommandOption::PARAMETER_NONE, 'Skip generating forms'),
+      new sfCommandOption('dir', null, sfCommandOption::PARAMETER_REQUIRED | sfCommandOption::IS_ARRAY, 'The directories to look for fixtures'),
     ));
 
     $this->aliases = array('doctrine-build-all-load');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-load';
-    $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, and load data';
+    $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, and loads fixtures data';
 
     $this->detailedDescription = <<<EOF
-The [doctrine:build-all-load|INFO] task is a shortcut for four other tasks:
+The [doctrine:build-all-load|INFO] task is a shortcut for two other tasks:
 
   [./symfony doctrine:build-all-load|INFO]
 
@@ -56,7 +57,7 @@ task. See [doctrine:data-load|COMMENT] help page for more information.
 To bypass the confirmation, you can pass the [no-confirmation|COMMENT]
 option:
 
-  [./symfony doctrine:buil-all-load --no-confirmation|INFO]
+  [./symfony doctrine:build-all-load --no-confirmation|INFO]
 EOF;
   }
 
@@ -86,13 +87,17 @@ EOF;
       $loadData = new sfDoctrineLoadDataTask($this->dispatcher, $this->formatter);
       $loadData->setCommandApplication($this->commandApplication);
 
-      $options = array('--env='.$options['env'], '--connection='.$options['connection']);
+      $loadDataOptions = array('--env='.$options['env'], '--connection='.$options['connection']);
       if (isset($this->options['application']))
       {
-        $options[] = '--application='.$options['application'];
+        $loadDataOptions[] = '--application='.$options['application'];
+      }
+      if (!empty($options['dir']))
+      {
+        $loadDataOptions[] = '--dir=' . implode(' --dir=', $options['dir']);
       }
 
-      $loadData->run(array(), $options);
+      $loadData->run(array(), $loadDataOptions);
     }
 
     return $ret;

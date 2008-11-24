@@ -75,7 +75,10 @@ EOF;
     if (isset($options['dir']) && $options['dir'])
     {
       $arguments['data_fixtures_path'] = $options['dir'];
-      $this->logSection('doctrine', sprintf('loading data fixtures from "%s"', $options['dir']));
+      foreach ($options['dir'] as $dir)
+      {
+        $this->logSection('doctrine', sprintf('loading data fixtures from "%s"', $dir));
+      }
     } else {
       $config = $this->getCliConfig();
       $this->logSection('doctrine', sprintf('loading data fixtures from "%s"', $config['data_fixtures_path'][0]));

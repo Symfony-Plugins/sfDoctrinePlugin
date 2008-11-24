@@ -43,7 +43,7 @@ The [doctrine:insert-sql|INFO] task creates database tables:
   [./symfony doctrine:insert-sql|INFO]
 
 The task connects to the database and executes all SQL statements
-found in [config/sql/*schema.sql|COMMENT] files.
+found in [data/sql/*.sql|COMMENT] files.
 EOF;
   }
 

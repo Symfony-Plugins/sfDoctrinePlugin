@@ -39,7 +39,7 @@ class sfDoctrineBuildAllReloadTestAllTask extends sfDoctrineBaseTask
     $this->aliases = array('doctrine-build-all-reload-test-all');
     $this->namespace = 'doctrine';
     $this->name = 'build-all-reload-test-all';
-    $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, load data and run all test suites';
+    $this->briefDescription = 'Generates Doctrine model, SQL, initializes database, load data and run all tests';
 
     $this->detailedDescription = <<<EOF
 The [doctrine:build-all-reload|INFO] task is a shortcut for four other tasks:
@@ -52,7 +52,7 @@ The task is equivalent to:
   [./symfony doctrine:build-db|INFO]
   [./symfony doctrine:build-model|INFO]
   [./symfony doctrine:insert-sql|INFO]
-  [./symfony doctrine:data-load frontend|INFO]
+  [./symfony doctrine:data-load|INFO]
   [./symfony test-all|INFO]
 
 The task takes an application argument because of the [doctrine:data-load|COMMENT]
@@ -82,9 +82,9 @@ EOF;
     {
       $buildAllReloadOptions[] = '--append';
     }
-    if (isset($options['force']) && $options['force'])
+    if (isset($options['no-confirmation']) && $options['no-confirmation'])
     {
-      $buildAllReloadOptions[] = '--force';
+      $buildAllReloadOptions[] = '--no-confirmation';
     }
     $buildAllReload->run(array(), $buildAllReloadOptions);
 

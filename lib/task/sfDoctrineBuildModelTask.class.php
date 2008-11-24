@@ -45,13 +45,10 @@ The [doctrine:build-model|INFO] task creates model classes from the schema:
 The task read the schema information in [config/doctrine/*.yml|COMMENT]
 from the project and all installed plugins.
 
-You mix and match YML and XML schema files. The task will convert
-YML ones to XML before calling the Doctrine task.
+The model classes files are created in [lib/model/doctrine|COMMENT].
 
-The model classes files are created in [lib/model|COMMENT].
-
-This task never overrides custom classes in [lib/model|COMMENT].
-It only replaces files in [lib/model/generated|COMMENT].
+This task never overrides custom classes in [lib/model/doctrine|COMMENT].
+It only replaces files in [lib/model/doctrine/base|COMMENT].
 EOF;
   }
 

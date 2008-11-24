@@ -44,7 +44,7 @@ class sfDoctrineDumpDataTask extends sfDoctrineBaseTask
     $this->detailedDescription = <<<EOF
 The [doctrine:data-dump|INFO] task dumps database data:
 
-  [./symfony doctrine:data-dump frontend|INFO]
+  [./symfony doctrine:data-dump|INFO]
 
 The task dumps the database data in [data/fixtures/%target%|COMMENT].
 
