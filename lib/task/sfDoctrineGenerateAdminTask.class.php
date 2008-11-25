@@ -114,7 +114,7 @@ EOF;
     model:               %s
     module:              %s
     prefix_path:         %s
-    with_wilcard_routes: true
+    with_wildcard_routes: true
 
 
 EOF
