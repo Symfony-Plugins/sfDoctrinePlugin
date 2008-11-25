@@ -67,6 +67,7 @@ collection routes for them:
     options:
       model:              Article
       collection_actions: { filter: post, batch: post }
+      with_wildcard_routes:   true
 EOF;
   }
 
