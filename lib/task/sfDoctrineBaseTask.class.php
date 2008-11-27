@@ -27,9 +27,10 @@ abstract class sfDoctrineBaseTask extends sfBaseTask
     parent::initialize($dispatcher, $formatter);
     self::$done = true;
   }
-  protected function createConfiguration($application, $env, $isDebug)
+
+  protected function createConfiguration($application, $env)
   {
-    $configuration = parent::createConfiguration($application, $env, $isDebug);
+    $configuration = parent::createConfiguration($application, $env);
 
     $autoloader = sfSimpleAutoload::getInstance();
     $config = new sfAutoloadConfigHandler();
