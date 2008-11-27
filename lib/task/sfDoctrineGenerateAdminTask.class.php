@@ -107,6 +107,8 @@ EOF;
 
     if (!isset($routesArray[$name]))
     {
+      $databaseManager = new sfDatabaseManager($this->configuration);
+      $primaryKey = Doctrine::getTable($model)->getIdentifier();
       $module = $options['module'] ? $options['module'] : $name;
       $content = sprintf(<<<EOF
 %s:
@@ -115,11 +117,12 @@ EOF;
     model:               %s
     module:              %s
     prefix_path:         %s
+    column:              %s
     with_wildcard_routes: true
 
 
 EOF
-      , $name, $model, $module, $module).$content;
+      , $name, $model, $module, $module, $primaryKey).$content;
 
       file_put_contents($routing, $content);
     }
