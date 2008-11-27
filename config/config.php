@@ -13,6 +13,9 @@ if (sfConfig::get('sf_web_debug'))
   $this->dispatcher->connect('debug.web.load_panels', array('sfWebDebugPanelDoctrine', 'listenToAddPanelEvent'));
 }
 
+require_once dirname(__FILE__).'/../lib/vendor/doctrine/Doctrine.php';
+spl_autoload_register(array('Doctrine', 'autoload'));
+
 $manager = Doctrine_Manager::getInstance();
 $manager->setAttribute('export', 'all');
 $manager->setAttribute('validate', true);
