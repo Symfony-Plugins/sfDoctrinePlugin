@@ -124,11 +124,15 @@ EOF;
     $files = sfFinder::type('file')->name('*.yml')->in($path);
     foreach ($files as $file)
     {
-      if (strpos(file_get_contents($file), 'package:') !== false)
+      $array = sfYaml::load($file);
+      foreach ($array as $key => $value)
       {
-        throw new sfDoctrineException(
-          sprintf('Cannot use package parameter in symfony Doctrine schema files. Found in "%s"', $file)
-        );
+        if ($key == 'package' || isset($value['package']))
+        {
+          throw new sfDoctrineException(
+            sprintf('Cannot use package parameter in symfony Doctrine schema files. Found in "%s"', $file)
+          );
+        }
       }
     }
   }
