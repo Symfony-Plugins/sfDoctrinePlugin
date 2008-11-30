@@ -40,7 +40,7 @@ class BaseProfileFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'         => 'Text',
+      'id'         => 'Number',
       'user_id'    => 'ForeignKey',
       'first_name' => 'Text',
       'last_name'  => 'Text',

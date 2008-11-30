@@ -40,7 +40,7 @@ class BaseArticleTranslationFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'    => 'Text',
+      'id'    => 'Number',
       'title' => 'Text',
       'body'  => 'Text',
       'lang'  => 'Text',

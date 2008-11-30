@@ -36,7 +36,7 @@ class BaseAuthorFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'   => 'Text',
+      'id'   => 'Number',
       'name' => 'Text',
     );
   }

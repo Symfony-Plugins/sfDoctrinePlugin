@@ -38,7 +38,7 @@ class BaseUserFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'       => 'Text',
+      'id'       => 'Number',
       'username' => 'Text',
       'password' => 'Text',
     );

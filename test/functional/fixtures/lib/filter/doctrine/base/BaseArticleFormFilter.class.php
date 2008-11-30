@@ -42,7 +42,7 @@ class BaseArticleFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'             => 'Text',
+      'id'             => 'Number',
       'author_id'      => 'ForeignKey',
       'is_on_homepage' => 'Boolean',
       'created_at'     => 'Date',
