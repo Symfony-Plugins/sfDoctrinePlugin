@@ -55,6 +55,7 @@ EOF;
     $this->logSection('doctrine', 'created tables successfully');
 
     $databaseManager = new sfDatabaseManager($this->configuration);
+    Doctrine::loadModels(sfConfig::get('sf_lib_dir') . '/model/doctrine', Doctrine::MODEL_LOADING_CONSERVATIVE);
     Doctrine::createTablesFromArray(Doctrine::getLoadedModels());
   }
 }
