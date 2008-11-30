@@ -174,9 +174,23 @@ abstract class sfFormFilterDoctrine extends sfFormFilter
     {
       $query->addWhere('r.' . $fieldName . ' IS NULL');
     }
-    else if (isset($values['text']) && '' != $values['text'])
+    else if (is_array($values) && isset($values['text']) && '' != $values['text'])
     {
       $query->addWhere('r.' . $fieldName . ' LIKE ?', '%' . $values['text'] . '%');
+    }
+  }
+
+  protected function addNumberQuery(Doctrine_Query $query, $field, $values)
+  {
+    $fieldName = $this->getFieldName($field);
+
+    if (is_array($values) && isset($values['is_empty']) && $values['is_empty'])
+    {
+      $query->addWhere('r.' . $fieldName . ' IS NULL');
+    }
+    else if (is_array($values) && isset($values['text']) && '' != $values['text'])
+    {
+      $query->addWhere('r.' . $fieldName . ' = ?', $values['text']);
     }
   }
 

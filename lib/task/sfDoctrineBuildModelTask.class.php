@@ -125,13 +125,16 @@ EOF;
     foreach ($files as $file)
     {
       $array = sfYaml::load($file);
-      foreach ($array as $key => $value)
+      if (is_array($array) AND !empty($array))
       {
-        if ($key == 'package' || isset($value['package']))
+        foreach ($array as $key => $value)
         {
-          throw new sfDoctrineException(
-            sprintf('Cannot use package parameter in symfony Doctrine schema files. Found in "%s"', $file)
-          );
+          if ($key == 'package' || isset($value['package']))
+          {
+            throw new sfDoctrineException(
+              sprintf('Cannot use package parameter in symfony Doctrine schema files. Found in "%s"', $file)
+            );
+          }
         }
       }
     }

@@ -72,9 +72,9 @@ class sfDoctrineGenerator extends sfModelGenerator
   protected function loadPrimaryKeys()
   {
     $this->primaryKey = array();
-    foreach ($this->table->getColumns() as $name => $column)
+    foreach ($this->getColumns() as $name => $column)
     {
-      if (isset($column['primary']))
+      if ($column->isPrimaryKey())
       {
         $this->primaryKey[] = $name;
       }
@@ -145,7 +145,7 @@ class sfDoctrineGenerator extends sfModelGenerator
     $fields = array();
 
     $names = array();
-    foreach ($this->table->getColumns() as $name => $column)
+    foreach ($this->getColumns() as $name => $column)
     {
       $name = sfInflector::underscore($name);
       $names[] = $name;
@@ -207,7 +207,7 @@ class sfDoctrineGenerator extends sfModelGenerator
     $fields = array();
 
     $names = array();
-    foreach ($this->table->getColumns() as $name => $column)
+    foreach ($this->getColumns() as $name => $column)
     {
       $name = sfInflector::underscore($name);
       $names[] = $name;
@@ -249,7 +249,7 @@ class sfDoctrineGenerator extends sfModelGenerator
   public function getAllFieldNames($withM2M = true)
   {
     $names = array();
-    foreach ($this->table->getColumns() as $name => $column)
+    foreach ($this->getColumns() as $name => $column)
     {
       $names[] = sfInflector::underscore($name);
     }
@@ -274,7 +274,7 @@ class sfDoctrineGenerator extends sfModelGenerator
   {
     foreach (array_keys($this->table->getColumns()) as $name)
     {
-      $columns[] = new sfDoctrineColumn($name, $this->table);
+      $columns[$name] = new sfDoctrineColumn($name, $this->table);
     }
 
     return $columns;
